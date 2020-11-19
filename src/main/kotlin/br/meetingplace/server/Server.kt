@@ -1,33 +1,33 @@
 package br.meetingplace.server
 
-import br.meetingplace.server.controllers.readwrite.chat.ChatRW
-import br.meetingplace.server.controllers.readwrite.community.CommunityRW
-import br.meetingplace.server.controllers.readwrite.group.GroupRW
-import br.meetingplace.server.controllers.readwrite.topic.TopicRW
-import br.meetingplace.server.controllers.readwrite.user.UserRW
-import br.meetingplace.server.controllers.subjects.entities.delete.UserDelete
-import br.meetingplace.server.controllers.subjects.entities.factory.UserFactory
-import br.meetingplace.server.controllers.subjects.entities.social.Social
-import br.meetingplace.server.controllers.subjects.entities.profile.Profile
-import br.meetingplace.server.controllers.subjects.entities.reader.UserReader
-import br.meetingplace.server.controllers.subjects.services.chat.delete.DeleteMessage
-import br.meetingplace.server.controllers.subjects.services.chat.send.SendMessage
-import br.meetingplace.server.controllers.subjects.services.chat.disfavor.DisfavorMessage
-import br.meetingplace.server.controllers.subjects.services.chat.favorite.FavoriteMessage
-import br.meetingplace.server.controllers.subjects.services.chat.quote.QuoteMessage
-import br.meetingplace.server.controllers.subjects.services.chat.share.ShareMessage
-import br.meetingplace.server.controllers.subjects.services.chat.reader.ChatReader
-import br.meetingplace.server.controllers.subjects.services.community.factory.CommunityFactory
-import br.meetingplace.server.controllers.subjects.services.community.moderators.Moderator
-import br.meetingplace.server.controllers.subjects.services.group.delete.GroupDelete
-import br.meetingplace.server.controllers.subjects.services.group.factory.GroupFactory
-import br.meetingplace.server.controllers.subjects.services.group.members.GroupMembers
-import br.meetingplace.server.controllers.subjects.services.search.group.GroupSearch
-import br.meetingplace.server.controllers.subjects.services.search.user.UserSearch
-import br.meetingplace.server.controllers.subjects.services.topic.delete.DeleteTopic
-import br.meetingplace.server.controllers.subjects.services.topic.dislike.DislikeTopic
-import br.meetingplace.server.controllers.subjects.services.topic.factory.TopicFactory
-import br.meetingplace.server.controllers.subjects.services.topic.like.LikeTopic
+import br.meetingplace.server.loadstore.file.chat.ChatRW
+import br.meetingplace.server.loadstore.file.community.CommunityRW
+import br.meetingplace.server.loadstore.file.group.GroupRW
+import br.meetingplace.server.loadstore.file.topic.TopicRW
+import br.meetingplace.server.loadstore.file.user.UserRW
+import br.meetingplace.server.user.controller.delete.UserDelete
+import br.meetingplace.server.user.controller.factory.UserFactory
+import br.meetingplace.server.user.controller.social.Social
+import br.meetingplace.server.user.controller.profile.Profile
+import br.meetingplace.server.user.controller.search.UserReader
+import br.meetingplace.server.services.chat.controller.delete.DeleteMessage
+import br.meetingplace.server.services.chat.controller.send.SendMessage
+import br.meetingplace.server.services.chat.controller.disfavor.DisfavorMessage
+import br.meetingplace.server.services.chat.controller.favorite.FavoriteMessage
+import br.meetingplace.server.services.chat.controller.quote.QuoteMessage
+import br.meetingplace.server.services.chat.controller.share.ShareMessage
+import br.meetingplace.server.services.chat.controller.search.ChatSearch
+import br.meetingplace.server.services.community.controller.factory.CommunityFactory
+import br.meetingplace.server.services.community.controller.moderators.Moderator
+import br.meetingplace.server.services.groups.controller.delete.GroupDelete
+import br.meetingplace.server.services.groups.controller.factory.GroupFactory
+import br.meetingplace.server.services.groups.controller.members.GroupMembers
+import br.meetingplace.server.services.groups.controller.search.GroupSearch
+import br.meetingplace.server.user.controller.search.UserSearch
+import br.meetingplace.server.services.topic.controller.delete.DeleteTopic
+import br.meetingplace.server.services.topic.controller.dislike.DislikeTopic
+import br.meetingplace.server.services.topic.controller.factory.TopicFactory
+import br.meetingplace.server.services.topic.controller.like.LikeTopic
 import br.meetingplace.server.dto.CreationData
 import br.meetingplace.server.dto.Login
 import br.meetingplace.server.dto.MemberOperator
@@ -64,14 +64,15 @@ fun main() {
             //SEARCH
             get("/search/topic"){
                 val data = call.receive<TopicIdentifier>()
-                val search = if(!data.subTopicID.isNullOrBlank()) TopicRW.getClass().read(data.subTopicID,data.mainTopicID)
-                else TopicRW.getClass().read(data.mainTopicID, null)
+                val search = if(!data.subTopicID.isNullOrBlank()) TopicRW.getClass().load(data.subTopicID,data.mainTopicID)
+                else TopicRW.getClass().load(data.mainTopicID, null)
 
                 if (search == null)
                     call.respond("Nothing found.")
                 else
                     call.respond(search)
             }
+
             get("/search/user") {
                 val data = call.receive<SimpleOperator>()
                 val search = UserSearch.getClass().searchUser(data, rwUser = UserRW.getClass())
@@ -84,7 +85,7 @@ fun main() {
 
             get("/search/community") {
                 val data = call.receive<SimpleOperator>()
-                val search = CommunityRW.getClass().read(data.identifier.ID)
+                val search = CommunityRW.getClass().load(data.identifier.ID)
 
                 if (search == null)
                     call.respond("Nothing found.")
@@ -109,7 +110,7 @@ fun main() {
             //USER
             get("/user") {
                 val data = call.receive<Login>()
-                val user = UserRW.getClass().read(data.email)
+                val user = UserRW.getClass().load(data.email)
 
                 if (user == null)
                     call.respond("Nothing found.")
@@ -152,7 +153,7 @@ fun main() {
             //CHAT
             get("/see/chat") {
                 val data = call.receive<ChatFinderOperator>()
-                val chat = ChatReader.getClass().seeChat(data, rwCommunity = CommunityRW.getClass(),rwGroup = GroupRW.getClass(),rwUser = UserRW.getClass(),rwChat = ChatRW.getClass())
+                val chat = ChatSearch.getClass().seeChat(data, rwCommunity = CommunityRW.getClass(),rwGroup = GroupRW.getClass(),rwUser = UserRW.getClass(),rwChat = ChatRW.getClass())
                 if (chat == null || chat.getID().isBlank()) {
                     call.respond("Nothing found.")
                 } else
