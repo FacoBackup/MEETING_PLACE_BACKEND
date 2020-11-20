@@ -1,18 +1,18 @@
 package br.meetingplace.server.modules.groups.dao.factory
 
-import br.meetingplace.server.dto.notification.NotificationData
-import br.meetingplace.server.dto.notification.types.NotificationMainType
-import br.meetingplace.server.dto.notification.types.NotificationSubType
-import br.meetingplace.server.dto.owner.OwnerType
-import br.meetingplace.server.db.interfaces.ChatDBInterface
-import br.meetingplace.server.db.interfaces.CommunityDBInterface
-import br.meetingplace.server.db.interfaces.GroupDBInterface
-import br.meetingplace.server.db.interfaces.UserDBInterface
+import br.meetingplace.server.modules.notification.dto.NotificationData
+import br.meetingplace.server.modules.notification.dto.types.NotificationMainType
+import br.meetingplace.server.modules.notification.dto.types.NotificationSubType
+import br.meetingplace.server.modules.owner.dto.OwnerType
+import br.meetingplace.server.db.chat.ChatDBInterface
+import br.meetingplace.server.db.community.CommunityDBInterface
+import br.meetingplace.server.db.group.GroupDBInterface
+import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.dto.Chat
 import br.meetingplace.server.modules.chat.dto.ChatOwnerData
 import br.meetingplace.server.modules.groups.dto.Group
 import br.meetingplace.server.modules.groups.dto.GroupOwnerData
-import br.meetingplace.server.routers.generic.requests.CreationData
+import br.meetingplace.server.requests.generic.CreationData
 
 class GroupFactory private constructor() {
     companion object {

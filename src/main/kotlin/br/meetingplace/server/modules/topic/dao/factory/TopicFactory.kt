@@ -1,14 +1,14 @@
 package br.meetingplace.server.modules.topic.dao.factory
 
-import br.meetingplace.server.dto.owner.OwnerType
-import br.meetingplace.server.db.interfaces.CommunityDBInterface
-import br.meetingplace.server.db.interfaces.TopicDBInterface
-import br.meetingplace.server.db.interfaces.UserDBInterface
+import br.meetingplace.server.modules.owner.dto.OwnerType
+import br.meetingplace.server.db.community.CommunityDBInterface
+import br.meetingplace.server.db.topic.TopicDBInterface
+import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.modules.topic.dto.SimplifiedTopic
 import br.meetingplace.server.modules.topic.dto.Topic
 import br.meetingplace.server.modules.topic.dto.TopicOwnerData
-import br.meetingplace.server.routers.topics.requests.TopicData
+import br.meetingplace.server.requests.topics.TopicData
 import java.util.*
 
 class TopicFactory private constructor() {

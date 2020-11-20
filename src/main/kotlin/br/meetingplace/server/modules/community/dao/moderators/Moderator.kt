@@ -1,13 +1,13 @@
 package br.meetingplace.server.modules.community.dao.moderators
 
-import br.meetingplace.server.db.interfaces.CommunityDBInterface
-import br.meetingplace.server.db.interfaces.GroupDBInterface
-import br.meetingplace.server.db.interfaces.TopicDBInterface
-import br.meetingplace.server.db.interfaces.UserDBInterface
+import br.meetingplace.server.db.community.CommunityDBInterface
+import br.meetingplace.server.db.group.GroupDBInterface
+import br.meetingplace.server.db.topic.TopicDBInterface
+import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.modules.topic.dto.SimplifiedTopic
-import br.meetingplace.server.routers.community.requests.ApprovalData
-import br.meetingplace.server.routers.generic.requests.MemberOperator
+import br.meetingplace.server.requests.community.ApprovalData
+import br.meetingplace.server.requests.generic.MemberOperator
 
 class Moderator private constructor() {
 

@@ -1,11 +1,11 @@
 package br.meetingplace.server.modules.chat.dao.search
 
-import br.meetingplace.server.db.interfaces.ChatDBInterface
-import br.meetingplace.server.db.interfaces.CommunityDBInterface
-import br.meetingplace.server.db.interfaces.GroupDBInterface
-import br.meetingplace.server.db.interfaces.UserDBInterface
+import br.meetingplace.server.db.chat.ChatDBInterface
+import br.meetingplace.server.db.community.CommunityDBInterface
+import br.meetingplace.server.db.group.GroupDBInterface
+import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.dto.Chat
-import br.meetingplace.server.routers.chat.requests.ChatFinderOperator
+import br.meetingplace.server.requests.chat.ChatFinderOperator
 
 class ChatSearch private constructor() {
     companion object {

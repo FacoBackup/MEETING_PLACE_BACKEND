@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.user.dao.factory
 
-import br.meetingplace.server.db.interfaces.UserDBInterface
+import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.user.dto.User
-import br.meetingplace.server.routers.user.requests.UserCreationData
+import br.meetingplace.server.requests.users.UserCreationData
 
 
 class UserFactory private constructor() : UserFactoryInterface {

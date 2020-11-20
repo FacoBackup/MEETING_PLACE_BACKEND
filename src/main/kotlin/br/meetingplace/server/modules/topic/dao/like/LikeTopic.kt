@@ -1,13 +1,13 @@
 package br.meetingplace.server.modules.topic.dao.like
 
-import br.meetingplace.server.dto.notification.NotificationData
-import br.meetingplace.server.dto.notification.types.NotificationMainType
-import br.meetingplace.server.dto.notification.types.NotificationSubType
-import br.meetingplace.server.db.interfaces.CommunityDBInterface
-import br.meetingplace.server.db.interfaces.TopicDBInterface
-import br.meetingplace.server.db.interfaces.UserDBInterface
+import br.meetingplace.server.modules.notification.dto.NotificationData
+import br.meetingplace.server.modules.notification.dto.types.NotificationMainType
+import br.meetingplace.server.modules.notification.dto.types.NotificationSubType
+import br.meetingplace.server.db.community.CommunityDBInterface
+import br.meetingplace.server.db.topic.TopicDBInterface
+import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.topic.dto.Topic
-import br.meetingplace.server.routers.topics.requests.TopicOperationsData
+import br.meetingplace.server.requests.topics.TopicOperationsData
 
 class LikeTopic private constructor() {
     companion object {

@@ -1,13 +1,13 @@
 package br.meetingplace.server.modules.community.dao.search
 
-import br.meetingplace.server.db.interfaces.CommunityDBInterface
-import br.meetingplace.server.db.interfaces.TopicDBInterface
-import br.meetingplace.server.db.interfaces.UserDBInterface
+import br.meetingplace.server.db.community.CommunityDBInterface
+import br.meetingplace.server.db.topic.TopicDBInterface
+import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.community.dto.dependencies.data.Report
 import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.modules.topic.dto.SimplifiedTopic
 import br.meetingplace.server.modules.topic.dto.Topic
-import br.meetingplace.server.routers.generic.requests.SimpleOperator
+import br.meetingplace.server.requests.generic.SimpleOperator
 
 class CommunitySearch {
 

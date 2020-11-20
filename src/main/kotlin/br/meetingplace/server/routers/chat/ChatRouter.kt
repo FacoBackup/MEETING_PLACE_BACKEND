@@ -1,9 +1,9 @@
 package br.meetingplace.server.routers.chat
 
-import br.meetingplace.server.db.file.chat.ChatRW
-import br.meetingplace.server.db.file.community.CommunityRW
-import br.meetingplace.server.db.file.group.GroupRW
-import br.meetingplace.server.db.file.user.UserRW
+import br.meetingplace.server.db.chat.file.ChatRW
+import br.meetingplace.server.db.community.file.CommunityRW
+import br.meetingplace.server.db.group.file.GroupRW
+import br.meetingplace.server.db.user.file.UserRW
 import br.meetingplace.server.modules.chat.dao.delete.DeleteMessage
 import br.meetingplace.server.modules.chat.dao.disfavor.DisfavorMessage
 import br.meetingplace.server.modules.chat.dao.favorite.FavoriteMessage
@@ -12,10 +12,10 @@ import br.meetingplace.server.modules.chat.dao.search.ChatSearch
 import br.meetingplace.server.modules.chat.dao.send.SendMessage
 import br.meetingplace.server.modules.chat.dao.share.ShareMessage
 import br.meetingplace.server.routers.chat.paths.ChatPaths
-import br.meetingplace.server.routers.chat.requests.ChatComplexOperator
-import br.meetingplace.server.routers.chat.requests.ChatFinderOperator
-import br.meetingplace.server.routers.chat.requests.ChatSimpleOperator
-import br.meetingplace.server.routers.chat.requests.MessageData
+import br.meetingplace.server.requests.chat.ChatComplexOperator
+import br.meetingplace.server.requests.chat.ChatFinderOperator
+import br.meetingplace.server.requests.chat.ChatSimpleOperator
+import br.meetingplace.server.requests.chat.MessageData
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*

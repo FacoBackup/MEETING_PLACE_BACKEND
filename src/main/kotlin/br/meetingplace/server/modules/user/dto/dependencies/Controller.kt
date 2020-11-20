@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.user.dto.dependencies
 
-import br.meetingplace.server.dto.notification.NotificationData
+import br.meetingplace.server.modules.notification.dto.NotificationData
 import br.meetingplace.server.modules.chat.dto.SimplifiedChat
 import br.meetingplace.server.modules.user.dto.dependencies.profile.UserProfile
 import br.meetingplace.server.modules.user.dto.dependencies.profile.UserProfileInterface

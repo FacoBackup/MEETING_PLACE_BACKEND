@@ -1,14 +1,14 @@
 package br.meetingplace.server.routers.community
 
-import br.meetingplace.server.db.file.community.CommunityRW
-import br.meetingplace.server.db.file.group.GroupRW
-import br.meetingplace.server.db.file.topic.TopicRW
-import br.meetingplace.server.db.file.user.UserRW
+import br.meetingplace.server.db.community.file.CommunityRW
+import br.meetingplace.server.db.group.file.GroupRW
+import br.meetingplace.server.db.topic.file.TopicRW
+import br.meetingplace.server.db.user.file.UserRW
 import br.meetingplace.server.modules.community.dao.factory.CommunityFactory
 import br.meetingplace.server.modules.community.dao.moderators.Moderator
 import br.meetingplace.server.routers.community.paths.CommunityPaths
-import br.meetingplace.server.routers.community.requests.ApprovalData
-import br.meetingplace.server.routers.generic.requests.CreationData
+import br.meetingplace.server.requests.community.ApprovalData
+import br.meetingplace.server.requests.generic.CreationData
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*

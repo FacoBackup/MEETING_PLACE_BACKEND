@@ -1,15 +1,15 @@
 package br.meetingplace.server.routers.groups
 
-import br.meetingplace.server.db.file.chat.ChatRW
-import br.meetingplace.server.db.file.community.CommunityRW
-import br.meetingplace.server.db.file.group.GroupRW
-import br.meetingplace.server.db.file.user.UserRW
+import br.meetingplace.server.db.chat.file.ChatRW
+import br.meetingplace.server.db.community.file.CommunityRW
+import br.meetingplace.server.db.group.file.GroupRW
+import br.meetingplace.server.db.user.file.UserRW
 import br.meetingplace.server.modules.groups.dao.delete.GroupDelete
 import br.meetingplace.server.modules.groups.dao.factory.GroupFactory
 import br.meetingplace.server.modules.groups.dao.members.GroupMembers
-import br.meetingplace.server.routers.generic.requests.CreationData
-import br.meetingplace.server.routers.generic.requests.MemberOperator
-import br.meetingplace.server.routers.generic.requests.SimpleOperator
+import br.meetingplace.server.requests.generic.CreationData
+import br.meetingplace.server.requests.generic.MemberOperator
+import br.meetingplace.server.requests.generic.SimpleOperator
 import br.meetingplace.server.routers.groups.paths.GroupPaths
 import io.ktor.application.*
 import io.ktor.request.*

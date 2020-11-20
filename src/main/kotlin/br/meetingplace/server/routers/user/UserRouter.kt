@@ -1,17 +1,17 @@
 package br.meetingplace.server.routers.user
 
-import br.meetingplace.server.db.file.community.CommunityRW
-import br.meetingplace.server.db.file.topic.TopicRW
-import br.meetingplace.server.db.file.user.UserRW
+import br.meetingplace.server.db.community.file.CommunityRW
+import br.meetingplace.server.db.topic.file.TopicRW
+import br.meetingplace.server.db.user.file.UserRW
 import br.meetingplace.server.modules.user.dao.delete.UserDelete
 import br.meetingplace.server.modules.user.dao.factory.UserFactory
 import br.meetingplace.server.modules.user.dao.profile.Profile
 import br.meetingplace.server.modules.user.dao.social.Social
-import br.meetingplace.server.routers.generic.requests.Login
-import br.meetingplace.server.routers.generic.requests.SimpleOperator
+import br.meetingplace.server.requests.generic.Login
+import br.meetingplace.server.requests.generic.SimpleOperator
 import br.meetingplace.server.routers.user.paths.UserPaths
-import br.meetingplace.server.routers.user.requests.ProfileData
-import br.meetingplace.server.routers.user.requests.UserCreationData
+import br.meetingplace.server.requests.users.ProfileData
+import br.meetingplace.server.requests.users.UserCreationData
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*

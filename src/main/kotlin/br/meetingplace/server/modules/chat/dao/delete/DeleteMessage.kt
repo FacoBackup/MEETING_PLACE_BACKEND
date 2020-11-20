@@ -1,10 +1,10 @@
 package br.meetingplace.server.modules.chat.dao.delete
 
-import br.meetingplace.server.db.interfaces.ChatDBInterface
-import br.meetingplace.server.db.interfaces.CommunityDBInterface
-import br.meetingplace.server.db.interfaces.GroupDBInterface
-import br.meetingplace.server.db.interfaces.UserDBInterface
-import br.meetingplace.server.routers.chat.requests.ChatSimpleOperator
+import br.meetingplace.server.db.chat.ChatDBInterface
+import br.meetingplace.server.db.community.CommunityDBInterface
+import br.meetingplace.server.db.group.GroupDBInterface
+import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.requests.chat.ChatSimpleOperator
 
 class DeleteMessage private constructor() {
     companion object {

@@ -1,10 +1,10 @@
 package br.meetingplace.server.modules.topic.dao.dislike
 
-import br.meetingplace.server.db.interfaces.CommunityDBInterface
-import br.meetingplace.server.db.interfaces.TopicDBInterface
-import br.meetingplace.server.db.interfaces.UserDBInterface
+import br.meetingplace.server.db.community.CommunityDBInterface
+import br.meetingplace.server.db.topic.TopicDBInterface
+import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.topic.dto.Topic
-import br.meetingplace.server.routers.topics.requests.TopicOperationsData
+import br.meetingplace.server.requests.topics.TopicOperationsData
 
 class DislikeTopic private constructor() {
     companion object {

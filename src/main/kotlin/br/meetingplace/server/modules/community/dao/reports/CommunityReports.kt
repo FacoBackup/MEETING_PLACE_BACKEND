@@ -1,12 +1,12 @@
 package br.meetingplace.server.modules.community.dao.reports
 
-import br.meetingplace.server.db.interfaces.CommunityDBInterface
-import br.meetingplace.server.db.interfaces.ReportDBInterface
-import br.meetingplace.server.db.interfaces.TopicDBInterface
-import br.meetingplace.server.db.interfaces.UserDBInterface
+import br.meetingplace.server.db.community.CommunityDBInterface
+import br.meetingplace.server.db.report.ReportDBInterface
+import br.meetingplace.server.db.topic.TopicDBInterface
+import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.community.dto.dependencies.data.Report
-import br.meetingplace.server.routers.community.requests.ApprovalData
-import br.meetingplace.server.routers.community.requests.ReportData
+import br.meetingplace.server.requests.community.ApprovalData
+import br.meetingplace.server.requests.community.ReportData
 import java.util.*
 
 class CommunityReports private constructor() {
