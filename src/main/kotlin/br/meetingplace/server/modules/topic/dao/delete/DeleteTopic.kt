@@ -51,7 +51,6 @@ class DeleteTopic private constructor() {
         val subTopic = data.identifier.subTopicID?.let { rwTopic.select(it, data.identifier.mainTopicID) }
         val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
         if (subTopic != null && mainTopic != null && subTopic.getCreator() == data.login.email) {
-            subTopic.removeSubTopic(data.identifier.subTopicID)
             mainTopic.removeSubTopic(subTopic.getID())
             rwTopic.insert(mainTopic)
             rwTopic.delete(subTopic)
@@ -79,7 +78,6 @@ class DeleteTopic private constructor() {
         if (subTopic != null && mainTopic != null && community != null && community.checkTopicApproval(mainTopic.getID()) &&
                 (subTopic.getCreator() == data.login.email || community.getMemberRole(data.login.email) == MemberType.MODERATOR || community.getMemberRole(data.login.email) == MemberType.CREATOR)) {
 
-            subTopic.removeSubTopic(data.identifier.subTopicID)
             mainTopic.removeSubTopic(subTopic.getID())
             rwTopic.insert(mainTopic)
             rwTopic.delete(subTopic)
@@ -90,7 +88,7 @@ class DeleteTopic private constructor() {
         val subTopics = mainTopic.getSubTopics()
 
         for (i in subTopics.indices) {
-            val subtopic = rwTopic.select(subTopics[i], mainTopic.getID())
+            val subtopic = rwTopic.select(subTopics[i].ID, mainTopic.getID())
             if(subtopic != null)
                 rwTopic.delete(subtopic)
         }

@@ -8,7 +8,6 @@ class User(
         private var email: String,
         private var password: String
 ) : Controller() {
-
     fun getPassword() = password
     fun getAge() = age
     fun getEmail() = email

@@ -57,7 +57,7 @@ fun Route.topicRouter (){
 
         patch(TopicPaths.LIKE) {
             val post = call.receive<TopicSimpleOperator>()
-            call.respond(LikeTopic.getClass().like(post,rwUser = UserRW.getClass(),rwTopic = TopicRW.getClass(),rwCommunity = CommunityRW.getClass()))
+            call.respond(LikeTopic.getClass().like(post,userDB = UserRW.getClass(),topicDB = TopicRW.getClass(),communityDB = CommunityRW.getClass()))
         }
 
         patch(TopicPaths.DISLIKE) {

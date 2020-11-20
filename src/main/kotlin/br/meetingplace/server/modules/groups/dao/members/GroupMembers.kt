@@ -31,7 +31,7 @@ class GroupMembers private constructor() {
                     if (group != null && group.verifyMember(data.login.email)
                             && !group.verifyMember(data.memberEmail)) {
 
-                        notification = NotificationData(NotificationMainType.GROUP, NotificationSubType.ADDED_IN_GROUP)
+                        notification = NotificationData(NotificationMainType.GROUP, NotificationSubType.ADDED_IN_GROUP, group.getGroupID())
 
                         group.updateMember(toBeAdded, false)
                         newMember.updateMemberIn(group.getGroupID(), false)
@@ -44,7 +44,7 @@ class GroupMembers private constructor() {
                     val group = groupDB.select(data.identifier.ID)
                     val community = communityDB.select(data.identifier.owner)
                     if (group != null && community != null && (data.login.email == group.getCreator() || data.login.email in community.getModerators())) {
-                        notification = NotificationData(NotificationMainType.GROUP, NotificationSubType.ADDED_IN_GROUP)
+                        notification = NotificationData(NotificationMainType.GROUP, NotificationSubType.ADDED_IN_GROUP, group.getGroupID())
                         group.updateMember(toBeAdded, false)
                         newMember.updateMemberIn(group.getGroupID(), false)
                         newMember.updateInbox(notification)

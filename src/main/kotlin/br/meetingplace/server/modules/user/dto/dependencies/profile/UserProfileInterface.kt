@@ -5,4 +5,5 @@ interface UserProfileInterface {
     fun getGender(): String?
     fun getNationality(): String?
     fun getAbout(): String?
+    fun getImageURL(): String?
 }

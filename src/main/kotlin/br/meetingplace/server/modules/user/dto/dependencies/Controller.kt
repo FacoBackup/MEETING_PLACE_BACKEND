@@ -28,7 +28,9 @@ abstract class Controller : UserChatInterface, UserCommunityInterface, UserFollo
     private val groups = UserGroups.getClass()
     private val communities = UserCommunity.getClass()
 
-    //PROFILE
+    override fun getImageURL(): String? {
+        return profile.getImageURL()
+    }
 
     override fun getGender(): String? {
         return profile.getGender()

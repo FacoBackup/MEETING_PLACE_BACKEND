@@ -14,7 +14,7 @@ class UserSearch private constructor() {
     fun searchUser(data: SimpleOperator, rwUser: UserDBInterface): List<SimplifiedUser> {
         val user = rwUser.select(data.identifier.ID)
         return if (user != null) {
-            listOf(SimplifiedUser(user.getUserName(), user.getEmail()))
+            listOf(SimplifiedUser(user.getUserName(), imageURL = user.getImageURL(), user.getEmail()))
         } else listOf()
     }
 }

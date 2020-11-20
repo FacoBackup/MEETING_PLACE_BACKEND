@@ -32,7 +32,7 @@ abstract class Controller : TopicContentInterface, TopicOpinionInterface, SubTop
         subTopics.addSubTopic(subTopicID,subTopicOwner)
     }
 
-    override fun removeSubTopic(subTopic: SimplifiedTopic) {
+    override fun removeSubTopic(subTopic: String) {
         subTopics.removeSubTopic(subTopic)
     }
 

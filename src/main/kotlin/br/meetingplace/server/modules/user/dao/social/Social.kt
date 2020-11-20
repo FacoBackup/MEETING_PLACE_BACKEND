@@ -23,7 +23,7 @@ class Social private constructor() : SocialInterface {
             when (data.identifier.community) {
                 false -> { //USER
                     val external = rwUser.select(data.identifier.ID)
-                    notification = NotificationData(NotificationMainType.USER, NotificationSubType.FOLLOWING)
+                    notification = NotificationData(NotificationMainType.USER, NotificationSubType.FOLLOWING, user.getEmail())
                     if (external != null && user.getEmail() !in external.getFollowers()) {
 
 

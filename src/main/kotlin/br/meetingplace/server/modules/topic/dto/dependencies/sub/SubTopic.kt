@@ -9,15 +9,18 @@ class SubTopic private constructor() : SubTopicInterface {
         fun getClass() = Class
     }
 
-    private var subTopicIDs = mutableListOf<SimplifiedTopic>()
+    private var subTopics = mutableListOf<SimplifiedTopic>()
 
-    override fun getSubTopics() = subTopicIDs
+    override fun getSubTopics() = subTopics
 
     override fun addSubTopic(subTopicID: String, subTopicOwner: TopicOwner) {
-        subTopicIDs.add(SimplifiedTopic(subTopicID, subTopicOwner))
+        subTopics.add(SimplifiedTopic(subTopicID, subTopicOwner))
     }
 
-    override fun removeSubTopic(subTopic: SimplifiedTopic) {
-        subTopicIDs.remove(subTopic)
+    override fun removeSubTopic(id: String) {
+        for (i in 0 until subTopics.size) {
+            if(subTopics[i].ID == id)
+                subTopics.removeAt(i)
+        }
     }
 }

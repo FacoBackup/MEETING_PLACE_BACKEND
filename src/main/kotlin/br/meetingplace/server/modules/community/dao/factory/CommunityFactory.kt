@@ -28,7 +28,7 @@ class CommunityFactory private constructor() {
         lateinit var id: String
 
         if (user != null && community == null) {
-            newCommunity = Community(data.name, getCommunityID(data.name), data.about, user.getEmail())
+            newCommunity = Community(name = data.name, imageURL = data.imageURL,id =  getCommunityID(data.name), about = data.about, creator = user.getEmail())
             id = getCommunityID(data.name)
             user.updateModeratorIn(id, false)
             communityDB.insert(newCommunity)
@@ -47,7 +47,7 @@ class CommunityFactory private constructor() {
                 when (community.getModerators().isEmpty()) {
                     true -> rwCommunity.delete(community)
                     false -> {
-                        notification = NotificationData(NotificationMainType.COMMUNITY, NotificationSubType.DELETE_REQUEST)
+                        notification = NotificationData(NotificationMainType.COMMUNITY, NotificationSubType.DELETE_REQUEST, community.getID())
                         mods = community.getModerators()
                         for (i in mods.indices) {
                             val moderator = rwUser.select(mods[i])
