@@ -12,10 +12,13 @@ import io.ktor.gson.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import org.jetbrains.exposed.sql.Database
 
 fun main() {
+//Database.connect("jdbc:postgresql: DB URL", driver = "idk", user = "AEB", password = "m@n@gerb0x")
+
     val port = System.getenv("PORT")?.toInt() ?: 8080
-    val application = embeddedServer(Netty, port) {
+    embeddedServer(Netty, port) {
         routing {
             install(ContentNegotiation) {
                 gson {
