@@ -8,17 +8,17 @@ import br.meetingplace.server.modules.topic.dao.dislike.DislikeTopic
 import br.meetingplace.server.modules.topic.dao.factory.TopicFactory
 import br.meetingplace.server.modules.topic.dao.like.LikeTopic
 import br.meetingplace.server.modules.user.dao.search.UserReader
-import br.meetingplace.server.requests.generic.Login
+import br.meetingplace.server.requests.generic.data.Login
 import br.meetingplace.server.routers.topics.paths.TopicPaths
-import br.meetingplace.server.requests.topics.TopicData
-import br.meetingplace.server.requests.topics.TopicIdentifier
-import br.meetingplace.server.requests.topics.TopicOperationsData
+import br.meetingplace.server.requests.topics.data.TopicData
+import br.meetingplace.server.requests.topics.data.TopicIdentifier
+import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-fun Route.TopicRouter (){
+fun Route.topicRouter (){
     route("/api"){
         get (TopicPaths.MY_TOPICS){
             val data = call.receive<Login>()
@@ -51,17 +51,17 @@ fun Route.TopicRouter (){
             call.respond(TopicFactory.getClass().create(new, rwUser = UserRW.getClass(),rwTopic = TopicRW.getClass(),rwCommunity = CommunityRW.getClass()))
         }
         delete(TopicPaths.TOPIC) {
-            val topic = call.receive<TopicOperationsData>()
+            val topic = call.receive<TopicSimpleOperator>()
             call.respond(DeleteTopic.getClass().delete(topic, rwUser = UserRW.getClass(),rwTopic = TopicRW.getClass(),rwCommunity = CommunityRW.getClass()))
         }
 
         patch(TopicPaths.LIKE) {
-            val post = call.receive<TopicOperationsData>()
+            val post = call.receive<TopicSimpleOperator>()
             call.respond(LikeTopic.getClass().like(post,rwUser = UserRW.getClass(),rwTopic = TopicRW.getClass(),rwCommunity = CommunityRW.getClass()))
         }
 
         patch(TopicPaths.DISLIKE) {
-            val post = call.receive<TopicOperationsData>()
+            val post = call.receive<TopicSimpleOperator>()
             call.respond(DislikeTopic.getClass().dislike(post, rwUser = UserRW.getClass(),rwTopic = TopicRW.getClass(),rwCommunity = CommunityRW.getClass()))
         }
 

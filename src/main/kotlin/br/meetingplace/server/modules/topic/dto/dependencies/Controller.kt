@@ -1,9 +1,11 @@
 package br.meetingplace.server.modules.topic.dto.dependencies
 
+import br.meetingplace.server.modules.topic.dto.SimplifiedTopic
 import br.meetingplace.server.modules.topic.dto.dependencies.content.TopicContent
 import br.meetingplace.server.modules.topic.dto.dependencies.content.TopicContentInterface
 import br.meetingplace.server.modules.topic.dto.dependencies.opinions.TopicOpinion
 import br.meetingplace.server.modules.topic.dto.dependencies.opinions.TopicOpinionInterface
+import br.meetingplace.server.modules.topic.dto.dependencies.owner.TopicOwner
 import br.meetingplace.server.modules.topic.dto.dependencies.sub.SubTopic
 import br.meetingplace.server.modules.topic.dto.dependencies.sub.SubTopicInterface
 
@@ -26,15 +28,15 @@ abstract class Controller : TopicContentInterface, TopicOpinionInterface, SubTop
     }
 
     //SUBTOPIC
-    override fun addSubTopic(subTopicID: String) {
-        subTopics.addSubTopic(subTopicID)
+    override fun addSubTopic(subTopicID: String, subTopicOwner: TopicOwner) {
+        subTopics.addSubTopic(subTopicID,subTopicOwner)
     }
 
-    override fun removeSubTopic(subTopicID: String) {
-        subTopics.removeSubTopic(subTopicID)
+    override fun removeSubTopic(subTopic: SimplifiedTopic) {
+        subTopics.removeSubTopic(subTopic)
     }
 
-    override fun getSubTopics(): List<String> {
+    override fun getSubTopics(): List<SimplifiedTopic> {
         return subTopics.getSubTopics()
     }
 

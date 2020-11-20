@@ -5,14 +5,14 @@ import br.meetingplace.server.db.group.file.GroupRW
 import br.meetingplace.server.db.user.file.UserRW
 import br.meetingplace.server.modules.groups.dao.search.GroupSearch
 import br.meetingplace.server.modules.user.dao.search.UserSearch
-import br.meetingplace.server.requests.generic.SimpleOperator
+import br.meetingplace.server.requests.generic.operators.SimpleOperator
 import br.meetingplace.server.routers.search.paths.SearchPaths
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-fun Route.SearchRouter (){
+fun Route.searchRouter (){
     route("/api"){
         get(SearchPaths.GROUP) {
             val data = call.receive<SimpleOperator>()

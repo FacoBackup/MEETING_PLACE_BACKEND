@@ -2,7 +2,7 @@ package br.meetingplace.server.modules.user.dao.delete
 
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
-import br.meetingplace.server.requests.generic.Login
+import br.meetingplace.server.requests.generic.data.Login
 
 class UserDelete private constructor() : UserDeleteInterface {
     companion object {

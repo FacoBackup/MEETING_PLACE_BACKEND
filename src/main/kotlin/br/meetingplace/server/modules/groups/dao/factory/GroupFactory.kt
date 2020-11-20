@@ -9,22 +9,24 @@ import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.dto.Chat
-import br.meetingplace.server.modules.chat.dto.ChatOwnerData
+import br.meetingplace.server.modules.chat.dto.dependencies.owner.ChatOwnerData
 import br.meetingplace.server.modules.groups.dto.Group
 import br.meetingplace.server.modules.groups.dto.GroupOwnerData
-import br.meetingplace.server.requests.generic.CreationData
+import br.meetingplace.server.requests.generic.data.CreationData
 
 class GroupFactory private constructor() {
+
     companion object {
         private val Class = GroupFactory()
         fun getClass() = Class
     }
+
     private fun getGroupID(name: String, creator: String): String{
-            return (name.replace("\\s".toRegex(), "") + "_" + (creator.replaceAfter("@", "")).removeSuffix("@")).toLowerCase()
+        return (name.replace("\\s".toRegex(), "") + "_" + (creator.replaceAfter("@", "")).removeSuffix("@")).toLowerCase()
     }
 
-    fun create(data: CreationData, rwGroup: GroupDBInterface, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface) {
-        val user = rwUser.select(data.login.email)
+    fun create(data: CreationData, groupDB: GroupDBInterface, userDB: UserDBInterface, communityDB: CommunityDBInterface, chatDB: ChatDBInterface) {
+        val user = userDB.select(data.login.email)
         lateinit var communityMods: List<String>
         lateinit var notification: NotificationData
         lateinit var newGroup: Group
@@ -37,17 +39,17 @@ class GroupFactory private constructor() {
                     newGroup = Group(GroupOwnerData(data.login.email, data.login.email, OwnerType.USER), groupID, data.name, newChat.getID())
                     user.updateMyGroups(groupID, false)
 
-                    rwGroup.insert(newGroup)
-                    rwChat.insert(newChat)
-                    rwUser.insert(user)
+                    groupDB.insert(newGroup)
+                    chatDB.insert(newChat)
+                    userDB.insert(user)
                 }
                 true -> {
-                    val community = rwCommunity.select(data.identifier.ID)
+                    val community = communityDB.select(data.identifier.ID)
                     if (community != null ) {
                         communityMods = community.getModerators()
-                        notification = NotificationData(NotificationMainType.COMMUNITY, NotificationSubType.CREATION_REQUEST)
+                        notification = NotificationData(NotificationMainType.COMMUNITY, NotificationSubType.CREATION_REQUEST, community.getID())
                         for (moderator in communityMods) {
-                            val mod = rwUser.select(moderator)
+                            val mod = userDB.select(moderator)
                             if (mod != null && mod != user)
                                 mod.updateInbox(notification)
                         }
@@ -62,10 +64,10 @@ class GroupFactory private constructor() {
                             community.updateGroupsInValidation(newGroup.getGroupID(), true)
 
 
-                        rwGroup.insert(newGroup)
-                        rwChat.insert(newChat)
-                        rwUser.insert(user)
-                        rwCommunity.insert(community)
+                        groupDB.insert(newGroup)
+                        chatDB.insert(newChat)
+                        userDB.insert(user)
+                        communityDB.insert(community)
                     }
                 }
             }

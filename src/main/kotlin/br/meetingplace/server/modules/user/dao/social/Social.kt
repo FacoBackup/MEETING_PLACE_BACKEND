@@ -5,7 +5,7 @@ import br.meetingplace.server.modules.notification.dto.types.NotificationMainTyp
 import br.meetingplace.server.modules.notification.dto.types.NotificationSubType
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
-import br.meetingplace.server.requests.generic.SimpleOperator
+import br.meetingplace.server.requests.generic.operators.SimpleOperator
 
 class Social private constructor() : SocialInterface {
 

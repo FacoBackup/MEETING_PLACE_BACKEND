@@ -6,8 +6,8 @@ import br.meetingplace.server.modules.notification.dto.types.NotificationSubType
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.community.dto.Community
-import br.meetingplace.server.requests.generic.CreationData
-import br.meetingplace.server.requests.generic.MemberOperator
+import br.meetingplace.server.requests.generic.data.CreationData
+import br.meetingplace.server.requests.generic.operators.MemberOperator
 
 class CommunityFactory private constructor() {
 
@@ -20,9 +20,9 @@ class CommunityFactory private constructor() {
         return (name.replace("\\s".toRegex(), "")).toLowerCase()
     }
 
-    fun create(data: CreationData, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface) {
-        val user = rwUser.select(data.login.email)
-        val community = rwCommunity.select(data.name)
+    fun create(data: CreationData, userDB: UserDBInterface, communityDB: CommunityDBInterface) {
+        val user = userDB.select(data.login.email)
+        val community = communityDB.select(data.name)
 
         lateinit var newCommunity: Community
         lateinit var id: String
@@ -31,8 +31,8 @@ class CommunityFactory private constructor() {
             newCommunity = Community(data.name, getCommunityID(data.name), data.about, user.getEmail())
             id = getCommunityID(data.name)
             user.updateModeratorIn(id, false)
-            rwCommunity.insert(newCommunity)
-            rwUser.insert(user)
+            communityDB.insert(newCommunity)
+            userDB.insert(user)
         }
     }
 

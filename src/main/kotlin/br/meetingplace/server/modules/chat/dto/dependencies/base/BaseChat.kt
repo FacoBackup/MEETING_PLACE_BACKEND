@@ -2,8 +2,8 @@ package br.meetingplace.server.modules.chat.dto.dependencies.base
 
 import br.meetingplace.server.modules.chat.dto.dependencies.data.MessageContent
 import br.meetingplace.server.modules.chat.dto.dependencies.data.MessageType
-import br.meetingplace.server.requests.chat.ChatComplexOperator
-import br.meetingplace.server.requests.chat.ChatSimpleOperator
+import br.meetingplace.server.requests.chat.operators.ChatComplexOperator
+import br.meetingplace.server.requests.chat.operators.ChatSimpleOperator
 
 class BaseChat private constructor() : BaseChatInterface {
     companion object {
@@ -46,8 +46,8 @@ class BaseChat private constructor() : BaseChatInterface {
     override fun quoteMessage(message: ChatComplexOperator, newId: String) {
         val index = idMessages.indexOf(message.messageID)
         if (index != -1) {
-            message.message = "|${messages[index].content}|  " + message.message
-            val newMessage = MessageContent(message.message, newId, messages[index].creator, MessageType.QUOTED)
+            message.content.message = "|${messages[index].content}|  " + message.content.message
+            val newMessage = MessageContent(message.content.message,imageURL = null, newId, messages[index].creator, MessageType.QUOTED)
             addMessage(newMessage)
         }
     }

@@ -1,10 +1,10 @@
 package br.meetingplace.server
 
-import br.meetingplace.server.routers.chat.ChatRouter
-import br.meetingplace.server.routers.community.CommunityRouter
-import br.meetingplace.server.routers.groups.GroupRouter
-import br.meetingplace.server.routers.search.SearchRouter
-import br.meetingplace.server.routers.topics.TopicRouter
+import br.meetingplace.server.routers.chat.chatRouter
+import br.meetingplace.server.routers.community.communityRouter
+import br.meetingplace.server.routers.groups.groupRouter
+import br.meetingplace.server.routers.search.searchRouter
+import br.meetingplace.server.routers.topics.topicRouter
 import br.meetingplace.server.routers.user.userRouter
 import io.ktor.application.*
 import io.ktor.features.*
@@ -22,12 +22,12 @@ fun main() {
                     setPrettyPrinting()
                 }
             }
-            TopicRouter()
-            SearchRouter()
+            topicRouter()
+            searchRouter()
             userRouter()
-            CommunityRouter()
-            GroupRouter()
-            ChatRouter()
+            communityRouter()
+            groupRouter()
+            chatRouter()
         }
     }.start(wait = true)
 }

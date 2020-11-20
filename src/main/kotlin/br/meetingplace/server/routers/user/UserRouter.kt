@@ -7,11 +7,11 @@ import br.meetingplace.server.modules.user.dao.delete.UserDelete
 import br.meetingplace.server.modules.user.dao.factory.UserFactory
 import br.meetingplace.server.modules.user.dao.profile.Profile
 import br.meetingplace.server.modules.user.dao.social.Social
-import br.meetingplace.server.requests.generic.Login
-import br.meetingplace.server.requests.generic.SimpleOperator
+import br.meetingplace.server.requests.generic.data.Login
+import br.meetingplace.server.requests.generic.operators.SimpleOperator
 import br.meetingplace.server.routers.user.paths.UserPaths
-import br.meetingplace.server.requests.users.ProfileData
-import br.meetingplace.server.requests.users.UserCreationData
+import br.meetingplace.server.requests.users.data.ProfileData
+import br.meetingplace.server.requests.users.data.UserCreationData
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*

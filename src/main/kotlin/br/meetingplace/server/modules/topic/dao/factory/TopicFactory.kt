@@ -7,8 +7,8 @@ import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.modules.topic.dto.SimplifiedTopic
 import br.meetingplace.server.modules.topic.dto.Topic
-import br.meetingplace.server.modules.topic.dto.TopicOwnerData
-import br.meetingplace.server.requests.topics.TopicData
+import br.meetingplace.server.modules.topic.dto.dependencies.owner.TopicOwner
+import br.meetingplace.server.requests.topics.data.TopicData
 import java.util.*
 
 class TopicFactory private constructor() {
@@ -51,7 +51,7 @@ class TopicFactory private constructor() {
         val community = data.communityID?.let { rwCommunity.select(it) }
 
         if (data.identifier != null && community != null && user != null) {
-            val topic = Topic(TopicOwnerData(community.getID(), data.login.email, OwnerType.COMMUNITY), user.getEmail(), UUID.randomUUID().toString(), null)
+            val topic = Topic(TopicOwner(community.getID(), data.login.email, OwnerType.COMMUNITY), user.getEmail(), UUID.randomUUID().toString(), null)
 
             when (community.getMemberRole(data.login.email)) {
                 MemberType.CREATOR -> {
@@ -78,7 +78,7 @@ class TopicFactory private constructor() {
             val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
             if (mainTopic != null && community.checkTopicApproval(mainTopic.getID())) {
                 val subtopic = Topic(mainTopic.getOwner(), user.getEmail(), UUID.randomUUID().toString(), data.identifier.mainTopicID)
-                mainTopic.addSubTopic(subtopic.getID())
+                mainTopic.addSubTopic(subtopic.getID(), subtopic.getOwner())
                 subtopic.addContent(data.header, data.body, user.getUserName())
                 rwTopic.insert(mainTopic)
                 rwTopic.insert(subtopic)
@@ -91,7 +91,7 @@ class TopicFactory private constructor() {
         val user = rwUser.select(data.login.email)
 
         if(user != null){
-            val topic = Topic(TopicOwnerData(user.getEmail(), user.getEmail(), OwnerType.USER), user.getEmail(), UUID.randomUUID().toString(), null)
+            val topic = Topic(TopicOwner(user.getEmail(), user.getEmail(), OwnerType.USER), user.getEmail(), UUID.randomUUID().toString(), null)
 
             topic.addContent(data.header, data.body, user.getUserName())
             rwTopic.insert(topic)
@@ -107,7 +107,7 @@ class TopicFactory private constructor() {
             val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
             if (mainTopic != null) {
                 val subtopic = Topic(mainTopic.getOwner(), user.getEmail(), UUID.randomUUID().toString(), data.identifier.mainTopicID)
-                mainTopic.addSubTopic(subtopic.getID())
+                mainTopic.addSubTopic(subtopic.getID(), subtopic.getOwner())
                 subtopic.addContent(data.header, data.body, user.getUserName())
                 rwTopic.insert(mainTopic)
                 rwTopic.insert(subtopic)

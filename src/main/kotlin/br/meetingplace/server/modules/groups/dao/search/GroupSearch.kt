@@ -3,7 +3,7 @@ package br.meetingplace.server.modules.groups.dao.search
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.groups.dto.Group
-import br.meetingplace.server.requests.generic.SimpleOperator
+import br.meetingplace.server.requests.generic.operators.SimpleOperator
 
 class GroupSearch private constructor() {
     companion object {

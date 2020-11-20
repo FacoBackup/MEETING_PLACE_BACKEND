@@ -12,16 +12,16 @@ import br.meetingplace.server.modules.chat.dao.search.ChatSearch
 import br.meetingplace.server.modules.chat.dao.send.SendMessage
 import br.meetingplace.server.modules.chat.dao.share.ShareMessage
 import br.meetingplace.server.routers.chat.paths.ChatPaths
-import br.meetingplace.server.requests.chat.ChatComplexOperator
-import br.meetingplace.server.requests.chat.ChatFinderOperator
-import br.meetingplace.server.requests.chat.ChatSimpleOperator
-import br.meetingplace.server.requests.chat.MessageData
+import br.meetingplace.server.requests.chat.operators.ChatComplexOperator
+import br.meetingplace.server.requests.chat.operators.ChatFinderOperator
+import br.meetingplace.server.requests.chat.operators.ChatSimpleOperator
+import br.meetingplace.server.requests.chat.data.MessageData
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-fun Route.ChatRouter (){
+fun Route.chatRouter (){
 
     route("/api"){
 
@@ -57,7 +57,7 @@ fun Route.ChatRouter (){
         }
         patch(ChatPaths.SHARE) {
             val data = call.receive<ChatComplexOperator>()
-            call.respond(ShareMessage.getClass().shareMessage(data, rwUser = UserRW.getClass(),rwGroup = GroupRW.getClass(),rwCommunity = CommunityRW.getClass(),rwChat = ChatRW.getClass()))
+            call.respond(ShareMessage.getClass().shareMessage(data, userDB = UserRW.getClass(),groupDB = GroupRW.getClass(),communityDB = CommunityRW.getClass(),chatDB = ChatRW.getClass()))
         }
     }
 }

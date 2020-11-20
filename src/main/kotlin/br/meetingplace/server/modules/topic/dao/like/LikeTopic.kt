@@ -7,7 +7,7 @@ import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.topic.dto.Topic
-import br.meetingplace.server.requests.topics.TopicOperationsData
+import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
 
 class LikeTopic private constructor() {
     companion object {
@@ -15,7 +15,7 @@ class LikeTopic private constructor() {
         fun getClass() = Class
     }
 
-    fun like(data: TopicOperationsData, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface) {
+    fun like(data: TopicSimpleOperator, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface) {
         val user = rwUser.select(data.login.email)
 
         if (user != null) {
@@ -44,7 +44,7 @@ class LikeTopic private constructor() {
         }//IF VERIFY USER
     }
 
-    private fun likeUserMainTopic(data: TopicOperationsData, rwUser: UserDBInterface, rwTopic: TopicDBInterface) {
+    private fun likeUserMainTopic(data: TopicSimpleOperator, rwUser: UserDBInterface, rwTopic: TopicDBInterface) {
         val user = rwUser.select(data.login.email)
         val topic = rwTopic.select(data.identifier.mainTopicID, null)
         val creator = rwUser.select(data.identifier.mainTopicOwner)
@@ -77,7 +77,7 @@ class LikeTopic private constructor() {
         }
     }
 
-    private fun likeUserSubTopic(data: TopicOperationsData, rwUser: UserDBInterface, rwTopic: TopicDBInterface) {
+    private fun likeUserSubTopic(data: TopicSimpleOperator, rwUser: UserDBInterface, rwTopic: TopicDBInterface) {
         val user = rwUser.select(data.login.email)
         val subTopic = data.identifier.subTopicID?.let { rwTopic.select(it, data.identifier.mainTopicID) }
         val creator = rwUser.select(data.identifier.mainTopicOwner)
@@ -110,7 +110,7 @@ class LikeTopic private constructor() {
         }
     }
 
-    private fun likeCommunityMainTopic(data: TopicOperationsData, rwTopic: TopicDBInterface, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface) {
+    private fun likeCommunityMainTopic(data: TopicSimpleOperator, rwTopic: TopicDBInterface, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface) {
         val user = rwUser.select(data.login.email)
         val topic = rwTopic.select(data.identifier.mainTopicID, null)
         val creator = rwUser.select(data.identifier.mainTopicOwner)
@@ -144,7 +144,7 @@ class LikeTopic private constructor() {
         }
     }
 
-    private fun likeCommunitySubtopic(data: TopicOperationsData, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface) {
+    private fun likeCommunitySubtopic(data: TopicSimpleOperator, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface) {
         val user = rwUser.select(data.login.email)
         val subTopic = data.identifier.subTopicID?.let { rwTopic.select(it, data.identifier.mainTopicID) }
         val creator = rwUser.select(data.identifier.mainTopicOwner)

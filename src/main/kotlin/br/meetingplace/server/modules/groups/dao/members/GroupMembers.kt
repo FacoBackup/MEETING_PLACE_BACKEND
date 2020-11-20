@@ -8,7 +8,7 @@ import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.modules.members.dto.MemberType
-import br.meetingplace.server.requests.generic.MemberOperator
+import br.meetingplace.server.requests.generic.operators.MemberOperator
 
 class GroupMembers private constructor() {
     companion object {
@@ -16,9 +16,9 @@ class GroupMembers private constructor() {
         fun getClass() = Class
     }
 
-    fun addMember(data: MemberOperator, rwCommunity: CommunityDBInterface, rwGroup: GroupDBInterface, rwUser: UserDBInterface) {
-        val user = rwUser.select(data.login.email)
-        val newMember = rwUser.select(data.memberEmail)
+    fun addMember(data: MemberOperator, communityDB: CommunityDBInterface, groupDB: GroupDBInterface, userDB: UserDBInterface) {
+        val user = userDB.select(data.login.email)
+        val newMember = userDB.select(data.memberEmail)
 
         lateinit var notification: NotificationData
         lateinit var toBeAdded: MemberData
@@ -27,7 +27,7 @@ class GroupMembers private constructor() {
             toBeAdded = MemberData(newMember.getEmail(), MemberType.NORMAL)
             when (data.identifier.community) {
                 false -> {
-                    val group = rwGroup.select(data.identifier.ID)
+                    val group = groupDB.select(data.identifier.ID)
                     if (group != null && group.verifyMember(data.login.email)
                             && !group.verifyMember(data.memberEmail)) {
 
@@ -36,20 +36,20 @@ class GroupMembers private constructor() {
                         group.updateMember(toBeAdded, false)
                         newMember.updateMemberIn(group.getGroupID(), false)
                         newMember.updateInbox(notification)
-                        rwUser.insert(newMember)
-                        rwGroup.insert(group)
+                        userDB.insert(newMember)
+                        groupDB.insert(group)
                     }
                 }
                 true -> {
-                    val group = rwGroup.select(data.identifier.ID)
-                    val community = rwCommunity.select(data.identifier.owner)
+                    val group = groupDB.select(data.identifier.ID)
+                    val community = communityDB.select(data.identifier.owner)
                     if (group != null && community != null && (data.login.email == group.getCreator() || data.login.email in community.getModerators())) {
                         notification = NotificationData(NotificationMainType.GROUP, NotificationSubType.ADDED_IN_GROUP)
                         group.updateMember(toBeAdded, false)
                         newMember.updateMemberIn(group.getGroupID(), false)
                         newMember.updateInbox(notification)
-                        rwUser.insert(newMember)
-                        rwGroup.insert(group)
+                        userDB.insert(newMember)
+                        groupDB.insert(group)
                     }
                 }
             }
@@ -83,17 +83,17 @@ class GroupMembers private constructor() {
         }
     }
 
-    fun removeMember(data: MemberOperator, rwGroup: GroupDBInterface, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface) {
+    fun removeMember(data: MemberOperator, groupDB: GroupDBInterface, userDB: UserDBInterface, communityDB: CommunityDBInterface) {
 
-        val user = rwUser.select(data.login.email)
-        val member = rwUser.select(data.memberEmail)
+        val user = userDB.select(data.login.email)
+        val member = userDB.select(data.memberEmail)
 
         lateinit var toBeRemoved: MemberData
 
         if (user != null && member != null && !data.identifier.owner.isNullOrBlank()) {
             when (data.identifier.community) {
                 false -> {
-                    val group = rwGroup.select(data.identifier.ID)
+                    val group = groupDB.select(data.identifier.ID)
 
 
                     if (group != null && group.verifyMember(data.login.email) && (data.login.email in group.getModerators() || data.login.email in group.getCreator())) {
@@ -103,22 +103,22 @@ class GroupMembers private constructor() {
                             group.updateMember(toBeRemoved, true)
                             member.updateMemberIn(group.getGroupID(), true)
 
-                            rwUser.insert(member)
-                            rwGroup.insert(group)
+                            userDB.insert(member)
+                            groupDB.insert(group)
                         }
 
                     }
 
                 }
                 true -> { //COMMUNITY
-                    val group = rwGroup.select(data.identifier.ID)
-                    val community = rwCommunity.select(data.identifier.owner)
+                    val group = groupDB.select(data.identifier.ID)
+                    val community = communityDB.select(data.identifier.owner)
                     if (group != null && community != null && (data.login.email == group.getCreator() || data.login.email in community.getModerators())) {
 
                         group.updateMember(toBeRemoved, true)
                         member.updateMemberIn(group.getGroupID(), true)
-                        rwUser.insert(member)
-                        rwGroup.insert(group)
+                        userDB.insert(member)
+                        groupDB.insert(group)
                     }
                 }
             }

@@ -4,7 +4,7 @@ import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.topic.dto.Topic
-import br.meetingplace.server.requests.topics.TopicOperationsData
+import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
 
 class DislikeTopic private constructor() {
     companion object {
@@ -12,7 +12,7 @@ class DislikeTopic private constructor() {
         fun getClass() = Class
     }
 
-    fun dislike(data: TopicOperationsData, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface) {
+    fun dislike(data: TopicSimpleOperator, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface) {
         val user = rwUser.select(data.login.email)
 
         if (user != null) {
@@ -42,7 +42,7 @@ class DislikeTopic private constructor() {
     }
 
 
-    private fun dislikeUserMainTopic(data: TopicOperationsData, rwTopic: TopicDBInterface) {
+    private fun dislikeUserMainTopic(data: TopicSimpleOperator, rwTopic: TopicDBInterface) {
         val topic = rwTopic.select(data.identifier.mainTopicID, null)
 
         if (topic != null) {
@@ -66,7 +66,7 @@ class DislikeTopic private constructor() {
         }
     }
 
-    private fun dislikeUserSubTopic(data: TopicOperationsData, rwTopic: TopicDBInterface, ) {
+    private fun dislikeUserSubTopic(data: TopicSimpleOperator, rwTopic: TopicDBInterface, ) {
         val subTopic = data.identifier.subTopicID?.let { rwTopic.select(it, data.identifier.mainTopicID) }
         val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
 
@@ -88,7 +88,7 @@ class DislikeTopic private constructor() {
         }
     }
 
-    private fun dislikeCommunityMainTopic(data: TopicOperationsData, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface) {
+    private fun dislikeCommunityMainTopic(data: TopicSimpleOperator, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface) {
         val topic = rwTopic.select(data.identifier.mainTopicID, null)
         val community = data.communityID?.let { rwCommunity.select(it) }
         if (topic != null && community != null && community.checkTopicApproval(topic.getID())) {
@@ -109,7 +109,7 @@ class DislikeTopic private constructor() {
         }
     }
 
-    private fun dislikeCommunitySubtopic(data: TopicOperationsData, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface, ) {
+    private fun dislikeCommunitySubtopic(data: TopicSimpleOperator, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface, ) {
         val subTopic = data.identifier.subTopicID?.let { rwTopic.select(it, data.identifier.mainTopicID) }
         val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
 

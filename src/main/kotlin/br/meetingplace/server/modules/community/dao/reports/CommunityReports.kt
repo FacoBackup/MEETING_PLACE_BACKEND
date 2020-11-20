@@ -5,8 +5,8 @@ import br.meetingplace.server.db.report.ReportDBInterface
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.community.dto.dependencies.data.Report
-import br.meetingplace.server.requests.community.ApprovalData
-import br.meetingplace.server.requests.community.ReportData
+import br.meetingplace.server.requests.community.Approval
+import br.meetingplace.server.requests.community.ReportCreationData
 import java.util.*
 
 class CommunityReports private constructor() {
@@ -15,7 +15,7 @@ class CommunityReports private constructor() {
         fun getClass() = Class
     }
 
-    fun createReport(data: ReportData, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface, rwReport: ReportDBInterface) {
+    fun createReport(data: ReportCreationData, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface, rwReport: ReportDBInterface) {
         val user = rwUser.select(data.login.email)
         val community = data.identifier.owner?.let { rwCommunity.select(it) }
 
@@ -39,7 +39,7 @@ class CommunityReports private constructor() {
         }
     }
 
-    fun deleteReport(data: ApprovalData, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface, rwReport: ReportDBInterface) {
+    fun deleteReport(data: Approval, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface, rwReport: ReportDBInterface) {
         val user = rwUser.select(data.login.email)
         val community = data.identifier.owner?.let { rwCommunity.select(it) }
         val report = rwReport.select(data.identifier.ID)

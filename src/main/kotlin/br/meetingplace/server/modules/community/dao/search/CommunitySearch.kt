@@ -7,7 +7,7 @@ import br.meetingplace.server.modules.community.dto.dependencies.data.Report
 import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.modules.topic.dto.SimplifiedTopic
 import br.meetingplace.server.modules.topic.dto.Topic
-import br.meetingplace.server.requests.generic.SimpleOperator
+import br.meetingplace.server.requests.generic.operators.SimpleOperator
 
 class CommunitySearch {
 

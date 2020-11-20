@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.chat.dto.dependencies.base
 
 import br.meetingplace.server.modules.chat.dto.dependencies.data.MessageContent
-import br.meetingplace.server.requests.chat.ChatComplexOperator
-import br.meetingplace.server.requests.chat.ChatSimpleOperator
+import br.meetingplace.server.requests.chat.operators.ChatComplexOperator
+import br.meetingplace.server.requests.chat.operators.ChatSimpleOperator
 
 interface BaseChatInterface {
     fun addMessage(message: MessageContent)

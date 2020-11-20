@@ -6,8 +6,8 @@ import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.dao.send.SendMessage
 import br.meetingplace.server.modules.chat.dto.dependencies.data.MessageType
-import br.meetingplace.server.requests.chat.ChatComplexOperator
-import br.meetingplace.server.requests.chat.MessageData
+import br.meetingplace.server.requests.chat.operators.ChatComplexOperator
+import br.meetingplace.server.requests.chat.data.MessageData
 
 class ShareMessage private constructor() {
     companion object {
@@ -15,88 +15,42 @@ class ShareMessage private constructor() {
         fun getClass() = Class
     }
 
-    fun shareMessage(data: ChatComplexOperator, rwUser: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface){
-        val user = rwUser.select(data.login.email)
+    fun shareMessage(data: ChatComplexOperator, userDB: UserDBInterface, groupDB: GroupDBInterface, communityDB: CommunityDBInterface, chatDB: ChatDBInterface){
+        val user = userDB.select(data.login.email)
         if(user != null){
             when(data.source.userGroup || data.source.communityGroup){
                 true -> { //GROUP
-                    val group = rwGroup.select(data.source.receiverID)
+                    val group = groupDB.select(data.source.receiverID)
                     if (group != null) {
-                        val chat = rwChat.select(group.getChatID())
+                        val chat = chatDB.select(group.getChatID())
                         when (data.receiver.communityGroup) {
                             true -> {
-                                val community = rwCommunity.select(group.getOwner().groupOwnerID)
+                                val community = communityDB.select(group.getOwner().groupOwnerID)
                                 if (community != null && chat != null) {
                                     val messageContent = chat.shareMessage(data)
-                                    SendMessage.getClass().sendMessage(MessageData("|Shared| $messageContent", MessageType.SHARED, data.receiver, data.login), rwUser, rwGroup, rwCommunity, rwChat)
-                                    rwChat.insert(chat)
+                                    SendMessage.getClass().sendMessage(MessageData("|Shared| $messageContent",imageURL = data.content.imageURL, MessageType.SHARED, data.receiver, data.login), userDB, groupDB, communityDB, chatDB)
+                                    chatDB.insert(chat)
                                 }
                             }
                             false -> {
                                 if(chat != null){
                                     val messageContent = chat.shareMessage(data)
-                                    SendMessage.getClass().sendMessage(MessageData("|Shared| $messageContent", MessageType.SHARED, data.receiver, data.login), rwUser, rwGroup, rwCommunity, rwChat)
-                                    rwChat.insert(chat)
+                                    SendMessage.getClass().sendMessage(MessageData("|Shared| $messageContent", imageURL = data.content.imageURL, MessageType.SHARED, data.receiver, data.login), userDB, groupDB, communityDB, chatDB)
+                                    chatDB.insert(chat)
                                 }
                             }
                         }
                     }
                 }
                 false->{ //USER <-> USER
-                    val chat = rwChat.select(data.source.chatID)
+                    val chat = chatDB.select(data.source.chatID)
                     if(chat != null){
                         val messageContent = chat.shareMessage(data)
-                        SendMessage.getClass().sendMessage(MessageData("|Shared| $messageContent", MessageType.SHARED, data.receiver, data.login), rwUser, rwGroup, rwCommunity, rwChat)
-                        rwChat.insert(chat)
+                        SendMessage.getClass().sendMessage(MessageData("|Shared| $messageContent", imageURL = data.content.imageURL, MessageType.SHARED, data.receiver, data.login), userDB, groupDB, communityDB, chatDB)
+                        chatDB.insert(chat)
                     }
                 }
             }
         }
     }
-
-//
-//    fun userShareMessage(data: ChatComplexOperator) {
-//        val user = rw.readUser(data.login.email)
-//        val receiver = rw.readUser(data.receiver.receiverID)
-//
-//        if (verify.verifyUser(user) && verify.verifyUser(receiver)) {
-//            val chat = rw.readChat(iDs.getChatId(data.source.ownerID, data.source.receiverID), data.source.ownerID, "", false, community = false)
-//            if (verify.verifyChat(chat)) {
-//                val message = chat.shareMessage(data)
-//                if (!message.isNullOrBlank())
-//                    _root_ide_package_.br.meetingplace.server.controllers.subjects.services.chat.base.controller.BaseChatController.getClass().sendMessage(MessageData("|Shared| ${data.message}", MessageType.SHARED, data.receiver, data.login))
-//            }
-//        }
-//    }
-//
-//    fun groupShareMessage(data: ChatComplexOperator) {
-//        when (data.receiver.communityGroup) {
-//            false -> {
-//                val group = rw.readGroup(data.source.receiverID, data.source.ownerID, false)
-//                val user = rw.readUser(data.login.email)
-//
-//                if (verify.verifyUser(user) && verify.verifyGroup(group) && group.verifyMember(user.getEmail())) {
-//                    val chat = rw.readChat("", user.getEmail(), group.getGroupID(), group = true, false)
-//                    val messageContent = chat.shareMessage(data)
-//
-//                    if (!messageContent.isNullOrBlank())
-//                        _root_ide_package_.br.meetingplace.server.controllers.subjects.services.chat.base.controller.BaseChatController.getClass().sendMessage(MessageData("|Shared| $messageContent", MessageType.SHARED, data.receiver, data.login))
-//                }
-//            }
-//            true -> {
-//                val group = rw.readGroup(data.source.receiverID, data.source.ownerID, true)
-//                val user = rw.readUser(data.login.email)
-//                val community = rw.readCommunity(data.source.ownerID)
-//
-//                if (verify.verifyUser(user) && verify.verifyGroup(group) && verify.verifyCommunity(community)
-//                        && community.checkGroupApproval(group.getGroupID()) && group.verifyMember(user.getEmail())) {
-//                    val chat = rw.readChat("", community.getID(), group.getGroupID(), group = true, true)
-//                    val messageContent = chat.shareMessage(data)
-//
-//                    if (!messageContent.isNullOrBlank())
-//                        _root_ide_package_.br.meetingplace.server.controllers.subjects.services.chat.base.controller.BaseChatController.getClass().sendMessage(MessageData("|Shared| $messageContent", MessageType.SHARED, data.receiver, data.login))
-//                }
-//            }
-//        }
-//    }
 }

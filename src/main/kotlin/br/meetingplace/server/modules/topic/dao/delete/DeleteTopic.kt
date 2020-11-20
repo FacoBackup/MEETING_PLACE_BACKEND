@@ -6,7 +6,7 @@ import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.modules.topic.dto.SimplifiedTopic
 import br.meetingplace.server.modules.topic.dto.Topic
-import br.meetingplace.server.requests.topics.TopicOperationsData
+import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
 
 class DeleteTopic private constructor() {
     companion object {
@@ -14,36 +14,28 @@ class DeleteTopic private constructor() {
         fun getClass() = Class
     }
 
-    fun delete(data: TopicOperationsData, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface) {
+    fun delete(data: TopicSimpleOperator, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface) {
         val user = rwUser.select(data.login.email)
 
         if (user != null) {
             when (data.communityID.isNullOrBlank()) {
                 true -> { //USER
                     when (data.identifier.subTopicID.isNullOrBlank()) {
-                        true -> { //MAIN
-                            deleteUserMainTopic(data,rwTopic, rwUser)
-                        }
-                        false -> { //SUB
-                            deleteUserSubTopic(data,rwTopic)
-                        }
+                        true -> deleteUserMainTopic(data,rwTopic, rwUser) //MAIN
+                        false -> deleteUserSubTopic(data,rwTopic) //SUB
                     }
                 }
                 false -> { //COMMUNITY
                     when (data.identifier.subTopicID.isNullOrBlank()) {
-                        true -> { //MAIN
-                            deleteCommunityMainTopic(data, rwCommunity, rwTopic)
-                        }
-                        false -> { //SUB
-                            deleteCommunitySubTopic(data,rwCommunity, rwTopic)
-                        }
+                        true -> deleteCommunityMainTopic(data, rwCommunity, rwTopic) //MAIN
+                        false -> deleteCommunitySubTopic(data,rwCommunity, rwTopic) //SUB
                     }
                 }
-            }//WHEN
-        }//IF VERIFY USER
-    }//DELETE
+            }
+        }
+    }
 
-    private fun deleteUserMainTopic(data: TopicOperationsData, rwTopic: TopicDBInterface, rwUser: UserDBInterface) {
+    private fun deleteUserMainTopic(data: TopicSimpleOperator, rwTopic: TopicDBInterface, rwUser: UserDBInterface) {
         val user = rwUser.select(data.login.email)
         val topic = rwTopic.select(data.identifier.mainTopicID, null)
 
@@ -55,7 +47,7 @@ class DeleteTopic private constructor() {
         }
     }
 
-    private fun deleteUserSubTopic(data: TopicOperationsData, rwTopic: TopicDBInterface) {
+    private fun deleteUserSubTopic(data: TopicSimpleOperator, rwTopic: TopicDBInterface) {
         val subTopic = data.identifier.subTopicID?.let { rwTopic.select(it, data.identifier.mainTopicID) }
         val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
         if (subTopic != null && mainTopic != null && subTopic.getCreator() == data.login.email) {
@@ -66,7 +58,7 @@ class DeleteTopic private constructor() {
         }
     }
 
-    private fun deleteCommunityMainTopic(data: TopicOperationsData, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface) {
+    private fun deleteCommunityMainTopic(data: TopicSimpleOperator, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface) {
         val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
         val community = data.communityID?.let { rwCommunity.select(it) }
 
@@ -79,7 +71,7 @@ class DeleteTopic private constructor() {
         }
     }
 
-    private fun deleteCommunitySubTopic(data: TopicOperationsData, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface) {
+    private fun deleteCommunitySubTopic(data: TopicSimpleOperator, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface) {
         val subTopic = data.identifier.subTopicID?.let { rwTopic.select(it, data.identifier.mainTopicID) }
         val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
         val community = data.communityID?.let { rwCommunity.select(it) }

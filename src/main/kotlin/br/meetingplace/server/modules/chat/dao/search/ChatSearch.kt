@@ -5,7 +5,7 @@ import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.dto.Chat
-import br.meetingplace.server.requests.chat.ChatFinderOperator
+import br.meetingplace.server.requests.chat.operators.ChatFinderOperator
 
 class ChatSearch private constructor() {
     companion object {

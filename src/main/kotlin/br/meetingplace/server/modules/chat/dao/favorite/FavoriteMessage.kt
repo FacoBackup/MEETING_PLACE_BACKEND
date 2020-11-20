@@ -4,7 +4,7 @@ import br.meetingplace.server.db.chat.ChatDBInterface
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
-import br.meetingplace.server.requests.chat.ChatSimpleOperator
+import br.meetingplace.server.requests.chat.operators.ChatSimpleOperator
 
 class FavoriteMessage private constructor()  {
     companion object {

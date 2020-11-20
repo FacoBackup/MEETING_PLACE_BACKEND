@@ -3,8 +3,8 @@ package br.meetingplace.server.modules.chat.dto.dependencies
 import br.meetingplace.server.modules.chat.dto.dependencies.base.BaseChat
 import br.meetingplace.server.modules.chat.dto.dependencies.base.BaseChatInterface
 import br.meetingplace.server.modules.chat.dto.dependencies.data.MessageContent
-import br.meetingplace.server.requests.chat.ChatComplexOperator
-import br.meetingplace.server.requests.chat.ChatSimpleOperator
+import br.meetingplace.server.requests.chat.operators.ChatComplexOperator
+import br.meetingplace.server.requests.chat.operators.ChatSimpleOperator
 
 abstract class Controller : BaseChatInterface {
 

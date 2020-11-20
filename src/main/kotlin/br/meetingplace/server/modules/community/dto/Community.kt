@@ -5,12 +5,20 @@ import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.modules.members.dto.MemberType
 
 
-class Community(private val name: String, private val id: String, private var about: String?, creator: String) : Controller() {
+class Community(private val name: String, private val id: String, private var about: String?, creator: String, private var imageURL: String?) : Controller() {
     fun getName() = name
     fun getID() = id
 
     init {
         startMembers(MemberData(creator, MemberType.CREATOR))
+    }
+
+    fun updateImage(imageURL: String?){
+        this.imageURL = imageURL
+    }
+
+    fun updateAbout(about: String?){
+        this.about = about
     }
 
     fun updateModerator(data: String, requester: String, remove: Boolean?) {
