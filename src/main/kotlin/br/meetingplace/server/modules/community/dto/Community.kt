@@ -7,11 +7,11 @@ import br.meetingplace.server.modules.members.dto.MemberType
 
 class Community(private val name: String, private val id: String, private var about: String?, creator: String, private var imageURL: String?): Members(){
 
-    private var topicsInValidation = listOf<String>()
-    private var approvedTopics = listOf<String>()
-    private var reportIDs = listOf<String>()
-    private var approvedGroups = listOf<String>()
-    private var groupsInValidation = listOf<String>()
+    private var topicsInValidation = mutableListOf<String>()
+    private var approvedTopics = mutableListOf<String>()
+    private var reportIDs = mutableListOf<String>()
+    private var approvedGroups = mutableListOf<String>()
+    private var groupsInValidation = mutableListOf<String>()
 
     fun getApprovedTopics() = approvedTopics
     fun getTopicsInValidation() = topicsInValidation
@@ -34,23 +34,23 @@ class Community(private val name: String, private val id: String, private var ab
     }
 
     fun setTopicsInValidation(topics: List<String>){
-        topicsInValidation = topics
+        topicsInValidation = topics as MutableList<String>
     }
 
     fun setReports(reports: List<String>){
-        reportIDs = reports
+        reportIDs = reports as MutableList<String>
     }
 
     fun setApprovedTopics(topics: List<String>){
-        approvedTopics = topics
+        approvedTopics = topics as MutableList<String>
     }
 
     fun setGroupsInValidation(groups: List<String>){
-        groupsInValidation = groups
+        groupsInValidation = groups as MutableList<String>
     }
 
     fun setApprovedGroups(groups: List<String>){
-        approvedGroups = groups
+        approvedGroups = groups as MutableList<String>
     }
 
 

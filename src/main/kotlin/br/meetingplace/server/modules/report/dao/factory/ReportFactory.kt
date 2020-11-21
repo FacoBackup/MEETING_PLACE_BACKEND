@@ -18,24 +18,25 @@ class ReportFactory private constructor() {
     fun createReport(data: ReportCreationData, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface, rwReport: ReportDBInterface) {
         val user = rwUser.select(data.login.email)
         val community = data.identifier.owner?.let { rwCommunity.select(it) }
+        val topic = rwTopic.select(data.identifier.ID, null)
+        lateinit var reports: List<String>
+        if (user != null && community != null && topic != null && topic.getID() in community.getApprovedTopics()) {
+            reports = community.getReports()
+            val newReport = Report(
+                    reportID = UUID.randomUUID().toString(),
+                    creator = data.login.email,
+                    serviceID = data.identifier.ID,
+                    reason = data.reason,
+                    finished = false,
+                    communityId = community.getID(),
+                    response = null
+            )
 
+            reports.add(newReport.reportID)
+            community.setReports(reports)
 
-        if (user != null && community != null && community.checkTopicApproval(data.identifier.ID)) {
-            val topic = rwTopic.select(data.identifier.ID, null)
-            if (topic != null) {
-                val newReport = Report(
-                        UUID.randomUUID().toString(),
-                        data.login.email,
-                        data.identifier.ID,
-                        data.reason,
-                        false,
-                        community.getID(),
-                        null
-                )
-                community.updateReport(newReport, false)
-                rwCommunity.insert(community)
-                rwReport.insert(newReport)
-            }
+            rwCommunity.insert(community)
+            rwReport.insert(newReport)
         }
     }
 

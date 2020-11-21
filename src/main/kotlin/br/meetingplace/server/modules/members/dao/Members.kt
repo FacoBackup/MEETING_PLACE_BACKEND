@@ -2,6 +2,7 @@ package br.meetingplace.server.modules.members.dao
 
 import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.modules.members.dto.MemberType
+import java.lang.reflect.Member
 
 abstract class Members {
     private val members = mutableListOf<MemberData>()
@@ -24,15 +25,15 @@ abstract class Members {
         return mods
     }
 
-    fun updateMember(member: MemberData, remove: Boolean) {
+    fun updateMember(id: String, role: MemberType, remove: Boolean) {
         when (remove) {
             true -> {
-                if (verifyMember(member.userEmail))
-                    members.remove(member)
+                if (verifyMember(id))
+                    members.remove(MemberData(id, role))
             }
             false -> {
-                if (!verifyMember(member.userEmail))
-                    members.add(member)
+                if (!verifyMember(id))
+                    members.add(MemberData(id, role))
             }
         }
     }

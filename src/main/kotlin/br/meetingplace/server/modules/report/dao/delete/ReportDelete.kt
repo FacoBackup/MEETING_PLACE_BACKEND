@@ -14,14 +14,6 @@ class ReportDelete private constructor(){
     }
 
     fun deleteReport(data: Approval, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface, rwReport: ReportDBInterface) {
-        val user = rwUser.select(data.login.email)
-        val community = data.identifier.owner?.let { rwCommunity.select(it) }
-        val report = rwReport.select(data.identifier.ID)
-
-        if (user != null && community != null && report != null && (data.login.email in community.getModerators() || data.login.email == report.creator)) {
-            community.updateReport(report, true)
-            rwCommunity.insert(community)
-            rwReport.delete(report)
-        }
+        // TODO: 21/11/2020
     }
 }

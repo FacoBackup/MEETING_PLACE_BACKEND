@@ -6,10 +6,11 @@ import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.modules.global.dto.owner.OwnerData
 
 class Group(creator: String, private val owner: OwnerData, private val ID: String,
-            private var name: String, private val chatID: String, private var about: String?) : Members() {
+            private var name: String, private val chatID: String, private var about: String?,
+            private var imageURL: String?) : Members() {
 
     init {
-        updateMember(MemberData(creator, MemberType.MODERATOR), false)
+        updateMember(creator, MemberType.MODERATOR, false)
     }
 
     fun getOwner() = owner

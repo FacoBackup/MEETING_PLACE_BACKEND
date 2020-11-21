@@ -12,6 +12,7 @@ import br.meetingplace.server.modules.chat.dto.Chat
 import br.meetingplace.server.modules.global.dto.owner.OwnerData
 import br.meetingplace.server.modules.groups.dto.Group
 import br.meetingplace.server.requests.generic.data.CreationData
+import java.util.*
 
 class GroupFactory private constructor() {
 
@@ -20,22 +21,20 @@ class GroupFactory private constructor() {
         fun getClass() = Class
     }
 
-    private fun getGroupID(name: String, creator: String): String{
-        return (name.replace("\\s".toRegex(), "") + "_" + (creator.replaceAfter("@", "")).removeSuffix("@")).toLowerCase()
-    }
-
     fun create(data: CreationData, groupDB: GroupDBInterface, userDB: UserDBInterface, communityDB: CommunityDBInterface, chatDB: ChatDBInterface) {
         val user = userDB.select(data.login.email)
         lateinit var communityMods: List<String>
         lateinit var notification: NotificationData
         lateinit var newGroup: Group
-        val groupID = getGroupID(data.name, data.login.email)
-
+        lateinit var groupID: String
+        lateinit var groups: List<String>
         if (user != null && data.name.isNotEmpty() && groupID !in user.getMemberIn() && groupID !in user.getMyGroups()) {
             when (data.identifier.community) {
                 false -> {
-                    val newChat = Chat(groupID + "_CHAT", OwnerData(user.getEmail(), groupID, OwnerType.USER, OwnerType.GROUP))
-                    newGroup = Group(GroupOwnerData(data.login.email, data.login.email, OwnerType.USER), groupID, data.name, newChat.getID())
+                    groupID = UUID.randomUUID().toString()
+                    val newChat = Chat(UUID.randomUUID().toString(), OwnerData(groupID, OwnerType.GROUP))
+                    newGroup = Group(owner = OwnerData(data.login.email, OwnerType.USER), chatID = newChat.getID(), ID = groupID, about = data.about, creator = data.login.email, name = data.name,imageURL = data.imageURL)
+
                     user.updateMyGroups(groupID, false)
 
                     groupDB.insert(newGroup)
@@ -52,16 +51,23 @@ class GroupFactory private constructor() {
                             if (mod != null && mod != user)
                                 mod.updateInbox(notification)
                         }
-                        val newChat = Chat(groupID + "_CHAT", OwnerData(community.getID(), groupID, OwnerType.COMMUNITY, OwnerType.GROUP))
-                        newGroup = Group(GroupOwnerData(community.getID(), data.login.email, OwnerType.COMMUNITY), groupID, data.name, newChat.getID())
-
+                        groupID = UUID.randomUUID().toString()
+                        val newChat = Chat(UUID.randomUUID().toString(), OwnerData(groupID, OwnerType.GROUP))
+                        newGroup = Group(owner = OwnerData(community.getID(), OwnerType.COMMUNITY), chatID = newChat.getID(), ID = groupID, about = data.about, creator = data.login.email, name = data.name ,imageURL = data.imageURL)
                         user.updateMyGroups(groupID, false)
 
-                        if (data.login.email !in community.getModerators())
-                            community.updateGroupsInValidation(newGroup.getGroupID(), null)
-                        else if (data.login.email in community.getModerators() || data.login.email in community.getCreator())
-                            community.updateGroupsInValidation(newGroup.getGroupID(), true)
+                        if (data.login.email !in community.getModerators()){
+                            groups = community.getGroupsInValidation()
+                            groups.add(newGroup.getGroupID())
 
+                            community.setGroupsInValidation(groups)
+                        }
+                        else{
+                            groups = community.getApprovedGroups()
+                            groups.add(newGroup.getGroupID())
+
+                            community.setApprovedGroups(groups)
+                        }
 
                         groupDB.insert(newGroup)
                         chatDB.insert(newChat)
