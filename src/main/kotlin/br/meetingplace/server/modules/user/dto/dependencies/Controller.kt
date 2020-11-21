@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.user.dto.dependencies
 
 import br.meetingplace.server.modules.notification.dto.NotificationData
-import br.meetingplace.server.modules.chat.dto.SimplifiedChat
+import br.meetingplace.server.modules.chat.dto.ChatIdentifier
 import br.meetingplace.server.modules.user.dto.dependencies.profile.UserProfile
 import br.meetingplace.server.modules.user.dto.dependencies.profile.UserProfileInterface
 import br.meetingplace.server.modules.user.dto.dependencies.services.chat.UserChat
@@ -48,7 +48,7 @@ abstract class Controller : UserChatInterface, UserCommunityInterface, UserFollo
         profile.updateProfile(about, nationality, gender)
     }
 
-    override fun updateMyChats(chat: SimplifiedChat) {
+    override fun updateMyChats(chat: ChatIdentifier) {
         this.chat.updateMyChats(chat)
     }
 
@@ -88,7 +88,7 @@ abstract class Controller : UserChatInterface, UserCommunityInterface, UserFollo
     }
 
     //CHAT
-    override fun getMyChats(): List<SimplifiedChat> {
+    override fun getMyChats(): List<ChatIdentifier> {
         return chat.getMyChats()
     }
 

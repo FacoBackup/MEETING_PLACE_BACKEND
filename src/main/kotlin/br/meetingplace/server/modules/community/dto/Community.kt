@@ -3,7 +3,6 @@ package br.meetingplace.server.modules.community.dto
 import br.meetingplace.server.modules.members.dao.Members
 import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.modules.members.dto.MemberType
-import br.meetingplace.server.modules.topic.dto.SimplifiedTopic
 
 
 class Community(private val name: String, private val id: String, private var about: String?, creator: String, private var imageURL: String?): Members(){
@@ -39,7 +38,7 @@ class Community(private val name: String, private val id: String, private var ab
     }
 
     fun setReports(reports: List<String>){
-        reportIDs = reports as MutableList<String>
+        reportIDs = reports
     }
 
     fun setApprovedTopics(topics: List<String>){

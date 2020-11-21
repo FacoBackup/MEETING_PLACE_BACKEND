@@ -1,0 +1,27 @@
+
+
+//    override fun addContent(header: String, body: String, footer: String) {
+//        this.header = header
+//        this.body = body
+//        this.footer = footer
+//    }
+//
+//    override fun editHeader(header: String) {
+//        this.header = header
+//    }
+//
+//    override fun editBody(body: String) {
+//        this.body = body
+//    }
+
+
+//    override fun addSubTopic(subTopicID: String, subTopicOwner: TopicOwner) {
+//        subTopics.add(SimplifiedTopic(subTopicID, subTopicOwner))
+//    }
+//
+//    override fun removeSubTopic(id: String) {
+//        for (i in 0 until subTopics.size) {
+//            if(subTopics[i].ID == id)
+//                subTopics.removeAt(i)
+//        }
+//    }

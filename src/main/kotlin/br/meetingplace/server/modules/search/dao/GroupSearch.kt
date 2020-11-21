@@ -1,4 +1,4 @@
-package br.meetingplace.server.modules.search
+package br.meetingplace.server.modules.search.dao
 
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface

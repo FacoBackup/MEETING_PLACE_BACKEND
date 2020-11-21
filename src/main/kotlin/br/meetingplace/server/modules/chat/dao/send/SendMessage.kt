@@ -10,7 +10,7 @@ import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.dto.Chat
 import br.meetingplace.server.modules.owner.dto.OwnerData
-import br.meetingplace.server.modules.chat.dto.SimplifiedChat
+import br.meetingplace.server.modules.chat.dto.ChatIdentifier
 import br.meetingplace.server.modules.chat.dto.dependencies.data.Content
 import br.meetingplace.server.modules.chat.dto.dependencies.data.MessageType
 import br.meetingplace.server.requests.chat.data.MessageData
@@ -79,8 +79,8 @@ class SendMessage private constructor() {
             chat.addMessage(messageContent)
 
 
-            user.updateMyChats(SimplifiedChat(chat.getID(), receiver.getEmail()))
-            receiver.updateMyChats(SimplifiedChat(chat.getID(), user.getEmail()))
+            user.updateMyChats(ChatIdentifier(chat.getID(), receiver.getEmail()))
+            receiver.updateMyChats(ChatIdentifier(chat.getID(), user.getEmail()))
             receiver.updateInbox(notification)
             rwChat.insert(chat)
             rwUser.insert(user)

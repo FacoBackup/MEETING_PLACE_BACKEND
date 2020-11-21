@@ -1,11 +1,3 @@
-package br.meetingplace.server.modules.chat.dto.dependencies.base
-
-class BaseChat private constructor(){
-    companion object {
-        private val Class = BaseChat()
-        fun getClass() = Class
-    }
-
 
 //
 //
@@ -54,4 +46,3 @@ class BaseChat private constructor(){
 //        if (message.messageID in idMessages && message.messageID in favoriteMessages)
 //            favoriteMessages.remove(message.messageID)
 //    }
-}

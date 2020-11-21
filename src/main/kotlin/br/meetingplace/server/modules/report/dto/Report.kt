@@ -9,11 +9,3 @@ data class Report(
         val communityId: String,
         val response: String?
 )
-
-//example:
-//idService = threadId
-//service = Thread
-//reason = "The thread was offensive or something else"
-//finished = false
-//response = null
-//reportId = some random id

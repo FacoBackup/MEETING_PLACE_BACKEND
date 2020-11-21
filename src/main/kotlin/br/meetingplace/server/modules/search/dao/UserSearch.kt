@@ -1,7 +1,7 @@
-package br.meetingplace.server.modules.search
+package br.meetingplace.server.modules.search.dao
 
 import br.meetingplace.server.db.user.UserDBInterface
-import br.meetingplace.server.modules.user.dto.SimplifiedUser
+import br.meetingplace.server.modules.search.dto.SimplifiedUser
 import br.meetingplace.server.requests.generic.operators.SimpleOperator
 
 
