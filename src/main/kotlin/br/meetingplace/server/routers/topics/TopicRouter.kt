@@ -7,7 +7,7 @@ import br.meetingplace.server.modules.topic.dao.delete.DeleteTopic
 import br.meetingplace.server.modules.topic.dao.dislike.DislikeTopic
 import br.meetingplace.server.modules.topic.dao.factory.TopicFactory
 import br.meetingplace.server.modules.topic.dao.like.LikeTopic
-import br.meetingplace.server.modules.user.dao.search.UserReader
+import br.meetingplace.server.modules.user.dao.TODO.UserReader
 import br.meetingplace.server.requests.generic.data.Login
 import br.meetingplace.server.routers.topics.paths.TopicPaths
 import br.meetingplace.server.requests.topics.data.TopicData

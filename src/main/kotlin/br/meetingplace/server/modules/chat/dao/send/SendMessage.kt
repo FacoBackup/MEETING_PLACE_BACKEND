@@ -9,9 +9,9 @@ import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.dto.Chat
-import br.meetingplace.server.modules.chat.dto.dependencies.owner.ChatOwnerData
+import br.meetingplace.server.modules.owner.dto.OwnerData
 import br.meetingplace.server.modules.chat.dto.SimplifiedChat
-import br.meetingplace.server.modules.chat.dto.dependencies.data.MessageContent
+import br.meetingplace.server.modules.chat.dto.dependencies.data.Content
 import br.meetingplace.server.modules.chat.dto.dependencies.data.MessageType
 import br.meetingplace.server.requests.chat.data.MessageData
 import java.util.*
@@ -34,14 +34,14 @@ class SendMessage private constructor() {
                             true -> {
                                 val community = rwCommunity.select(group.getOwner().groupOwnerID)
                                 if (community != null && chat != null) {
-                                    chat.addMessage(MessageContent(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), user.getEmail(), data.messageType
+                                    chat.addMessage(Content(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), user.getEmail(), data.messageType
                                             ?: MessageType.NORMAL))
                                     rwChat.insert(chat)
                                 }
                             }
                             false -> {
                                 if (chat != null) {
-                                    chat.addMessage(MessageContent(data.message,imageURL = data.imageURL , UUID.randomUUID().toString(), user.getEmail(), data.messageType
+                                    chat.addMessage(Content(data.message,imageURL = data.imageURL , UUID.randomUUID().toString(), user.getEmail(), data.messageType
                                             ?: MessageType.NORMAL))
                                     rwChat.insert(chat)
                                 }
@@ -52,7 +52,7 @@ class SendMessage private constructor() {
                 false -> { //USER <-> USER
                     val chat = rwChat.select(data.receiver.chatID)
                     if (chat != null) {
-                        chat.addMessage(MessageContent(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), user.getEmail(), data.messageType
+                        chat.addMessage(Content(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), user.getEmail(), data.messageType
                                 ?: MessageType.NORMAL))
                         rwChat.insert(chat)
                     } else createChat(data, rwUser, rwChat)
@@ -66,15 +66,15 @@ class SendMessage private constructor() {
         val user = rwUser.select(data.login.email)
         val receiver = rwUser.select(data.receiver.receiverID)
 
-        lateinit var messageContent: MessageContent
+        lateinit var messageContent: Content
         lateinit var notification: NotificationData
         lateinit var chat: Chat
 
         if (user != null && receiver != null) {
-            chat = Chat(UUID.randomUUID().toString(), ChatOwnerData(user.getEmail(), receiver.getEmail(), OwnerType.USER, OwnerType.USER))
+            chat = Chat(UUID.randomUUID().toString(), OwnerData(user.getEmail(), receiver.getEmail(), OwnerType.USER, OwnerType.USER))
             notification = NotificationData(NotificationMainType.CHAT, NotificationSubType.NEW_MESSAGE, logged)
 
-            messageContent = MessageContent(data.message,imageURL = data.imageURL, UUID.randomUUID().toString(), logged, data.messageType
+            messageContent = Content(data.message,imageURL = data.imageURL, UUID.randomUUID().toString(), logged, data.messageType
                     ?: MessageType.NORMAL)
             chat.addMessage(messageContent)
 

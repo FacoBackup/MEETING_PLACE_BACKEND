@@ -1,7 +1,7 @@
 package br.meetingplace.server.db.report.file
 
 import br.meetingplace.server.db.report.ReportDBInterface
-import br.meetingplace.server.modules.community.dto.dependencies.data.Report
+import br.meetingplace.server.modules.report.dto.Report
 import com.google.gson.GsonBuilder
 
 import java.io.File

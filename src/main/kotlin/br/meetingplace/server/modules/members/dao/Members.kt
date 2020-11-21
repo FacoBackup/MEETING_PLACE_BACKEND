@@ -4,8 +4,6 @@ import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.modules.members.dto.MemberType
 
 abstract class Members {
-
-
     private val members = mutableListOf<MemberData>()
 
     fun getMembers(): List<String> {
@@ -26,11 +24,6 @@ abstract class Members {
         return mods
     }
 
-    fun startMembers(data: MemberData) {
-        if (getCreator() == "")
-            members.add(data)
-    }
-
     fun updateMember(member: MemberData, remove: Boolean) {
         when (remove) {
             true -> {
@@ -42,14 +35,6 @@ abstract class Members {
                     members.add(member)
             }
         }
-    }
-
-    fun getCreator(): String {
-        for (i in 0 until members.size) {
-            if (members[i].role == MemberType.CREATOR)
-                return members[i].userEmail
-        }
-        return ""
     }
 
     fun updateMemberRole(email: String, newRole: MemberType) {

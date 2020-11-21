@@ -1,60 +1,58 @@
 package br.meetingplace.server.modules.community.dto
 
-import br.meetingplace.server.modules.community.dto.dependencies.Controller
+import br.meetingplace.server.modules.members.dao.Members
 import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.modules.members.dto.MemberType
+import br.meetingplace.server.modules.topic.dto.SimplifiedTopic
 
 
-class Community(private val name: String, private val id: String, private var about: String?, creator: String, private var imageURL: String?) : Controller() {
+class Community(private val name: String, private val id: String, private var about: String?, creator: String, private var imageURL: String?): Members(){
+
+    private var topicsInValidation = listOf<String>()
+    private var approvedTopics = listOf<String>()
+    private var reportIDs = listOf<String>()
+    private var approvedGroups = listOf<String>()
+    private var groupsInValidation = listOf<String>()
+
+    fun getApprovedTopics() = approvedTopics
+    fun getTopicsInValidation() = topicsInValidation
+    fun getReports() = reportIDs
     fun getName() = name
     fun getID() = id
+    fun getApprovedGroups() = approvedGroups
+    fun getGroupsInValidation() = groupsInValidation
 
     init {
-        startMembers(MemberData(creator, MemberType.CREATOR))
+        updateMember(MemberData(creator, MemberType.MODERATOR), false)
     }
 
-    fun updateImage(imageURL: String?){
+    fun setImage(imageURL: String?){
         this.imageURL = imageURL
     }
 
-    fun updateAbout(about: String?){
+    fun setAbout(about: String?){
         this.about = about
     }
 
-    fun updateModerator(data: String, requester: String, remove: Boolean?) {
-        if (getMemberRole(requester) == MemberType.MODERATOR || getMemberRole(requester) == MemberType.CREATOR) {
-            when (remove) {
-                true -> { //REMOVE
-                    if (verifyMember(data) && getMemberRole(requester) == MemberType.CREATOR)
-                        updateMember(MemberData(data, MemberType.MODERATOR), true)
-                }
-                false -> { //ADD
-                    if (data !in getModerators())
-                        updateMember(MemberData(data, MemberType.MODERATOR), false)
-                }
-                null -> { //STEP-DOWN
-                    if (data in getModerators()) {
-                        updateMember(MemberData(data, MemberType.NORMAL), false)
-                        updateFollower(data, false)
-                    }
-                }
-            }
-        }
+    fun setTopicsInValidation(topics: List<String>){
+        topicsInValidation = topics
     }
 
-    fun updateFollower(data: String, remove: Boolean) {
-        when (remove) {
-            false -> {
-                if (!verifyMember(data)) {
-                    updateMember(MemberData(data, MemberType.NORMAL), false)
-                }
-            }
-            true -> {
-                if (verifyMember(data)) {
-                    updateMember(MemberData(data, MemberType.NORMAL), true)
-                }
-            }
-        }
+    fun setReports(reports: List<String>){
+        reportIDs = reports as MutableList<String>
     }
+
+    fun setApprovedTopics(topics: List<String>){
+        approvedTopics = topics
+    }
+
+    fun setGroupsInValidation(groups: List<String>){
+        groupsInValidation = groups
+    }
+
+    fun setApprovedGroups(groups: List<String>){
+        approvedGroups = groups
+    }
+
 
 }

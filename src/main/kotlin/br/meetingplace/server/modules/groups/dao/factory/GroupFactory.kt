@@ -9,9 +9,8 @@ import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.dto.Chat
-import br.meetingplace.server.modules.chat.dto.dependencies.owner.ChatOwnerData
+import br.meetingplace.server.modules.owner.dto.OwnerData
 import br.meetingplace.server.modules.groups.dto.Group
-import br.meetingplace.server.modules.groups.dto.GroupOwnerData
 import br.meetingplace.server.requests.generic.data.CreationData
 
 class GroupFactory private constructor() {
@@ -35,7 +34,7 @@ class GroupFactory private constructor() {
         if (user != null && data.name.isNotEmpty() && groupID !in user.getMemberIn() && groupID !in user.getMyGroups()) {
             when (data.identifier.community) {
                 false -> {
-                    val newChat = Chat(groupID + "_CHAT", ChatOwnerData(user.getEmail(), groupID, OwnerType.USER, OwnerType.GROUP))
+                    val newChat = Chat(groupID + "_CHAT", OwnerData(user.getEmail(), groupID, OwnerType.USER, OwnerType.GROUP))
                     newGroup = Group(GroupOwnerData(data.login.email, data.login.email, OwnerType.USER), groupID, data.name, newChat.getID())
                     user.updateMyGroups(groupID, false)
 
@@ -53,7 +52,7 @@ class GroupFactory private constructor() {
                             if (mod != null && mod != user)
                                 mod.updateInbox(notification)
                         }
-                        val newChat = Chat(groupID + "_CHAT", ChatOwnerData(community.getID(), groupID, OwnerType.COMMUNITY, OwnerType.GROUP))
+                        val newChat = Chat(groupID + "_CHAT", OwnerData(community.getID(), groupID, OwnerType.COMMUNITY, OwnerType.GROUP))
                         newGroup = Group(GroupOwnerData(community.getID(), data.login.email, OwnerType.COMMUNITY), groupID, data.name, newChat.getID())
 
                         user.updateMyGroups(groupID, false)

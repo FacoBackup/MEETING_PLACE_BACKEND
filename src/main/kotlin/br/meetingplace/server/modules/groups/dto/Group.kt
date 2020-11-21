@@ -3,20 +3,25 @@ package br.meetingplace.server.modules.groups.dto
 import br.meetingplace.server.modules.members.dao.Members
 import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.modules.members.dto.MemberType
+import br.meetingplace.server.modules.owner.dto.OwnerData
 
-class Group(private val owner: GroupOwnerData, private val groupID: String, private val name: String, private val chatID: String) : Members() {
-    private var about: String? = null
+class Group(creator: String, private val owner: OwnerData, private val ID: String,
+            private var name: String, private val chatID: String, private var about: String?) : Members() {
+
+    init {
+        updateMember(MemberData(creator, MemberType.MODERATOR), false)
+    }
 
     fun getOwner() = owner
     fun getNameGroup() = name
-    fun getGroupID() = groupID
+    fun getGroupID() = ID
     fun getChatID() = chatID
 
-    init {
-        startMembers(MemberData(owner.groupCreatorID, MemberType.CREATOR))
+    fun setName(name: String){
+        this.name = name
     }
 
-    fun updateAbout(about: String) {
+    fun setAbout(about: String) {
         this.about = about
     }
 }

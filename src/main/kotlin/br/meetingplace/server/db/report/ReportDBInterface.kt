@@ -1,6 +1,6 @@
 package br.meetingplace.server.db.report
 
-import br.meetingplace.server.modules.community.dto.dependencies.data.Report
+import br.meetingplace.server.modules.report.dto.Report
 
 interface ReportDBInterface {
     fun select(id: String): Report?
