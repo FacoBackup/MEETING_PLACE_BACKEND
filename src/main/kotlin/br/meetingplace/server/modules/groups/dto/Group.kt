@@ -3,7 +3,7 @@ package br.meetingplace.server.modules.groups.dto
 import br.meetingplace.server.modules.members.dao.Members
 import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.modules.members.dto.MemberType
-import br.meetingplace.server.modules.owner.dto.OwnerData
+import br.meetingplace.server.modules.global.dto.owner.OwnerData
 
 class Group(creator: String, private val owner: OwnerData, private val ID: String,
             private var name: String, private val chatID: String, private var about: String?) : Members() {

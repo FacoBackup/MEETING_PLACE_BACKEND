@@ -1,4 +1,4 @@
-package br.meetingplace.server.modules.chat.dao.search
+package br.meetingplace.server.modules.chat.dao.searchTODO
 
 import br.meetingplace.server.db.chat.ChatDBInterface
 import br.meetingplace.server.db.community.CommunityDBInterface
@@ -23,9 +23,9 @@ class ChatSearch private constructor() {
                     when (data.identifier.communityGroup) {
                         true -> {//COMMUNITY GROUP
                             val group = rwGroup.select(data.identifier.receiverID)
-                            if(group != null){
-                                val community = rwCommunity.select(group.getOwner().groupOwnerID)
-                                if(community!= null && community.checkGroupApproval(data.identifier.receiverID))
+                            if(group != null ){
+                                val community = rwCommunity.select(group.getOwner().ID)
+                                if(community!= null && group.getGroupID() in community.getApprovedGroups())
                                     return rwChat.select(group.getChatID())
                             }
                         }

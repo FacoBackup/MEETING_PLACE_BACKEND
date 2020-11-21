@@ -1,17 +1,5 @@
 
 //
-//
-//    override fun verifyMessage(idMessage: String): Boolean {
-//        return idMessage in idMessages
-//    }
-//
-//    override fun addMessage(message: Content) {
-//        if (message.ID !in idMessages) {
-//            messages.add(message)
-//            idMessages.add(message.ID)
-//        }
-//    }
-//
 //    override fun deleteMessage(message: ChatSimpleOperator) {
 //        if (message.messageID in idMessages) {
 //            if (message.messageID in favoriteMessages)

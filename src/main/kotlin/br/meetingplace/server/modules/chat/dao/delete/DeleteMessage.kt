@@ -4,6 +4,11 @@ import br.meetingplace.server.db.chat.ChatDBInterface
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.chat.dto.Chat
+import br.meetingplace.server.modules.chat.dto.dependencies.data.Content
+import br.meetingplace.server.modules.community.dto.Community
+import br.meetingplace.server.modules.global.functions.chat.getContent
+import br.meetingplace.server.modules.groups.dto.Group
 import br.meetingplace.server.requests.chat.operators.ChatSimpleOperator
 
 class DeleteMessage private constructor() {
@@ -14,6 +19,8 @@ class DeleteMessage private constructor() {
 
     fun deleteMessage(data: ChatSimpleOperator, rwUser: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface){
         val user = rwUser.select(data.login.email)
+        lateinit var messages: List<Content>
+
         if(user != null){
             when(data.receiver.userGroup || data.receiver.communityGroup){
                 true->{ //GROUP
@@ -23,14 +30,19 @@ class DeleteMessage private constructor() {
                         when(data.receiver.communityGroup){
                             true->{
                                 val community = rwCommunity.select(group.getOwner().ID)
-                                if(community != null && chat != null) {
-                                    chat.deleteMessage(data)
+                                if(community != null && chat != null && group.getGroupID() in community.getApprovedGroups()) {
+                                    messages = chat.getMessages()
+                                    messages.remove(getContent(chat.getMessages(), data.messageID))
+                                    chat.setMessages(messages)
+
                                     rwChat.insert(chat)
                                 }
-
                             }
                             false-> if(chat!= null){
-                                        chat.deleteMessage(data)
+                                        messages = chat.getMessages()
+                                        messages.remove(getContent(chat.getMessages(), data.messageID))
+                                        chat.setMessages(messages)
+
                                         rwChat.insert(chat)
                                     }
                         }
@@ -39,7 +51,10 @@ class DeleteMessage private constructor() {
                 false->{ //USER <-> USER
                     val chat = rwChat.select(data.receiver.chatID)
                     if(chat!= null){
-                        chat.deleteMessage(data)
+                        messages = chat.getMessages()
+                        messages.remove(getContent(chat.getMessages(), data.messageID))
+                        chat.setMessages(messages)
+
                         rwChat.insert(chat)
                     }
                 }

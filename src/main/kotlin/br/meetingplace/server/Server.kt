@@ -15,8 +15,7 @@ import io.ktor.server.netty.*
 import org.jetbrains.exposed.sql.Database
 
 fun main() {
-//Database.connect("jdbc:postgresql: DB URL", driver = "idk", user = "AEB", password = "m@n@gerb0x")
-
+    //Database.connect("jdbc:postgresql: DB URL", driver = "idk", user = "AEB", password = "m@n@gerb0x")
     val port = System.getenv("PORT")?.toInt() ?: 8080
     embeddedServer(Netty, port) {
         routing {

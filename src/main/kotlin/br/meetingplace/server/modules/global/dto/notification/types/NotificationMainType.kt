@@ -1,4 +1,4 @@
-package br.meetingplace.server.modules.notification.dto.types
+package br.meetingplace.server.modules.global.dto.notification.types
 
 enum class NotificationMainType {
     USER, COMMUNITY, GROUP, CHAT, TOPIC

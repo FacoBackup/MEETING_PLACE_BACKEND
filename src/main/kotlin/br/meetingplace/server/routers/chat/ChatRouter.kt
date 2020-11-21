@@ -5,10 +5,10 @@ import br.meetingplace.server.db.community.file.CommunityRW
 import br.meetingplace.server.db.group.file.GroupRW
 import br.meetingplace.server.db.user.file.UserRW
 import br.meetingplace.server.modules.chat.dao.delete.DeleteMessage
-import br.meetingplace.server.modules.chat.dao.disfavor.DisfavorMessage
+import br.meetingplace.server.modules.chat.dao.dislike.DislikeMessage
 import br.meetingplace.server.modules.chat.dao.favorite.FavoriteMessage
 import br.meetingplace.server.modules.chat.dao.quote.QuoteMessage
-import br.meetingplace.server.modules.chat.dao.search.ChatSearch
+import br.meetingplace.server.modules.chat.dao.searchTODO.ChatSearch
 import br.meetingplace.server.modules.chat.dao.send.SendMessage
 import br.meetingplace.server.modules.chat.dao.share.ShareMessage
 import br.meetingplace.server.routers.chat.paths.ChatPaths
@@ -53,7 +53,7 @@ fun Route.chatRouter (){
         }
         patch(ChatPaths.DISLIKE) {
             val data = call.receive<ChatSimpleOperator>()
-            call.respond(DisfavorMessage.getClass().disfavorMessage(data, rwUser = UserRW.getClass(),rwGroup = GroupRW.getClass(),rwCommunity = CommunityRW.getClass(),rwChat = ChatRW.getClass()))
+            call.respond(DislikeMessage.getClass().dislikeMessage(data, rwUser = UserRW.getClass(),rwGroup = GroupRW.getClass(),rwCommunity = CommunityRW.getClass(),rwChat = ChatRW.getClass()))
         }
         patch(ChatPaths.SHARE) {
             val data = call.receive<ChatComplexOperator>()

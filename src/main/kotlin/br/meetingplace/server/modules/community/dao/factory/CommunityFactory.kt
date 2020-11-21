@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.community.dao.factory
 
-import br.meetingplace.server.modules.notification.dto.NotificationData
-import br.meetingplace.server.modules.notification.dto.types.NotificationMainType
-import br.meetingplace.server.modules.notification.dto.types.NotificationSubType
+import br.meetingplace.server.modules.global.dto.notification.NotificationData
+import br.meetingplace.server.modules.global.dto.notification.types.NotificationMainType
+import br.meetingplace.server.modules.global.dto.notification.types.NotificationSubType
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.community.dto.Community

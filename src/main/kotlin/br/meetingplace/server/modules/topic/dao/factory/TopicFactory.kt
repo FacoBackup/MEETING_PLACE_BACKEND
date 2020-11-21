@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.topic.dao.factory
 
-import br.meetingplace.server.modules.owner.dto.OwnerType
+import br.meetingplace.server.modules.global.dto.owner.OwnerType
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
