@@ -5,23 +5,23 @@ import br.meetingplace.server.modules.topic.dto.Topic
 import com.google.gson.GsonBuilder
 import java.io.File
 
-class TopicRW private constructor(): TopicDBInterface {
-    companion object{
+class TopicRW private constructor() : TopicDBInterface {
+    companion object {
         private val Class = TopicRW()
-        fun getClass () = Class
+        fun getClass() = Class
     }
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
     override fun delete(data: Topic) {
         var directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/TOPICS")
-        directory += if(data.getMainTopic().isNullOrBlank())
+        directory += if (data.getMainTopic().isNullOrBlank())
             "/${data.getID()}"
         else
             "/${data.getMainTopic()}"
 
         try {
-            File(directory+"/${data.getID()}.json").delete()
+            File(directory + "/${data.getID()}.json").delete()
         } catch (e: Exception) {
             println(e.message)
         }
@@ -29,7 +29,7 @@ class TopicRW private constructor(): TopicDBInterface {
 
     override fun select(id: String, mainTopic: String?): Topic? {
         var directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/TOPICS")
-        directory += if(mainTopic.isNullOrBlank())
+        directory += if (mainTopic.isNullOrBlank())
             "/$id/$id.json"
         else
             "/$mainTopic/$id.json"
@@ -48,7 +48,7 @@ class TopicRW private constructor(): TopicDBInterface {
     override fun insert(data: Topic) {
         var directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/TOPICS")
 
-        directory += if(data.getMainTopic().isNullOrBlank())
+        directory += if (data.getMainTopic().isNullOrBlank())
             "/${data.getID()}"
         else
             "/${data.getMainTopic()}"
@@ -65,6 +65,14 @@ class TopicRW private constructor(): TopicDBInterface {
             File(file).writeText(json)
         } catch (e: Exception) {
             println(e.message)
+        }
+    }
+
+    override fun check(id: String): Boolean {
+        return try {
+            File(File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/TOPICS/${id}.json").exists()
+        } catch (e: Exception) {
+            false
         }
     }
 }

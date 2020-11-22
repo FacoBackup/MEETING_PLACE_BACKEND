@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.user.dto.dependencies
 
-import br.meetingplace.server.modules.global.dto.notification.NotificationData
 import br.meetingplace.server.modules.chat.dto.ChatIdentifier
+import br.meetingplace.server.modules.global.dto.notification.NotificationData
 import br.meetingplace.server.modules.user.dto.dependencies.profile.UserProfile
 import br.meetingplace.server.modules.user.dto.dependencies.profile.UserProfileInterface
 import br.meetingplace.server.modules.user.dto.dependencies.services.chat.UserChat
@@ -19,7 +19,7 @@ import br.meetingplace.server.modules.user.dto.dependencies.services.topic.UserT
 
 
 abstract class Controller : UserChatInterface, UserCommunityInterface, UserFollowInterface, UserGroupsInterface,
-    UserTopicsInterface, UserProfileInterface, UserNotificationsInterface {
+        UserTopicsInterface, UserProfileInterface, UserNotificationsInterface {
     private val profile = UserProfile.getClass()
     private val social = UserFollow.getClass()
     private val notifications = UserNotifications.getClass()

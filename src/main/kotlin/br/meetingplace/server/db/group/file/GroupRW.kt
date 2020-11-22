@@ -5,10 +5,10 @@ import br.meetingplace.server.modules.groups.dto.Group
 import com.google.gson.GsonBuilder
 import java.io.File
 
-class GroupRW private constructor(): GroupDBInterface {
-    companion object{
+class GroupRW private constructor() : GroupDBInterface {
+    companion object {
         private val Class = GroupRW()
-        fun getClass () = Class
+        fun getClass() = Class
     }
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
@@ -23,7 +23,7 @@ class GroupRW private constructor(): GroupDBInterface {
         }
     }
 
-    override fun select(id: String): Group?{
+    override fun select(id: String): Group? {
         val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/GROUPS/$id.json")
 
         val file = File(directory)
@@ -47,6 +47,14 @@ class GroupRW private constructor(): GroupDBInterface {
             file.writeText(json)
         } catch (e: Exception) {
             println(e.message)
+        }
+    }
+
+    override fun check(id: String): Boolean {
+        return try {
+            File(File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/GROUPS/${id}.json").exists()
+        } catch (e: Exception) {
+            false
         }
     }
 }

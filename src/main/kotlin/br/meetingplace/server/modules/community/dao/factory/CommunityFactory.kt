@@ -1,11 +1,11 @@
 package br.meetingplace.server.modules.community.dao.factory
 
-import br.meetingplace.server.modules.global.dto.notification.NotificationData
-import br.meetingplace.server.modules.global.dto.notification.types.NotificationMainType
-import br.meetingplace.server.modules.global.dto.notification.types.NotificationSubType
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.community.dto.Community
+import br.meetingplace.server.modules.global.dto.notification.NotificationData
+import br.meetingplace.server.modules.global.dto.notification.types.NotificationMainType
+import br.meetingplace.server.modules.global.dto.notification.types.NotificationSubType
 import br.meetingplace.server.requests.generic.data.CreationData
 import br.meetingplace.server.requests.generic.operators.MemberOperator
 
@@ -16,7 +16,7 @@ class CommunityFactory private constructor() {
         fun getClass() = Class
     }
 
-    private fun getCommunityID(name: String): String{
+    private fun getCommunityID(name: String): String {
         return (name.replace("\\s".toRegex(), "")).toLowerCase()
     }
 
@@ -28,7 +28,7 @@ class CommunityFactory private constructor() {
         lateinit var id: String
 
         if (user != null && community == null) {
-            newCommunity = Community(name = data.name, imageURL = data.imageURL,id =  getCommunityID(data.name), about = data.about, creator = user.getEmail())
+            newCommunity = Community(name = data.name, imageURL = data.imageURL, id = getCommunityID(data.name), about = data.about, creator = user.getEmail())
             id = getCommunityID(data.name)
             user.updateModeratorIn(id, false)
             communityDB.insert(newCommunity)

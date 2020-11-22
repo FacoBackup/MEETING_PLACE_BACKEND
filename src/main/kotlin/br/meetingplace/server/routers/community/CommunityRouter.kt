@@ -6,16 +6,16 @@ import br.meetingplace.server.db.topic.file.TopicRW
 import br.meetingplace.server.db.user.file.UserRW
 import br.meetingplace.server.modules.community.dao.factory.CommunityFactory
 import br.meetingplace.server.modules.community.dao.moderators.Moderator
-import br.meetingplace.server.routers.community.paths.CommunityPaths
 import br.meetingplace.server.requests.community.Approval
 import br.meetingplace.server.requests.generic.data.CreationData
+import br.meetingplace.server.routers.community.paths.CommunityPaths
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-fun Route.communityRouter (){
-    route("/api"){
+fun Route.communityRouter() {
+    route("/api") {
         post(CommunityPaths.COMMUNITY) {
             val data = call.receive<CreationData>()
             call.respond(CommunityFactory.getClass().create(data, userDB = UserRW.getClass(), communityDB = CommunityRW.getClass()))

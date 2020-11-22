@@ -2,7 +2,6 @@ package br.meetingplace.server.modules.members.dao
 
 import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.modules.members.dto.MemberType
-import java.lang.reflect.Member
 
 abstract class Members {
     private val members = mutableListOf<MemberData>()

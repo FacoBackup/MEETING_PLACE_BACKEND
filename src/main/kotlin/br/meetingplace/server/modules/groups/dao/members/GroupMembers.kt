@@ -1,12 +1,11 @@
 package br.meetingplace.server.modules.groups.dao.members
 
-import br.meetingplace.server.modules.global.dto.notification.NotificationData
-import br.meetingplace.server.modules.global.dto.notification.types.NotificationMainType
-import br.meetingplace.server.modules.global.dto.notification.types.NotificationSubType
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
-import br.meetingplace.server.modules.members.dto.MemberData
+import br.meetingplace.server.modules.global.dto.notification.NotificationData
+import br.meetingplace.server.modules.global.dto.notification.types.NotificationMainType
+import br.meetingplace.server.modules.global.dto.notification.types.NotificationSubType
 import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.requests.generic.operators.MemberOperator
 
@@ -30,7 +29,7 @@ class GroupMembers private constructor() {
 
                         notification = NotificationData(NotificationMainType.GROUP, NotificationSubType.ADDED_IN_GROUP, group.getGroupID())
 
-                        group.updateMember(newMember.getEmail(),MemberType.NORMAL, false)
+                        group.updateMember(newMember.getEmail(), MemberType.NORMAL, false)
                         newMember.updateMemberIn(group.getGroupID(), false)
                         newMember.updateInbox(notification)
                         userDB.insert(newMember)
@@ -42,7 +41,7 @@ class GroupMembers private constructor() {
                     val community = communityDB.select(data.identifier.owner)
                     if (group != null && community != null && data.login.email in community.getModerators()) {
                         notification = NotificationData(NotificationMainType.GROUP, NotificationSubType.ADDED_IN_GROUP, group.getGroupID())
-                        group.updateMember(newMember.getEmail(), MemberType.NORMAL,false)
+                        group.updateMember(newMember.getEmail(), MemberType.NORMAL, false)
                         newMember.updateMemberIn(group.getGroupID(), false)
                         newMember.updateInbox(notification)
                         userDB.insert(newMember)
@@ -65,10 +64,10 @@ class GroupMembers private constructor() {
         if (user != null && group != null && member != null && group.getMemberRole(user.getEmail()) == MemberType.MODERATOR) {
             when (data.stepDown) {
                 true -> if (group.getMemberRole(member.getEmail()) == MemberType.MODERATOR)
-                        group.updateMemberRole(member.getEmail(), MemberType.NORMAL)
+                    group.updateMemberRole(member.getEmail(), MemberType.NORMAL)
 
                 false -> if (group.getMemberRole(member.getEmail()) == MemberType.NORMAL)
-                        group.updateMemberRole(member.getEmail(), MemberType.MODERATOR)
+                    group.updateMemberRole(member.getEmail(), MemberType.MODERATOR)
             }
         }
     }
@@ -82,10 +81,10 @@ class GroupMembers private constructor() {
         if (user != null && member != null && group != null && !data.identifier.owner.isNullOrBlank()) {
             when (data.identifier.community) {
                 false -> {
-                    if ( group.verifyMember(data.login.email) && data.login.email in group.getModerators()) {
+                    if (group.verifyMember(data.login.email) && data.login.email in group.getModerators()) {
                         val memberRole = group.getMemberRole(member.getEmail())
-                        if(memberRole != null){
-                            group.updateMember(member.getEmail(), memberRole,true)
+                        if (memberRole != null) {
+                            group.updateMember(member.getEmail(), memberRole, true)
                             member.updateMemberIn(group.getGroupID(), true)
 
                             userDB.insert(member)
@@ -96,10 +95,10 @@ class GroupMembers private constructor() {
                 true -> {
                     val community = communityDB.select(data.identifier.owner)
 
-                    if (community != null && data.login.email in community.getModerators() && group.getGroupID() in community.getApprovedGroups()) {
+                    if (community != null && data.login.email in community.getModerators() && group.getGroupID() in community.getGroups()) {
                         val memberRole = community.getMemberRole(member.getEmail())
                         if (memberRole != null)
-                        group.updateMember(member.getEmail(),memberRole,true)
+                            group.updateMember(member.getEmail(), memberRole, true)
                         member.updateMemberIn(group.getGroupID(), true)
                         userDB.insert(member)
                         groupDB.insert(group)

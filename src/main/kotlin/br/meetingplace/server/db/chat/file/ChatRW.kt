@@ -6,9 +6,9 @@ import com.google.gson.GsonBuilder
 import java.io.File
 
 class ChatRW private constructor() : ChatDBInterface {
-    companion object{
+    companion object {
         private val Class = ChatRW()
-        fun getClass () = Class
+        fun getClass() = Class
     }
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
@@ -23,7 +23,7 @@ class ChatRW private constructor() : ChatDBInterface {
         }
     }
 
-    override fun select(id: String): Chat?{
+    override fun select(id: String): Chat? {
         val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/CHATS/$id.json")
 
         val file = File(directory)
@@ -46,6 +46,14 @@ class ChatRW private constructor() : ChatDBInterface {
             file.writeText(json)
         } catch (e: Exception) {
             println(e.message)
+        }
+    }
+
+    override fun check(id: String): Boolean {
+        return try {
+            File(File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/CHATS/${id}.json").exists()
+        } catch (e: Exception) {
+            false
         }
     }
 }

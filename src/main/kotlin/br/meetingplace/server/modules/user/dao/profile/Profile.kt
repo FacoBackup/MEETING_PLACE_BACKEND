@@ -26,7 +26,7 @@ class Profile private constructor() : ProfileInterface {
 
     override fun clearNotifications(data: Login, rwUser: UserDBInterface) {
         val user = rwUser.select(data.email)
-        if(user != null){
+        if (user != null) {
             user.clearNotifications()
             rwUser.insert(user)
         }

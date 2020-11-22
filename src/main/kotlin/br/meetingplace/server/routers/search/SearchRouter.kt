@@ -12,8 +12,8 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-fun Route.searchRouter (){
-    route("/api"){
+fun Route.searchRouter() {
+    route("/api") {
         get(SearchPaths.GROUP) {
             val data = call.receive<SimpleOperator>()
             val group = GroupSearch.getClass().seeGroup(data, rwUser = UserRW.getClass(), rwGroup = GroupRW.getClass())

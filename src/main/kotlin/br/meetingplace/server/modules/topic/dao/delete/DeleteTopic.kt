@@ -14,20 +14,19 @@ class DeleteTopic private constructor() {
     }
 
     fun delete(data: TopicSimpleOperator, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface) {
-        val user = rwUser.select(data.login.email)
 
-        if (user != null) {
+        if (rwUser.check(data.login.email)) {
             when (data.communityID.isNullOrBlank()) {
                 true -> { //USER
                     when (data.identifier.subTopicID.isNullOrBlank()) {
-                        true -> deleteUserMainTopic(data,rwTopic, rwUser) //MAIN
-                        false -> deleteUserSubTopic(data,rwTopic) //SUB
+                        true -> deleteUserMainTopic(data, rwTopic, rwUser) //MAIN
+                        false -> deleteUserSubTopic(data, rwTopic) //SUB
                     }
                 }
                 false -> { //COMMUNITY
                     when (data.identifier.subTopicID.isNullOrBlank()) {
                         true -> deleteCommunityMainTopic(data, rwCommunity, rwTopic) //MAIN
-                        false -> deleteCommunitySubTopic(data,rwCommunity, rwTopic) //SUB
+                        false -> deleteCommunitySubTopic(data, rwCommunity, rwTopic) //SUB
                     }
                 }
             }
@@ -49,8 +48,11 @@ class DeleteTopic private constructor() {
     private fun deleteUserSubTopic(data: TopicSimpleOperator, rwTopic: TopicDBInterface) {
         val subTopic = data.identifier.subTopicID?.let { rwTopic.select(it, data.identifier.mainTopicID) }
         val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
+        lateinit var subtopics: List<String>
         if (subTopic != null && mainTopic != null && subTopic.getCreator() == data.login.email) {
-            mainTopic.removeSubTopic(subTopic.getID())
+            subtopics = mainTopic.getComments()
+            subtopics.remove(subTopic.getID())
+            mainTopic.setComments(subtopics)
             rwTopic.insert(mainTopic)
             rwTopic.delete(subTopic)
         }
@@ -59,12 +61,14 @@ class DeleteTopic private constructor() {
     private fun deleteCommunityMainTopic(data: TopicSimpleOperator, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface) {
         val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
         val community = data.communityID?.let { rwCommunity.select(it) }
+        lateinit var approved: List<String>
+        if (mainTopic != null && community != null && mainTopic.getID() in community.getTopics() &&
+                (mainTopic.getCreator() == data.login.email || community.getMemberRole(data.login.email) == MemberType.MODERATOR)) {
 
-        if (mainTopic!= null && community != null && community.checkTopicApproval(mainTopic.getID()) &&
-                (mainTopic.getCreator() == data.login.email || community.getMemberRole(data.login.email) == MemberType.MODERATOR || community.getMemberRole(data.login.email) == MemberType.CREATOR)) {
-
-            community.removeApprovedTopic(SimplifiedTopic(mainTopic.getID(), mainTopic.getOwner()))
-            deleteAllSubTopics(mainTopic,rwTopic)
+            approved = community.getTopics()
+            approved.remove(mainTopic.getID())
+            community.setTopics(approved)
+            deleteAllSubTopics(mainTopic, rwTopic)
             rwTopic.delete(mainTopic)
         }
     }
@@ -73,23 +77,30 @@ class DeleteTopic private constructor() {
         val subTopic = data.identifier.subTopicID?.let { rwTopic.select(it, data.identifier.mainTopicID) }
         val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
         val community = data.communityID?.let { rwCommunity.select(it) }
+        lateinit var subtopics: List<String>
 
-        if (subTopic != null && mainTopic != null && community != null && community.checkTopicApproval(mainTopic.getID()) &&
-                (subTopic.getCreator() == data.login.email || community.getMemberRole(data.login.email) == MemberType.MODERATOR || community.getMemberRole(data.login.email) == MemberType.CREATOR)) {
+        if (subTopic != null && mainTopic != null && community != null && mainTopic.getID() in community.getTopics() &&
+                (subTopic.getCreator() == data.login.email || community.getMemberRole(data.login.email) == MemberType.MODERATOR)) {
 
-            mainTopic.removeSubTopic(subTopic.getID())
+            subtopics = mainTopic.getComments()
+            subtopics.remove(subTopic.getID())
+            mainTopic.setComments(subtopics)
+
             rwTopic.insert(mainTopic)
             rwTopic.delete(subTopic)
         }
     }
 
     private fun deleteAllSubTopics(mainTopic: Topic, rwTopic: TopicDBInterface) {
-        val subTopics = mainTopic.getSubTopics()
+        val subTopics = mainTopic.getComments()
 
         for (i in subTopics.indices) {
-            val subtopic = rwTopic.select(subTopics[i].ID, mainTopic.getID())
-            if(subtopic != null)
+            val subtopic = rwTopic.select(subTopics[i], mainTopic.getID())
+
+            if (subtopic != null) {
+                deleteAllSubTopics(subtopic, rwTopic)
                 rwTopic.delete(subtopic)
+            }
         }
     }
 }

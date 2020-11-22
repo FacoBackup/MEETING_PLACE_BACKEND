@@ -16,16 +16,16 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-fun Route.groupRouter (){
-    route("/api"){
+fun Route.groupRouter() {
+    route("/api") {
 
         post(GroupPaths.GROUP) {
             val group = call.receive<CreationData>()
-            call.respond(GroupFactory.getClass().create(group,userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass(),chatDB = ChatRW.getClass()))
+            call.respond(GroupFactory.getClass().create(group, userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass(), chatDB = ChatRW.getClass()))
         }
         delete(GroupPaths.GROUP) {
             val group = call.receive<SimpleOperator>()
-            call.respond(GroupDelete.getClass().delete(group,userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass(),chatDB = ChatRW.getClass()))
+            call.respond(GroupDelete.getClass().delete(group, userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass(), chatDB = ChatRW.getClass()))
         }
         patch(GroupPaths.MEMBER) {
             val member = call.receive<MemberOperator>()

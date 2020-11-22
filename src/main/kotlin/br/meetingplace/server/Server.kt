@@ -12,7 +12,6 @@ import io.ktor.gson.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import org.jetbrains.exposed.sql.Database
 
 fun main() {
     //Database.connect("jdbc:postgresql: DB URL", driver = "idk", user = "AEB", password = "m@n@gerb0x")

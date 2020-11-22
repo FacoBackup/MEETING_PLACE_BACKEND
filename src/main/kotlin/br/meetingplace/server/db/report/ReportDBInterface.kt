@@ -6,4 +6,5 @@ interface ReportDBInterface {
     fun select(id: String): Report?
     fun insert(data: Report)
     fun delete(data: Report)
+    fun check(id: String): Boolean
 }

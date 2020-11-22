@@ -6,4 +6,5 @@ interface TopicDBInterface {
     fun select(id: String, mainTopic: String?): Topic?
     fun insert(data: Topic)
     fun delete(data: Topic)
+    fun check(id: String): Boolean
 }

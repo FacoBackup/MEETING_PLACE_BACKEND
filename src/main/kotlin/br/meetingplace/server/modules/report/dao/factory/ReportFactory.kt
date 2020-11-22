@@ -5,7 +5,6 @@ import br.meetingplace.server.db.report.ReportDBInterface
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.report.dto.Report
-import br.meetingplace.server.requests.community.Approval
 import br.meetingplace.server.requests.community.ReportCreationData
 import java.util.*
 
@@ -20,7 +19,7 @@ class ReportFactory private constructor() {
         val community = data.identifier.owner?.let { rwCommunity.select(it) }
         val topic = rwTopic.select(data.identifier.ID, null)
         lateinit var reports: List<String>
-        if (user != null && community != null && topic != null && topic.getID() in community.getApprovedTopics()) {
+        if (user != null && community != null && topic != null && topic.getID() in community.getTopics()) {
             reports = community.getReports()
             val newReport = Report(
                     reportID = UUID.randomUUID().toString(),

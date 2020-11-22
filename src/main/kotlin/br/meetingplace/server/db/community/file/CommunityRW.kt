@@ -5,10 +5,10 @@ import br.meetingplace.server.modules.community.dto.Community
 import com.google.gson.GsonBuilder
 import java.io.File
 
-class CommunityRW private constructor(): CommunityDBInterface {
-    companion object{
+class CommunityRW private constructor() : CommunityDBInterface {
+    companion object {
         private val Class = CommunityRW()
-        fun getClass () = Class
+        fun getClass() = Class
     }
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
@@ -50,6 +50,14 @@ class CommunityRW private constructor(): CommunityDBInterface {
             file.writeText(json)
         } catch (e: Exception) {
             println(e.message)
+        }
+    }
+
+    override fun check(id: String): Boolean {
+        return try {
+            File(File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/COMMUNITIES/${id}.json").exists()
+        } catch (e: Exception) {
+            false
         }
     }
 }

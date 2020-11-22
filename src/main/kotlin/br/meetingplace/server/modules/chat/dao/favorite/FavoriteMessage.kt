@@ -7,17 +7,18 @@ import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.functions.chat.getContent
 import br.meetingplace.server.requests.chat.operators.ChatSimpleOperator
 
-class FavoriteMessage private constructor()  {
+class FavoriteMessage private constructor() {
     companion object {
         private val Class = FavoriteMessage()
         fun getClass() = Class
     }
-    fun favoriteMessage(data: ChatSimpleOperator, rwUser: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface){
+
+    fun favoriteMessage(data: ChatSimpleOperator, rwUser: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface) {
         val user = rwUser.select(data.login.email)
         lateinit var liked: List<String>
 
-        if(user != null){
-            when(data.receiver.userGroup || data.receiver.communityGroup){
+        if (user != null) {
+            when (data.receiver.userGroup || data.receiver.communityGroup) {
                 true -> { //GROUP
                     val group = rwGroup.select(data.receiver.receiverID)
                     if (group != null) {
@@ -25,10 +26,10 @@ class FavoriteMessage private constructor()  {
                         when (data.receiver.communityGroup) {
                             true -> {
                                 val community = rwCommunity.select(group.getOwner().ID)
-                                if (community != null && chat != null && group.getGroupID() in community.getApprovedGroups()) {
+                                if (community != null && chat != null && group.getGroupID() in community.getGroups()) {
 
                                     liked = chat.getLiked()
-                                    if(getContent(chat.getMessages(), data.messageID) != null){
+                                    if (getContent(chat.getMessages(), data.messageID) != null) {
                                         liked.add(data.messageID)
                                         chat.setLiked(liked = liked)
                                     }
@@ -38,9 +39,9 @@ class FavoriteMessage private constructor()  {
                                 }
                             }
                             false -> {
-                                if(chat != null){
+                                if (chat != null) {
                                     liked = chat.getLiked()
-                                    if(getContent(chat.getMessages(), data.messageID) != null){
+                                    if (getContent(chat.getMessages(), data.messageID) != null) {
                                         liked.add(data.messageID)
                                         chat.setLiked(liked = liked)
                                     }
@@ -52,11 +53,11 @@ class FavoriteMessage private constructor()  {
                         }
                     }
                 }
-                false->{ //USER <-> USER
+                false -> { //USER <-> USER
                     val chat = rwChat.select(data.receiver.chatID)
-                    if(chat != null){
+                    if (chat != null) {
                         liked = chat.getLiked()
-                        if(getContent(chat.getMessages(), data.messageID) != null){
+                        if (getContent(chat.getMessages(), data.messageID) != null) {
                             liked.add(data.messageID)
                             chat.setLiked(liked = liked)
                         }

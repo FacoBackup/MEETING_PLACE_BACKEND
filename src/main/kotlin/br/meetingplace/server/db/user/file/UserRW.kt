@@ -5,10 +5,10 @@ import br.meetingplace.server.modules.user.dto.User
 import com.google.gson.GsonBuilder
 import java.io.File
 
-class UserRW private constructor(): UserDBInterface {
-    companion object{
+class UserRW private constructor() : UserDBInterface {
+    companion object {
         private val Class = UserRW()
-        fun getClass () = Class
+        fun getClass() = Class
     }
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
@@ -52,6 +52,14 @@ class UserRW private constructor(): UserDBInterface {
             file.writeText(json)
         } catch (e: Exception) {
             println(e.message)
+        }
+    }
+
+    override fun check(id: String): Boolean {
+        return try {
+            File(File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/USERS/${id}.json").exists()
+        } catch (e: Exception) {
+            false
         }
     }
 }

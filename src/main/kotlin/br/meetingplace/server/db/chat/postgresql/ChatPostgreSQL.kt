@@ -4,9 +4,13 @@ import br.meetingplace.server.db.chat.ChatDBInterface
 import br.meetingplace.server.modules.chat.dto.Chat
 
 class ChatPostgreSQL private constructor() : ChatDBInterface {
-    companion object{
+    companion object {
         private val Class = ChatPostgreSQL()
-        fun getClass () = Class
+        fun getClass() = Class
+    }
+
+    override fun check(id: String): Boolean {
+        TODO("Not yet implemented")
     }
 
     override fun delete(data: Chat) {

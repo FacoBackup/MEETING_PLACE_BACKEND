@@ -17,7 +17,7 @@ class UserFactory private constructor() : UserFactoryInterface {
 
         return if (newUser.age >= 16) {
             val existingUser = rwUser.select(user.getEmail())
-            println (existingUser)
+            println(existingUser)
             return if (existingUser == null) {
                 rwUser.insert(user)
                 true

@@ -6,4 +6,5 @@ interface UserDBInterface {
     fun select(id: String): User?
     fun insert(data: User)
     fun delete(data: User)
+    fun check(id: String): Boolean
 }

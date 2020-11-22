@@ -6,4 +6,5 @@ interface CommunityDBInterface {
     fun select(id: String): Community?
     fun insert(data: Community)
     fun delete(data: Community)
+    fun check(id: String): Boolean
 }

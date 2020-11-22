@@ -5,7 +5,6 @@ import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.members.dto.MemberType
-import br.meetingplace.server.modules.topic.dto.Topic
 import br.meetingplace.server.requests.community.Approval
 import br.meetingplace.server.requests.generic.operators.MemberOperator
 
@@ -22,16 +21,12 @@ class Moderator private constructor() {
         val topic = topicDB.select(data.identifier.ID, null)
 
         lateinit var topics: List<String>
-        if (user != null && community != null && data.login.email in community.getModerators() && !data.identifier.owner.isNullOrBlank() && topic != null && topic.getID() in community.getTopicsInValidation()) {
+        if (user != null && community != null && data.login.email in community.getModerators() && !data.identifier.owner.isNullOrBlank() && topic != null && !topic.getApproved()) {
 
-            topics = community.getTopicsInValidation()
-            topics.remove(topic.getID())
-            community.setTopicsInValidation(topics)
-
-            topics = community.getApprovedTopics()
+            topics = community.getTopics()
             topics.add(topic.getID())
-            community.setApprovedTopics(topics)
-
+            topic.setApproved(true)
+            community.setTopics(topics)
             communityDB.insert(community)
         }
     }
@@ -42,15 +37,12 @@ class Moderator private constructor() {
         val group = groupDB.select(data.identifier.ID)
         lateinit var groups: List<String>
 
-        if (user != null && community != null && community.getMemberRole(data.login.email) == MemberType.MODERATOR && group != null && group.getGroupID() in community.getGroupsInValidation()) {
+        if (user != null && community != null && community.getMemberRole(data.login.email) == MemberType.MODERATOR && group != null && !group.getApproved()) {
 
-            groups = community.getGroupsInValidation()
-            groups.remove(group.getGroupID())
-            community.setGroupsInValidation(groups)
-
-            groups = community.getApprovedGroups()
+            groups = community.getGroups()
             groups.add(group.getGroupID())
-            community.setApprovedTopics(groups)
+            group.setApproved(true)
+            community.setTopics(groups)
 
             communityDB.insert(community)
         }
@@ -61,6 +53,6 @@ class Moderator private constructor() {
         val community = data.identifier.owner?.let { rwCommunity.select(it) }
 
         if (user != null && community != null && community.verifyMember(data.login.email) && user.getEmail() in community.getModerators())
-            community.updateMember(data.login.email, MemberType.NORMAL,false)
+            community.updateMember(data.login.email, MemberType.NORMAL, false)
     }
 }

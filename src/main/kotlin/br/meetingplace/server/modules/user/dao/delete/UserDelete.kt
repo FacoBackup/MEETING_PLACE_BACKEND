@@ -44,7 +44,7 @@ class UserDelete private constructor() : UserDeleteInterface {
              */
 
             rwUser.delete(user)
-            deleteAllTopicsFromUser(data, rwUser = rwUser, rwTopic= rwTopic)
+            deleteAllTopicsFromUser(data, rwUser = rwUser, rwTopic = rwTopic)
         }
     }
 

@@ -1,10 +1,11 @@
 package br.meetingplace.server.modules.user.dao.social
 
+import br.meetingplace.server.db.community.CommunityDBInterface
+import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.notification.NotificationData
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationMainType
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationSubType
-import br.meetingplace.server.db.community.CommunityDBInterface
-import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.requests.generic.operators.SimpleOperator
 
 class Social private constructor() : SocialInterface {
@@ -37,18 +38,16 @@ class Social private constructor() : SocialInterface {
                 }
                 true -> { //COMMUNITY
                     val community = rwCommunity.select(data.identifier.ID)
-
                     if (community != null && !community.verifyMember(data.login.email)) {
                         user.updateCommunitiesIFollow(community.getID(), false)
-                        community.updateFollower(data.identifier.ID, false)
+                        community.updateMember(data.identifier.ID, MemberType.NORMAL, false)
                         rwUser.insert(user)
                         rwCommunity.insert(community)
                     }
                 }
             }
-
         }
-    } //UPDATE
+    }
 
     override fun unfollow(data: SimpleOperator, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface) {
         val user = rwUser.select(data.login.email)
@@ -70,10 +69,13 @@ class Social private constructor() : SocialInterface {
                     val community = rwCommunity.select(data.identifier.ID)
 
                     if (community != null && !community.verifyMember(data.login.email)) {
-                        user.updateCommunitiesIFollow(community.getID(), true)
-                        community.updateFollower(data.identifier.ID, true)
-                        rwUser.insert(user)
-                        rwCommunity.insert(community)
+                        val role = community.getMemberRole(user.getEmail())
+                        if (role != null) {
+                            user.updateCommunitiesIFollow(community.getID(), true)
+                            community.updateMember(data.identifier.ID, role, true)
+                            rwUser.insert(user)
+                            rwCommunity.insert(community)
+                        }
                     }
                 }
             }

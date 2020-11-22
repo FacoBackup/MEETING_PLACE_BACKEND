@@ -9,7 +9,7 @@ class UserProfile private constructor() : UserProfileInterface {
     private var gender: String? = null
     private var nationality: String? = null
     private var about: String? = null
-    private var imageURL: String?= null
+    private var imageURL: String? = null
     override fun getImageURL() = imageURL
     override fun getGender(): String? {
         return gender

@@ -6,4 +6,5 @@ interface GroupDBInterface {
     fun select(id: String): Group?
     fun insert(data: Group)
     fun delete(data: Group)
+    fun check(id: String): Boolean
 }

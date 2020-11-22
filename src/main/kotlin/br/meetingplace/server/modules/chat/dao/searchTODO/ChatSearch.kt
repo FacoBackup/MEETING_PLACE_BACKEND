@@ -23,9 +23,9 @@ class ChatSearch private constructor() {
                     when (data.identifier.communityGroup) {
                         true -> {//COMMUNITY GROUP
                             val group = rwGroup.select(data.identifier.receiverID)
-                            if(group != null ){
+                            if (group != null) {
                                 val community = rwCommunity.select(group.getOwner().ID)
-                                if(community!= null && group.getGroupID() in community.getApprovedGroups())
+                                if (community != null && group.getGroupID() in community.getGroups())
                                     return rwChat.select(group.getChatID())
                             }
                         }
