@@ -14,14 +14,9 @@ class UserFactory private constructor() : UserFactoryInterface {
 
     override fun create(newUser: UserCreationData, rwUser: UserDBInterface): Boolean {
         val user = User(newUser.userName, newUser.age, newUser.email.toLowerCase(), newUser.password)
-
-        return if (newUser.age >= 16) {
-            val existingUser = rwUser.select(user.getEmail())
-            println(existingUser)
-            return if (existingUser == null) {
-                rwUser.insert(user)
-                true
-            } else false
+        return if (!rwUser.check(user.getEmail())) {
+            rwUser.insert(user)
+            true
         } else false
     }
 }

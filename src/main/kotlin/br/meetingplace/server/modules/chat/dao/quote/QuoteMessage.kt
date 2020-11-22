@@ -6,7 +6,7 @@ import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.dto.dependencies.data.Content
 import br.meetingplace.server.modules.chat.dto.dependencies.data.MessageType
-import br.meetingplace.server.modules.global.functions.chat.getContent
+import br.meetingplace.server.modules.global.methods.chat.getContent
 import br.meetingplace.server.requests.chat.operators.ChatComplexOperator
 import java.util.*
 

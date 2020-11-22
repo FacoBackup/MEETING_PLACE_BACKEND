@@ -8,7 +8,7 @@ import br.meetingplace.server.modules.chat.dao.delete.DeleteMessage
 import br.meetingplace.server.modules.chat.dao.dislike.DislikeMessage
 import br.meetingplace.server.modules.chat.dao.favorite.FavoriteMessage
 import br.meetingplace.server.modules.chat.dao.quote.QuoteMessage
-import br.meetingplace.server.modules.chat.dao.searchTODO.ChatSearch
+import br.meetingplace.server.modules.search.dao.ChatSearch
 import br.meetingplace.server.modules.chat.dao.send.SendMessage
 import br.meetingplace.server.modules.chat.dao.share.ShareMessage
 import br.meetingplace.server.requests.chat.data.MessageData
