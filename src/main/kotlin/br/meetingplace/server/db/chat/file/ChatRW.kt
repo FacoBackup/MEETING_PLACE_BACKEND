@@ -2,6 +2,8 @@ package br.meetingplace.server.db.chat.file
 
 import br.meetingplace.server.db.chat.ChatDBInterface
 import br.meetingplace.server.modules.chat.dto.Chat
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import com.google.gson.GsonBuilder
 import java.io.File
 
@@ -13,14 +15,15 @@ class ChatRW private constructor() : ChatDBInterface {
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
-    override fun delete(data: Chat) {
+    override fun delete(data: Chat): Status{
         val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/CHATS/${data.getID()}.json")
 
         try {
             File(directory).delete()
         } catch (e: Exception) {
-            println(e.message)
+            return Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
+        return Status(200, StatusMessages.OK)
     }
 
     override fun select(id: String): Chat? {
@@ -37,7 +40,7 @@ class ChatRW private constructor() : ChatDBInterface {
         }
     }
 
-    override fun insert(data: Chat) {
+    override fun insert(data: Chat): Status {
         val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/CHATS/${data.getID()}.json")
         try {
             val file = File(directory)
@@ -45,8 +48,9 @@ class ChatRW private constructor() : ChatDBInterface {
 
             file.writeText(json)
         } catch (e: Exception) {
-            println(e.message)
+            return Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
+        return Status(200, StatusMessages.OK)
     }
 
     override fun check(id: String): Boolean {

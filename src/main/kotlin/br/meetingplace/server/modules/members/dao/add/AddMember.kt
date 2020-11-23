@@ -32,8 +32,7 @@ class AddMember private constructor(){
                     newMember.setCommunities(userMemberIn)
 
                     communityDB.insert(community)
-                    userDB.insert(newMember)
-                    Status(statusCode = 200, StatusMessages.OK)
+                    return userDB.insert(newMember)
                 }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
             false->{
@@ -48,9 +47,9 @@ class AddMember private constructor(){
                     userMemberIn.add(group.getID())
                     newMember.setGroups(userMemberIn)
 
+
                     groupDB.insert(group)
-                    userDB.insert(newMember)
-                    Status(statusCode = 200, StatusMessages.OK)
+                    return userDB.insert(newMember)
                 }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
         }

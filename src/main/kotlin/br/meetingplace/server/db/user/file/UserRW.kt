@@ -1,6 +1,8 @@
 package br.meetingplace.server.db.user.file
 
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.user.dto.User
 import com.google.gson.GsonBuilder
 import java.io.File
@@ -13,7 +15,7 @@ class UserRW private constructor() : UserDBInterface {
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
-    override fun delete(data: User) {
+    override fun delete(data: User): Status {
         val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/USERS/${data.getEmail()}")
         val filePath = "$directory/${data.getEmail()}.json"
 
@@ -21,8 +23,9 @@ class UserRW private constructor() : UserDBInterface {
             File(filePath).delete()
             File(directory).delete()
         } catch (e: Exception) {
-            println(e.message)
+            return Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
+        return Status(200, StatusMessages.OK)
     }
 
     override fun select(id: String): User? {
@@ -37,9 +40,10 @@ class UserRW private constructor() : UserDBInterface {
         } finally {
             return user
         }
+
     }
 
-    override fun insert(data: User) {
+    override fun insert(data: User): Status {
         val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/USERS/${data.getEmail()}")
         val jsonFile = "$directory/${data.getEmail()}.json"
         try {
@@ -51,8 +55,9 @@ class UserRW private constructor() : UserDBInterface {
 
             file.writeText(json)
         } catch (e: Exception) {
-            println(e.message)
+            return Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
+        return Status(200, StatusMessages.OK)
     }
 
     override fun check(id: String): Boolean {

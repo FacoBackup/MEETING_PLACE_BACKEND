@@ -21,36 +21,35 @@ class RemoveMember private constructor(){
         return when(data.identifier.community){
             true->{
                 val community = communityDB.select(data.identifier.ID)
-                val newMember = userDB.select(data.memberEmail)
-                if(userDB.check(data.login.email) && newMember != null && community != null && getMemberRole(community.getMembers(), newMember.getEmail()) == MemberType.NORMAL && getMemberRole(community.getMembers(), data.login.email)  == MemberType.MODERATOR){
+                val member = userDB.select(data.memberEmail)
+                if(userDB.check(data.login.email) && member != null && community != null && getMemberRole(community.getMembers(), member.getEmail()) == MemberType.NORMAL && getMemberRole(community.getMembers(), data.login.email)  == MemberType.MODERATOR){
                     members = community.getMembers()
-                    members.remove(MemberData(newMember.getEmail(), MemberType.NORMAL))
+                    members.remove(MemberData(member.getEmail(), MemberType.NORMAL))
                     community.setMembers(members)
 
-                    userMemberIn = newMember.getCommunities()
+                    userMemberIn = member.getCommunities()
                     userMemberIn.remove(community.getID())
-                    newMember.setCommunities(userMemberIn)
+                    member.setCommunities(userMemberIn)
 
                     communityDB.insert(community)
-                    userDB.insert(newMember)
-                    Status(statusCode = 200, StatusMessages.OK)
+                    return userDB.insert(member)
                 }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
             false->{
                 val group = groupDB.select(data.identifier.ID)
-                val newMember = userDB.select(data.memberEmail)
-                if(userDB.check(data.login.email) && newMember != null && group != null && getMemberRole(group.getMembers(), newMember.getEmail()) == MemberType.NORMAL && getMemberRole(group.getMembers(), data.login.email)  == MemberType.MODERATOR && group.getApproved()){
+                val member = userDB.select(data.memberEmail)
+                if(userDB.check(data.login.email) && member != null && group != null && getMemberRole(group.getMembers(), member.getEmail()) == MemberType.NORMAL && getMemberRole(group.getMembers(), data.login.email)  == MemberType.MODERATOR && group.getApproved()){
                     members = group.getMembers()
-                    members.remove(MemberData(newMember.getEmail(), MemberType.NORMAL))
+                    members.remove(MemberData(member.getEmail(), MemberType.NORMAL))
                     group.setMembers(members)
 
-                    userMemberIn = newMember.getGroups()
+                    userMemberIn = member.getGroups()
                     userMemberIn.remove(group.getID())
-                    newMember.setGroups(userMemberIn)
+                    member.setGroups(userMemberIn)
 
                     groupDB.insert(group)
-                    userDB.insert(newMember)
-                    Status(statusCode = 200, StatusMessages.OK)
+                    return userDB.insert(member)
+
                 }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
         }

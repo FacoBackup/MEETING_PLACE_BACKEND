@@ -1,6 +1,8 @@
 package br.meetingplace.server.db.topic.file
 
 import br.meetingplace.server.db.topic.TopicDBInterface
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.topic.dto.Topic
 import com.google.gson.GsonBuilder
 import java.io.File
@@ -13,7 +15,7 @@ class TopicRW private constructor() : TopicDBInterface {
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
-    override fun delete(data: Topic) {
+    override fun delete(data: Topic): Status{
         var directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/TOPICS")
         directory += if (data.getMainTopic().isNullOrBlank())
             "/${data.getID()}"
@@ -23,8 +25,9 @@ class TopicRW private constructor() : TopicDBInterface {
         try {
             File(directory + "/${data.getID()}.json").delete()
         } catch (e: Exception) {
-            println(e.message)
+            return Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
+        return Status(200, StatusMessages.OK)
     }
 
     override fun select(id: String, mainTopic: String?): Topic? {
@@ -45,27 +48,18 @@ class TopicRW private constructor() : TopicDBInterface {
         }
     }
 
-    override fun insert(data: Topic) {
-        var directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/TOPICS")
-
-        directory += if (data.getMainTopic().isNullOrBlank())
-            "/${data.getID()}"
-        else
-            "/${data.getMainTopic()}"
-
-
-        val file = "$directory/${data.getID()}.json"
-
-
+    override fun insert(data: Topic):Status {
+        var directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/TOPICS/${data.getID()}.json")
         try {
             val json = gson.toJson(data)
             if (!File(directory).exists())
                 File(directory).mkdir()
 
-            File(file).writeText(json)
+            File(directory).writeText(json)
         } catch (e: Exception) {
-            println(e.message)
+            return Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
+        return Status(200, StatusMessages.OK)
     }
 
     override fun check(id: String): Boolean {

@@ -26,8 +26,7 @@ class UpdateMember private constructor(){
                     members.add(MemberData(data.memberEmail, MemberType.MODERATOR))
                     community.setMembers(members)
 
-                    communityDB.insert(community)
-                    Status(statusCode = 200, StatusMessages.OK)
+                    return communityDB.insert(community)
                 }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
             false->{
@@ -38,8 +37,7 @@ class UpdateMember private constructor(){
                     members.add(MemberData(data.memberEmail, MemberType.MODERATOR))
                     group.setMembers(members)
 
-                    groupDB.insert(group)
-                    Status(statusCode = 200, StatusMessages.OK)
+                    return groupDB.insert(group)
                 }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
         }
@@ -55,8 +53,7 @@ class UpdateMember private constructor(){
                     members.add(MemberData(data.memberEmail, MemberType.NORMAL))
                     community.setMembers(members)
 
-                    communityDB.insert(community)
-                    Status(statusCode = 200, StatusMessages.OK)
+                    return communityDB.insert(community)
                 }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
             false->{
@@ -67,8 +64,7 @@ class UpdateMember private constructor(){
                     members.add(MemberData(data.memberEmail, MemberType.NORMAL))
                     group.setMembers(members)
 
-                    groupDB.insert(group)
-                    Status(statusCode = 200, StatusMessages.OK)
+                    return groupDB.insert(group)
                 }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
         }

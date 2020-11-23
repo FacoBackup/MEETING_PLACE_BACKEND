@@ -17,8 +17,7 @@ class UserFactory private constructor() {
     fun create(newUser: UserCreationData, rwUser: UserDBInterface): Status {
         val user = User(newUser.userName, newUser.age, newUser.email.toLowerCase(), newUser.password)
         return if (!rwUser.check(user.getEmail())) {
-            rwUser.insert(user)
-            Status(statusCode = 200, StatusMessages.OK)
+            return rwUser.insert(user)
         } else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 }

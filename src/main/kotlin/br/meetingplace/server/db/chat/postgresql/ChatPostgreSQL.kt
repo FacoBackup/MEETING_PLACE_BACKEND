@@ -2,6 +2,7 @@ package br.meetingplace.server.db.chat.postgresql
 
 import br.meetingplace.server.db.chat.ChatDBInterface
 import br.meetingplace.server.modules.chat.dto.Chat
+import br.meetingplace.server.modules.global.dto.http.status.Status
 
 class ChatPostgreSQL private constructor() : ChatDBInterface {
     companion object {
@@ -13,11 +14,11 @@ class ChatPostgreSQL private constructor() : ChatDBInterface {
         TODO("Not yet implemented")
     }
 
-    override fun delete(data: Chat) {
+    override fun delete(data: Chat): Status {
         TODO("Not yet implemented")
     }
 
-    override fun insert(data: Chat) {
+    override fun insert(data: Chat): Status {
         TODO("Not yet implemented")
     }
 

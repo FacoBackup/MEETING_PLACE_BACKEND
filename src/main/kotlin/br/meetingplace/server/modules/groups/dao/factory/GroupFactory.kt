@@ -79,11 +79,10 @@ class GroupFactory private constructor() {
                         groups.add(newGroup.getID())
                         user.setGroups(groups)
 
-                        groupDB.insert(newGroup)
                         chatDB.insert(newChat)
                         userDB.insert(user)
                         communityDB.insert(community)
-                        Status(statusCode = 200, StatusMessages.OK)
+                        return groupDB.insert(newGroup)
                     }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
                 }
             }

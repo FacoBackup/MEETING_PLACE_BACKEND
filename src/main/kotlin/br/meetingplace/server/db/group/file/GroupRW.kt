@@ -1,6 +1,8 @@
 package br.meetingplace.server.db.group.file
 
 import br.meetingplace.server.db.group.GroupDBInterface
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.groups.dto.Group
 import com.google.gson.GsonBuilder
 import java.io.File
@@ -13,14 +15,15 @@ class GroupRW private constructor() : GroupDBInterface {
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
-    override fun delete(data: Group) {
+    override fun delete(data: Group):Status {
         val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/GROUPS/${data.getID()}.json")
         val file = File(directory)
         try {
             file.delete()
         } catch (e: Exception) {
-            println(e.message)
+            return Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
+        return Status(200, StatusMessages.OK)
     }
 
     override fun select(id: String): Group? {
@@ -37,7 +40,7 @@ class GroupRW private constructor() : GroupDBInterface {
         }
     }
 
-    override fun insert(data: Group) {
+    override fun insert(data: Group): Status{
         val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/GROUPS/${data.getID()}.json")
 
         try {
@@ -46,8 +49,9 @@ class GroupRW private constructor() : GroupDBInterface {
 
             file.writeText(json)
         } catch (e: Exception) {
-            println(e.message)
+            return Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
+        return Status(200, StatusMessages.OK)
     }
 
     override fun check(id: String): Boolean {

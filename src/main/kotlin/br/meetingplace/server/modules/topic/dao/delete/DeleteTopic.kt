@@ -47,9 +47,9 @@ class DeleteTopic private constructor() {
             user.setTopics(userTopics)
 
             deleteAllSubTopics(topic, rwTopic)
-            rwTopic.delete(topic)
             rwUser.insert(user)
-            Status(statusCode = 200, StatusMessages.OK)
+
+            return rwTopic.delete(topic)
         }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
@@ -63,8 +63,7 @@ class DeleteTopic private constructor() {
             subtopics.remove(subTopic.getID())
             mainTopic.setComments(subtopics)
             rwTopic.insert(mainTopic)
-            rwTopic.delete(subTopic)
-            Status(statusCode = 200, StatusMessages.OK)
+            return rwTopic.delete(subTopic)
         }else  Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
@@ -80,8 +79,7 @@ class DeleteTopic private constructor() {
             approved.remove(mainTopic.getID())
             community.setTopics(approved)
             deleteAllSubTopics(mainTopic, rwTopic)
-            rwTopic.delete(mainTopic)
-            Status(statusCode = 200, StatusMessages.OK)
+            return rwTopic.delete(mainTopic)
         }else  Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
@@ -99,8 +97,7 @@ class DeleteTopic private constructor() {
             mainTopic.setComments(subtopics)
 
             rwTopic.insert(mainTopic)
-            rwTopic.delete(subTopic)
-            Status(statusCode = 200, StatusMessages.OK)
+            return rwTopic.delete(subTopic)
         }else  Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 

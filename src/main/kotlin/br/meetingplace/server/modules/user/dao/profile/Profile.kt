@@ -25,16 +25,14 @@ class Profile private constructor() {
                 user.setNationality(data.nationality)
             if(data.imageURL != null)
                 user.setImageURL(data.imageURL)
-            userDB.insert(user)
-            Status(statusCode = 200, StatusMessages.OK)
+            return userDB.insert(user)
         } else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
     fun clearNotifications(data: Login, userDB: UserDBInterface):Status {
         val user = userDB.select(data.email)
         return if (user != null) {
             user.setInbox(listOf())
-            userDB.insert(user)
-            Status(statusCode = 200, StatusMessages.OK)
+            return userDB.insert(user)
         } else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 }

@@ -22,7 +22,7 @@ class LikeTopic private constructor() {
                         true -> {
                             val topic = topicDB.select(mainTopic = null, id = data.identifier.mainTopicID)
                             if (topic != null)
-                                like(email = data.login.email, rwTopic = topicDB, topic = topic)
+                                like(email = data.login.email, topicDB = topicDB, topic = topic)
                             else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
                         } //MAIN
                         false -> {
@@ -38,13 +38,13 @@ class LikeTopic private constructor() {
                         true -> {//MAIN
                             val topic = topicDB.select(mainTopic = null, id = data.identifier.mainTopicID)
                             if (communityDB.check(data.communityID) && topic != null && topic.getApproved())
-                                like(email = data.login.email, rwTopic = topicDB, topic = topic)
+                                like(email = data.login.email, topicDB = topicDB, topic = topic)
                             else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
                         }
                         false -> {//SUB
                             val topic = topicDB.select(mainTopic = data.identifier.mainTopicID, id = data.identifier.subTopicID)
                             if (communityDB.check(data.communityID) && topic != null)
-                                like(email = data.login.email, rwTopic = topicDB, topic = topic)
+                                like(email = data.login.email, topicDB = topicDB, topic = topic)
                             else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
                         }
                     }
@@ -53,7 +53,7 @@ class LikeTopic private constructor() {
         }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
-    private fun like(topic: Topic, email: String, rwTopic: TopicDBInterface):Status {
+    private fun like(topic: Topic, email: String, topicDB: TopicDBInterface):Status {
         lateinit var dislikes: List<String>
         lateinit var likes: List<String>
 
@@ -63,8 +63,7 @@ class LikeTopic private constructor() {
                 likes.remove(email)
 
                 topic.setLikes(dislikes)
-                rwTopic.insert(topic)
-                Status(statusCode = 200 , StatusMessages.OK)
+                return topicDB.insert(topic)
             }
             1 -> {
                 likes = topic.getLikes()
@@ -75,16 +74,14 @@ class LikeTopic private constructor() {
 
                 topic.setLikes(likes)
                 topic.setDislikes(dislikes)
-                rwTopic.insert(topic)
-                Status(statusCode = 200 , StatusMessages.OK)
+                return topicDB.insert(topic)
             } //dislikeToLike
             2 -> {
                 likes = topic.getLikes()
                 likes.add(email)
 
                 topic.setLikes(dislikes)
-                rwTopic.insert(topic)
-                Status(statusCode = 200 , StatusMessages.OK)
+                return topicDB.insert(topic)
             }
             else -> Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
         }

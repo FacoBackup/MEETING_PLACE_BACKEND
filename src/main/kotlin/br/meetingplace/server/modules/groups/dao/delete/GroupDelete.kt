@@ -46,9 +46,8 @@ class GroupDelete private constructor() {
 
                     if (chat != null)
                         chatDB.delete(chat)
-
-                    groupDB.delete(group)
-                    Status(statusCode = 200, StatusMessages.OK)
+                    communityDB.insert(community)
+                    return groupDB.delete(group)
                 }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
             false -> {
@@ -68,8 +67,7 @@ class GroupDelete private constructor() {
                     if (chat != null)
                         chatDB.delete(chat)
 
-                    groupDB.delete(group)
-                    Status(statusCode = 200, StatusMessages.OK)
+                    return groupDB.delete(group)
                 }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
         }

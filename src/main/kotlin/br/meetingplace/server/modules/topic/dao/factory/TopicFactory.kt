@@ -51,9 +51,9 @@ class TopicFactory private constructor() {
         }//WHEN
     }
 
-    private fun createCommunityMainTopic(data: TopicData, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface) :Status{
-        val user = rwUser.select(data.login.email)
-        val community = data.communityID?.let { rwCommunity.select(it) }
+    private fun createCommunityMainTopic(data: TopicData, userDB: UserDBInterface, communityDB: CommunityDBInterface, topicDB: TopicDBInterface) :Status{
+        val user = userDB.select(data.login.email)
+        val community = data.communityID?.let { communityDB.select(it) }
         lateinit var topic: Topic
         lateinit var topics: List<String>
 
@@ -67,10 +67,9 @@ class TopicFactory private constructor() {
             topics.add(topic.getID())
             community.setTopics(topics)
 
-            rwTopic.insert(topic)
-            rwUser.insert(user)
-            rwCommunity.insert(community)
-            Status(statusCode = 200, StatusMessages.OK)
+            userDB.insert(user)
+            communityDB.insert(community)
+            return topicDB.insert(topic)
         }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
@@ -88,14 +87,13 @@ class TopicFactory private constructor() {
             mainTopic.setComments(comments)
 
             topicDB.insert(mainTopic)
-            topicDB.insert(topic)
             userDB.insert(user)
-            Status(statusCode = 200, StatusMessages.OK)
+            return topicDB.insert(topic)
         }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
-    private fun createUserMainTopic(data: TopicData, rwUser: UserDBInterface, rwTopic: TopicDBInterface):Status {
-        val user = rwUser.select(data.login.email)
+    private fun createUserMainTopic(data: TopicData, userDB: UserDBInterface, topicDB: TopicDBInterface):Status {
+        val user = userDB.select(data.login.email)
         lateinit var topics: List<String>
 
         return if (user != null) {
@@ -103,10 +101,9 @@ class TopicFactory private constructor() {
             topics = user.getTopics()
             topics.add(topic.getID())
             user.setTopics(topics)
-            
-            rwTopic.insert(topic)
-            rwUser.insert(user)
-            Status(statusCode = 200, StatusMessages.OK)
+
+            userDB.insert(user)
+            return topicDB.insert(topic)
         }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
@@ -123,9 +120,9 @@ class TopicFactory private constructor() {
             mainTopic.setComments(comments)
 
             topicDB.insert(mainTopic)
-            topicDB.insert(topic)
+
             userDB.insert(user)
-            Status(statusCode = 200, StatusMessages.OK)
+            return topicDB.insert(topic)
         }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 

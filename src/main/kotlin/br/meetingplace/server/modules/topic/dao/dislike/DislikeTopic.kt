@@ -67,24 +67,21 @@ class DislikeTopic private constructor() {
 
                 topic.setLikes(likes)
                 topic.setDislikes(dislikes)
-                rwTopic.insert(topic)
-                Status(statusCode = 200, StatusMessages.OK)
+                return rwTopic.insert(topic)
             } // like to dislike
             1 -> {
                 dislikes = topic.getDislikes()
                 dislikes.remove(email)
 
                 topic.setDislikes(dislikes)
-                rwTopic.insert(topic)
-                Status(statusCode = 200, StatusMessages.OK)
+                return rwTopic.insert(topic)
             }
             2 -> {
                 dislikes = topic.getDislikes()
                 dislikes.add(email)
 
                 topic.setDislikes(dislikes)
-                rwTopic.insert(topic)
-                Status(statusCode = 200, StatusMessages.OK)
+                return rwTopic.insert(topic)
             }
             else->Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
         }

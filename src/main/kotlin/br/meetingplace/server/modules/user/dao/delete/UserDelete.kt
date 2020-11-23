@@ -80,9 +80,9 @@ class UserDelete private constructor() {
                 }
             }
 
-            userDB.delete(user)
+
             deleteAllTopicsFromUser(data, rwUser = userDB, rwTopic = topicDB)
-            Status(statusCode = 200, StatusMessages.OK)
+            return userDB.delete(user)
         }
         else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }

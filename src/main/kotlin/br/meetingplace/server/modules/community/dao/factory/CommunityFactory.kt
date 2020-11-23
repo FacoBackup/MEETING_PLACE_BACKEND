@@ -34,9 +34,8 @@ class CommunityFactory private constructor() {
             userCommunities.add(newCommunity.getID())
             user.setCommunities(userCommunities)
 
-            communityDB.insert(newCommunity)
             userDB.insert(user)
-            Status(statusCode = 200, StatusMessages.OK)
+            return communityDB.insert(newCommunity)
         }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 

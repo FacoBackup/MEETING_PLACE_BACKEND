@@ -38,8 +38,7 @@ class ReportFactory private constructor() {
             community.setReports(reports)
 
             rwCommunity.insert(community)
-            rwReport.insert(newReport)
-            Status(statusCode = 200, StatusMessages.OK)
+            return rwReport.insert(newReport)
         } else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 

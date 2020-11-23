@@ -30,8 +30,7 @@ class Moderator private constructor() {
             topics.add(topic.getID())
             topic.setApproved(true)
             community.setTopics(topics)
-            communityDB.insert(community)
-            Status(statusCode = 200, StatusMessages.OK)
+            return communityDB.insert(community)
         }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
@@ -48,8 +47,7 @@ class Moderator private constructor() {
             group.setApproved(true)
             community.setTopics(groups)
 
-            communityDB.insert(community)
-            Status(statusCode = 200, StatusMessages.OK)
+            return communityDB.insert(community)
         }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 }

@@ -1,6 +1,8 @@
 package br.meetingplace.server.db.report.file
 
 import br.meetingplace.server.db.report.ReportDBInterface
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.report.dto.Report
 import com.google.gson.GsonBuilder
 
@@ -14,14 +16,15 @@ class ReportRW private constructor() : ReportDBInterface {
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
-    override fun delete(data: Report) {
+    override fun delete(data: Report):Status{
         val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/REPORTS/${data.reportID}.json")
         val file = File(directory)
         try {
             file.delete()
         } catch (e: Exception) {
-            println(e.message)
+            return Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
+        return Status(200, StatusMessages.OK)
     }
 
     override fun select(id: String): Report? {
@@ -38,7 +41,7 @@ class ReportRW private constructor() : ReportDBInterface {
         }
     }
 
-    override fun insert(data: Report) {
+    override fun insert(data: Report):Status {
         val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/REPORTS/${data.reportID}")
         val jsonFile = "$directory/${data.reportID}.json"
         try {
@@ -50,8 +53,9 @@ class ReportRW private constructor() : ReportDBInterface {
 
             file.writeText(json)
         } catch (e: Exception) {
-            println(e.message)
+            return Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
+        return Status(200, StatusMessages.OK)
     }
 
     override fun check(id: String): Boolean {

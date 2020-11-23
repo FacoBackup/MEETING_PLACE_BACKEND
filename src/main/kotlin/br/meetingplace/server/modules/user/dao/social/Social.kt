@@ -38,11 +38,9 @@ class Social private constructor() {
                 userFollowing.add(external.getEmail())
                 user.setFollowing(userFollowing)
 
-                userDB.insert(user)
                 userDB.insert(external)
-                Status(statusCode = 200, StatusMessages.OK)
-            }
-            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
+                return userDB.insert(user)
+            } else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
         }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
@@ -62,11 +60,9 @@ class Social private constructor() {
                 userFollowing.remove(external.getEmail())
                 user.setFollowing(userFollowing)
 
-                userDB.insert(user)
                 userDB.insert(external)
-                Status(statusCode = 200, StatusMessages.OK)
-            }
-            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
+                return userDB.insert(user)
+            } else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
         } else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 }
