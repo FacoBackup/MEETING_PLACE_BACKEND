@@ -35,7 +35,7 @@ fun Route.chatRouter() {
         }
         post(ChatPaths.CHAT) {
             val data = call.receive<MessageData>()
-            call.respond(SendMessage.getClass().sendMessage(data, rwChat = ChatRW.getClass(), rwCommunity = CommunityRW.getClass(), rwGroup = GroupRW.getClass(), rwUser = UserRW.getClass()))
+            call.respond(SendMessage.getClass().sendMessage(data, rwChat = ChatRW.getClass(), rwCommunity = CommunityRW.getClass(), rwGroup = GroupRW.getClass(), userDB = UserRW.getClass()))
         }
         delete(ChatPaths.CHAT) {
             val data = call.receive<ChatSimpleOperator>()

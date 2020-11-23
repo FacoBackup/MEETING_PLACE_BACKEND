@@ -6,8 +6,11 @@ import br.meetingplace.server.modules.community.dto.Community
 import br.meetingplace.server.modules.global.dto.notification.NotificationData
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationMainType
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationSubType
+import br.meetingplace.server.modules.members.dto.MemberData
+import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.requests.generic.data.CreationData
 import br.meetingplace.server.requests.generic.operators.MemberOperator
+import java.util.*
 
 class CommunityFactory private constructor() {
 
@@ -16,46 +19,44 @@ class CommunityFactory private constructor() {
         fun getClass() = Class
     }
 
-    private fun getCommunityID(name: String): String {
-        return (name.replace("\\s".toRegex(), "")).toLowerCase()
-    }
-
     fun create(data: CreationData, userDB: UserDBInterface, communityDB: CommunityDBInterface) {
         val user = userDB.select(data.login.email)
         val community = communityDB.select(data.name)
 
         lateinit var newCommunity: Community
-        lateinit var id: String
+        lateinit var userCommunities: List<MemberData>
 
         if (user != null && community == null) {
-            newCommunity = Community(name = data.name, imageURL = data.imageURL, id = getCommunityID(data.name), about = data.about, creator = user.getEmail())
-            id = getCommunityID(data.name)
-            user.updateModeratorIn(id, false)
+            newCommunity = Community(name = data.name, imageURL = data.imageURL, id = UUID.randomUUID().toString(), about = data.about, creator = user.getEmail())
+            userCommunities = user.getCommunities()
+            userCommunities.add(MemberData(newCommunity.getID(), MemberType.MODERATOR))
+            user.setCommunities(userCommunities)
+
             communityDB.insert(newCommunity)
             userDB.insert(user)
         }
     }
 
-    fun delete(data: MemberOperator, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface) {
-        val user = rwUser.select(data.login.email)
-        lateinit var notification: NotificationData
-        lateinit var mods: List<String>
-
-        if (user != null) {
-            val community = rwCommunity.select(data.identifier.ID)
-            if (community != null) {
-                when (community.getModerators().isEmpty()) {
-                    true -> rwCommunity.delete(community)
-                    false -> {
-                        notification = NotificationData(NotificationMainType.COMMUNITY, NotificationSubType.DELETE_REQUEST, community.getID())
-                        mods = community.getModerators()
-                        for (i in mods.indices) {
-                            val moderator = rwUser.select(mods[i])
-                            moderator?.updateInbox(notification)
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    fun delete(data: MemberOperator, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface) {
+//        val user = rwUser.select(data.login.email)
+//        lateinit var notification: NotificationData
+//        lateinit var mods: List<String>
+//
+//        if (user != null) {
+//            val community = rwCommunity.select(data.identifier.ID)
+//            if (community != null) {
+//                when (community.getModerators().isEmpty()) {
+//                    true -> rwCommunity.delete(community)
+//                    false -> {
+//                        notification = NotificationData(NotificationMainType.COMMUNITY, NotificationSubType.DELETE_REQUEST, community.getID())
+//                        mods = community.getModerators()
+//                        for (i in mods.indices) {
+//                            val moderator = rwUser.select(mods[i])
+//                            moderator?.updateInbox(notification)
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

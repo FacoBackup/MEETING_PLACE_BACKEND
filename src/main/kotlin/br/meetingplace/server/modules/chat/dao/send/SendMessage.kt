@@ -22,11 +22,10 @@ class SendMessage private constructor() {
         fun getClass() = Class
     }
 
-    fun sendMessage(data: MessageData, rwUser: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface) {
-        val user = rwUser.select(data.login.email)
+    fun sendMessage(data: MessageData, userDB: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface) {
         lateinit var messages: List<Content>
 
-        if (user != null && data.receiver.receiverID != data.login.email) {
+        if (userDB.check(data.login.email) && data.receiver.receiverID != data.login.email) {
             when (data.receiver.userGroup || data.receiver.communityGroup) {
                 true -> { //GROUP
                     val group = rwGroup.select(data.receiver.receiverID)
@@ -37,7 +36,7 @@ class SendMessage private constructor() {
                                 val community = rwCommunity.select(group.getOwner().ID)
                                 if (community != null && chat != null) {
                                     messages = chat.getMessages()
-                                    messages.add(Content(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), user.getEmail(), data.messageType
+                                    messages.add(Content(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), data.login.email, data.messageType
                                             ?: MessageType.NORMAL))
                                     chat.setMessages(messages = messages)
 
@@ -47,7 +46,7 @@ class SendMessage private constructor() {
                             false -> {
                                 if (chat != null) {
                                     messages = chat.getMessages()
-                                    messages.add(Content(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), user.getEmail(), data.messageType
+                                    messages.add(Content(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), data.login.email, data.messageType
                                             ?: MessageType.NORMAL))
                                     chat.setMessages(messages = messages)
 
@@ -61,12 +60,11 @@ class SendMessage private constructor() {
                     val chat = rwChat.select(data.receiver.chatID)
                     if (chat != null) {
                         messages = chat.getMessages()
-                        messages.add(Content(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), user.getEmail(), data.messageType
-                                ?: MessageType.NORMAL))
+                        messages.add(Content(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), data.login.email, data.messageType ?: MessageType.NORMAL))
                         chat.setMessages(messages = messages)
 
                         rwChat.insert(chat)
-                    } else createChat(data, rwUser, rwChat)
+                    } else createChat(data, userDB, rwChat)
                 }
             }
         }
@@ -80,18 +78,23 @@ class SendMessage private constructor() {
         lateinit var notification: NotificationData
         lateinit var chat: Chat
         lateinit var messages: List<Content>
-
+        lateinit var userChats: List<ChatIdentifier>
+        lateinit var receiverChats: List<ChatIdentifier>
         if (user != null && receiver != null) {
             chat = Chat(UUID.randomUUID().toString(), OwnerData(user.getEmail(), OwnerType.USER))
             notification = NotificationData(NotificationMainType.CHAT, NotificationSubType.NEW_MESSAGE, logged)
             messages = chat.getMessages()
-            messages.add(Content(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), logged, data.messageType
-                    ?: MessageType.NORMAL))
+            messages.add(Content(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), logged, data.messageType?: MessageType.NORMAL))
             chat.setMessages(messages = messages)
 
-            user.updateMyChats(ChatIdentifier(chat.getID(), receiver.getEmail()))
-            receiver.updateMyChats(ChatIdentifier(chat.getID(), user.getEmail()))
-            receiver.updateInbox(notification)
+            userChats = user.getChats()
+            userChats.add(ChatIdentifier(chat.getID(), receiver.getEmail()))
+            user.setChats(userChats)
+
+            receiverChats = receiver.getChats()
+            receiverChats.add(ChatIdentifier(chat.getID(), user.getEmail()))
+            receiver.setChats(receiverChats)
+
             rwChat.insert(chat)
             rwUser.insert(user)
             rwUser.insert(receiver)

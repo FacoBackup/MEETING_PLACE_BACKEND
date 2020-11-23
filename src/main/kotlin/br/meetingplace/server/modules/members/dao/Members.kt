@@ -10,7 +10,7 @@ abstract class Members {
         val members = mutableListOf<String>()
         for (i in 0 until members.size) {
             if (this.members[i].role == MemberType.MODERATOR)
-                members.add(this.members[i].userEmail)
+                members.add(this.members[i].ID)
         }
         return members
     }
@@ -19,7 +19,7 @@ abstract class Members {
         val mods = mutableListOf<String>()
         for (i in 0 until members.size) {
             if (members[i].role == MemberType.MODERATOR)
-                mods.add(members[i].userEmail)
+                mods.add(members[i].ID)
         }
         return mods
     }
@@ -50,7 +50,7 @@ abstract class Members {
 
     fun verifyMember(email: String): Boolean {
         for (i in 0 until members.size) {
-            if (members[i].userEmail == email)
+            if (members[i].ID == email)
                 return true
         }
         return false
@@ -58,7 +58,7 @@ abstract class Members {
 
     private fun getMemberIndex(email: String): Int {
         for (i in 0 until members.size) {
-            if (members[i].userEmail == email)
+            if (members[i].ID == email)
                 return i
         }
         return -1
