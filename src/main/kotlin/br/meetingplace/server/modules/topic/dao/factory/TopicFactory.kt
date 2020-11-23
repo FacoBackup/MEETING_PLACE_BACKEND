@@ -48,10 +48,13 @@ class TopicFactory private constructor() {
         val community = data.communityID?.let { rwCommunity.select(it) }
         lateinit var topic: Topic
         lateinit var topics: List<String>
+
         if (data.identifier != null && community != null && user != null) {
 
             topic = Topic(approved = data.login.email in community.getModerators(), id = UUID.randomUUID().toString(), creator = user.getEmail(), footer = user.getUserName(), mainTopic = null)
-            user.updateMyTopics(topic.getID(), true)
+            topics = user.getTopics()
+            topics.add(topic.getID())
+            user.setTopics(topics)
 
             topics = community.getTopics()
             topics.add(topic.getID())
@@ -84,12 +87,14 @@ class TopicFactory private constructor() {
 
     private fun createUserMainTopic(data: TopicData, rwUser: UserDBInterface, rwTopic: TopicDBInterface) {
         val user = rwUser.select(data.login.email)
-
+        lateinit var topics: List<String>
         if (user != null) {
             val topic = Topic(approved = true, id = UUID.randomUUID().toString(), creator = user.getEmail(), footer = user.getUserName(), mainTopic = null)
-            user.updateMyTopics(topic.getID(), true)
+            topics = user.getTopics()
+            topics.add(topic.getID())
+            user.setTopics(topics)
+            
             rwTopic.insert(topic)
-            user.updateMyTopics(topic.getID(), true)
             rwUser.insert(user)
         }
     }

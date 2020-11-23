@@ -37,7 +37,7 @@ fun Route.searchRouter() {
             val data = call.receive<SimpleOperator>()
             val search = UserSearch.getClass().searchUser(data, rwUser = UserRW.getClass())
 
-            if (search.isEmpty())
+            if (search == null)
                 call.respond("Nothing found.")
             else
                 call.respond(search)

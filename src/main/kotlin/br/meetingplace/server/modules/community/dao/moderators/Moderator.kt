@@ -53,6 +53,6 @@ class Moderator private constructor() {
         val community = data.identifier.owner?.let { rwCommunity.select(it) }
 
         if (user != null && community != null && community.verifyMember(data.login.email) && user.getEmail() in community.getModerators())
-            community.updateMember(data.login.email, MemberType.NORMAL, false)
+            community.addMember(data.login.email, MemberType.NORMAL)
     }
 }

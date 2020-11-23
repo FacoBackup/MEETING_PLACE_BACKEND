@@ -11,42 +11,33 @@ import br.meetingplace.server.requests.generic.operators.SimpleOperator
 class CommunitySearch {
 
     fun seeReports(data: SimpleOperator, rwCommunity: CommunityDBInterface, rwUser: UserDBInterface): List<Report> {
-        TODO("Not yet implemented")
-    }
-
-    fun seeMembers(data: SimpleOperator, rwCommunity: CommunityDBInterface, rwUser: UserDBInterface): List<String> {
-        val user = rwUser.select(data.login.email)
-        val community = data.identifier.owner?.let { rwCommunity.select(it) }
-
-        if (user != null && community != null)
-            return community.getMembers()
-
-        return listOf()
+        TODO("NOT YET IMPLEMENTED")
     }
 
     fun seeTopics(data: SimpleOperator, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface, rwUser: UserDBInterface): List<Topic> {
-        val user = rwUser.select(data.login.email)
-        val community = data.identifier.owner?.let { rwCommunity.select(it) }
-        lateinit var topics: List<String>
-
-        if (user != null && community != null) {
-            topics = community.getTopics()
-
-            val communityTopics = mutableListOf<Topic>()
-
-            for (element in topics) {
-                val topic = rwTopic.select(element, null)
-                if (topic != null)
-                    communityTopics.add(topic)
-            }
-
-            return communityTopics
-        }
-
-        return listOf()
+        TODO("NOT YET IMPLEMENTED")
+    //        val user = rwUser.select(data.login.email)
+//        val community = data.identifier.owner?.let { rwCommunity.select(it) }
+//        lateinit var topics: List<String>
+//
+//        if (user != null && community != null) {
+//            topics = community.getTopics()
+//
+//            val communityTopics = mutableListOf<Topic>()
+//
+//            for (element in topics) {
+//                val topic = rwTopic.select(element, null)
+//                if (topic != null)
+//                    communityTopics.add(topic)
+//            }
+//
+//            return communityTopics
+//        }
+//
+//        return listOf()
     }
 
     fun seeGroups(data: SimpleOperator): List<Group> {
-        TODO("Not yet implemented")
+        TODO("NOT YET IMPLEMENTED")
     }
 }

@@ -29,15 +29,17 @@ class GroupFactory private constructor() {
         lateinit var newChat: Chat
         lateinit var groupID: String
         lateinit var groups: List<String>
-
-        if (user != null && data.name.isNotEmpty() && groupID !in user.getMemberIn() && groupID !in user.getMyGroups()) {
+        lateinit var userInbox: List<NotificationData>
+        if (user != null && data.name.isNotEmpty() && groupID !in user.getGroups()) {
             when (data.identifier.community) {
                 false -> {
                     groupID = UUID.randomUUID().toString()
                     newChat = Chat(UUID.randomUUID().toString(), OwnerData(groupID, OwnerType.GROUP))
                     newGroup = Group(approved = true, owner = OwnerData(data.login.email, OwnerType.USER), chatID = newChat.getID(), ID = groupID, about = data.about, creator = data.login.email, name = data.name, imageURL = data.imageURL)
 
-                    user.updateMyGroups(groupID, false)
+                    groups = user.getGroups()
+                    groups.add(newGroup.getGroupID())
+                    user.setGroups(groups)
 
                     groupDB.insert(newGroup)
                     chatDB.insert(newChat)
@@ -55,14 +57,22 @@ class GroupFactory private constructor() {
                         notification = NotificationData(NotificationMainType.COMMUNITY, NotificationSubType.CREATION_REQUEST, community.getID())
                         for (moderator in communityMods) {
                             val mod = userDB.select(moderator)
-                            if (mod != null && mod != user)
-                                mod.updateInbox(notification)
+                            if (mod != null && mod != user){
+                                userInbox = mod.getInbox()
+                                userInbox.add(notification)
+                                mod.setInbox(userInbox)
+                            }
+
                         }
 
                         groups = community.getGroups()
                         groups.add(newGroup.getGroupID())
                         community.setGroups(groups)
-                        user.updateMyGroups(groupID, false)
+
+                        groups = user.getGroups()
+                        groups.add(newGroup.getGroupID())
+                        user.setGroups(groups)
+
                         groupDB.insert(newGroup)
                         chatDB.insert(newChat)
                         userDB.insert(user)

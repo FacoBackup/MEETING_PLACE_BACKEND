@@ -24,12 +24,12 @@ class CommunityFactory private constructor() {
         val community = communityDB.select(data.name)
 
         lateinit var newCommunity: Community
-        lateinit var userCommunities: List<MemberData>
+        lateinit var userCommunities: List<String>
 
         if (user != null && community == null) {
             newCommunity = Community(name = data.name, imageURL = data.imageURL, id = UUID.randomUUID().toString(), about = data.about, creator = user.getEmail())
             userCommunities = user.getCommunities()
-            userCommunities.add(MemberData(newCommunity.getID(), MemberType.MODERATOR))
+            userCommunities.add(newCommunity.getID())
             user.setCommunities(userCommunities)
 
             communityDB.insert(newCommunity)

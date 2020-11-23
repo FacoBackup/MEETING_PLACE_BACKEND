@@ -18,8 +18,8 @@ class UserDelete private constructor() {
 
         lateinit var userFollowers: List<String>
         lateinit var userFollowing: List<String>
-        lateinit var userGroups: List<MemberData>
-        lateinit var userCommunities: List<MemberData>
+        lateinit var userGroups: List<String>
+        lateinit var userCommunities: List<String>
         lateinit var externalFollowing: List<String>
         lateinit var externalFollowers: List<String>
 
@@ -51,17 +51,17 @@ class UserDelete private constructor() {
             }
 
             for (index in userGroups.indices) {
-                val group = groupDB.select(userGroups[index].ID)
+                val group = groupDB.select(userGroups[index])
                 if (group != null) {
-                    group.updateMember(user.getEmail(),userGroups[index].role, remove = true)
+                    group.removeMember(user.getEmail())
                     groupDB.insert(group)
                 }
             }
 
             for (index in userCommunities.indices) {
-                val community = communityDB.select(userCommunities[index].ID)
+                val community = communityDB.select(userCommunities[index])
                 if (community != null) {
-                    community.updateMember(user.getEmail(),userCommunities[index].role, remove = true)
+                    community.removeMember(user.getEmail())
                     communityDB.insert(community)
                 }
             }

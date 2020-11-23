@@ -36,9 +36,12 @@ class DeleteTopic private constructor() {
     private fun deleteUserMainTopic(data: TopicSimpleOperator, rwTopic: TopicDBInterface, rwUser: UserDBInterface) {
         val user = rwUser.select(data.login.email)
         val topic = rwTopic.select(data.identifier.mainTopicID, null)
-
+        lateinit var userTopics: List<String>
         if (topic != null && user != null && topic.getCreator() == data.login.email) {
-            user.updateMyTopics(topic.getID(), false)
+            userTopics = user.getTopics()
+            userTopics.remove(topic.getID())
+            user.setTopics(userTopics)
+
             deleteAllSubTopics(topic, rwTopic)
             rwTopic.delete(topic)
             rwUser.insert(user)

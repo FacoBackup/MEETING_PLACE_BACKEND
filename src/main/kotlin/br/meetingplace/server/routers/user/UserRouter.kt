@@ -1,6 +1,7 @@
 package br.meetingplace.server.routers.user
 
 import br.meetingplace.server.db.community.file.CommunityRW
+import br.meetingplace.server.db.group.file.GroupRW
 import br.meetingplace.server.db.topic.file.TopicRW
 import br.meetingplace.server.db.user.file.UserRW
 import br.meetingplace.server.modules.user.dao.delete.UserDelete
@@ -42,7 +43,7 @@ fun Route.userRouter() {
         }
         delete(UserPaths.USER) {
             val data = call.receive<Login>()
-            call.respond(UserDelete.getClass().delete(data, userDB = UserRW.getClass(), topicDB = TopicRW.getClass()))
+            call.respond(UserDelete.getClass().delete(data, userDB = UserRW.getClass(), topicDB = TopicRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass()))
         }
 
         patch(UserPaths.NOTIFICATIONS) {
@@ -52,7 +53,7 @@ fun Route.userRouter() {
 
         patch(UserPaths.PROFILE) {
             val user = call.receive<ProfileData>()
-            call.respond(Profile.getClass().updateProfile(user, rwUser = UserRW.getClass()))
+            call.respond(Profile.getClass().updateProfile(user, userDB = UserRW.getClass()))
         }
         patch(UserPaths.FOLLOW) {
             val follow = call.receive<SimpleOperator>()

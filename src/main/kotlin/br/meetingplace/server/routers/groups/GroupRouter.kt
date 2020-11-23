@@ -27,13 +27,13 @@ fun Route.groupRouter() {
             val group = call.receive<SimpleOperator>()
             call.respond(GroupDelete.getClass().delete(group, userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass(), chatDB = ChatRW.getClass()))
         }
-        patch(GroupPaths.MEMBER) {
-            val member = call.receive<MemberOperator>()
-            call.respond(GroupMembers.getClass().addMember(member, userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass()))
-        }
-        delete(GroupPaths.MEMBER) {
-            val member = call.receive<MemberOperator>()
-            call.respond(GroupMembers.getClass().removeMember(member, userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass()))
-        }
+//        patch(GroupPaths.MEMBER) {
+//            val member = call.receive<MemberOperator>()
+//            call.respond(GroupMembers.getClass().addMember(member, userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass()))
+//        }
+//        delete(GroupPaths.MEMBER) {
+//            val member = call.receive<MemberOperator>()
+//            call.respond(GroupMembers.getClass().removeMember(member, userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass()))
+//        }
     }
 }

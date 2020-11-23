@@ -4,10 +4,10 @@ import br.meetingplace.server.modules.members.dao.Members
 import br.meetingplace.server.modules.members.dto.MemberType
 
 
-class Community(private val name: String, private val id: String, private var about: String?, creator: String, private var imageURL: String?) : Members() {
+class Community(private var name: String, private val id: String, private var about: String?, creator: String, private var imageURL: String?) : Members() {
 
     init {
-        updateMember(creator, MemberType.MODERATOR, false)
+        addMember(creator, MemberType.MODERATOR)
     }
 
     private var topics = mutableListOf<String>()
@@ -20,22 +20,21 @@ class Community(private val name: String, private val id: String, private var ab
     fun getID() = id
     fun getGroups() = groups
 
-    fun setImage(imageURL: String?) {
+    fun setName(name: String){
+        this.name = name
+    }
+    fun setImageURL(imageURL: String?) {
         this.imageURL = imageURL
     }
-
     fun setAbout(about: String?) {
         this.about = about
     }
-
-    fun setReports(reports: List<String>) {
-        reportIDs = reports as MutableList<String>
+    fun setReports(reportIDs: List<String>) {
+        this.reportIDs = reportIDs as MutableList<String>
     }
-
     fun setTopics(topics: List<String>) {
         this.topics = topics as MutableList<String>
     }
-
     fun setGroups(groups: List<String>) {
         this.groups = groups as MutableList<String>
     }

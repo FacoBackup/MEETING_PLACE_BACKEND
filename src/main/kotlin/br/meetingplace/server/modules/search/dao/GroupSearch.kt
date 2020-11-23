@@ -12,15 +12,16 @@ class GroupSearch private constructor() {
     }
 
     fun seeGroup(data: SimpleOperator, rwUser: UserDBInterface, rwGroup: GroupDBInterface): Group? {
-        val user = rwUser.select(data.login.email)
-
-        return if (user != null && data.identifier.owner != null) {
-            if (data.identifier.ID in user.getMyGroups()) {
-                return rwGroup.select(data.identifier.ID)
-            } else if (data.identifier.ID in user.getMemberIn()) {
-                return rwGroup.select(data.identifier.ID)
-            }
-            null
-        } else null
+        TODO("NOT YET IMPLEMENTED")
+//        val user = rwUser.select(data.login.email)
+//
+//        return if (user != null && data.identifier.owner != null) {
+//            if (data.identifier.ID in user.getMyGroups()) {
+//                return rwGroup.select(data.identifier.ID)
+//            } else if (data.identifier.ID in user.getMemberIn()) {
+//                return rwGroup.select(data.identifier.ID)
+//            }
+//            null
+//        } else null
     }
 }

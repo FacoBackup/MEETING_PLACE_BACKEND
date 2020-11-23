@@ -15,30 +15,31 @@ class ChatSearch private constructor() {
 
 
     fun seeChat(data: ChatFinderOperator, rwUser: UserDBInterface, rwChat: ChatDBInterface, rwCommunity: CommunityDBInterface, rwGroup: GroupDBInterface): Chat? {
-        val user = rwUser.select(data.login.email)
-
-        if (user != null) {
-            when (data.identifier.communityGroup || data.identifier.userGroup) {
-                true -> { //IS GROUP
-                    when (data.identifier.communityGroup) {
-                        true -> {//COMMUNITY GROUP
-                            val group = rwGroup.select(data.identifier.receiverID)
-                            if (group != null) {
-                                val community = rwCommunity.select(group.getOwner().ID)
-                                if (community != null && group.getGroupID() in community.getGroups())
-                                    return rwChat.select(group.getChatID())
-                            }
-                        }
-                        false -> { //USER GROUP
-                            return rwChat.select(data.identifier.chatID)
-                        }
-                    }
-                }
-                false -> { //IS USER <-> USER
-                    return rwChat.select(data.identifier.chatID)
-                }
-            }
-        }
-        return null
+        TODO("NOT YET IMPLEMENTED")
+//        val user = rwUser.select(data.login.email)
+//
+//        if (user != null) {
+//            when (data.identifier.communityGroup || data.identifier.userGroup) {
+//                true -> { //IS GROUP
+//                    when (data.identifier.communityGroup) {
+//                        true -> {//COMMUNITY GROUP
+//                            val group = rwGroup.select(data.identifier.receiverID)
+//                            if (group != null) {
+//                                val community = rwCommunity.select(group.getOwner().ID)
+//                                if (community != null && group.getGroupID() in community.getGroups())
+//                                    return rwChat.select(group.getChatID())
+//                            }
+//                        }
+//                        false -> { //USER GROUP
+//                            return rwChat.select(data.identifier.chatID)
+//                        }
+//                    }
+//                }
+//                false -> { //IS USER <-> USER
+//                    return rwChat.select(data.identifier.chatID)
+//                }
+//            }
+//        }
+//        return null
     }
 }

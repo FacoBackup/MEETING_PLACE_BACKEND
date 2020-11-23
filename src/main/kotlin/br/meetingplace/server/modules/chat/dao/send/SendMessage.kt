@@ -80,6 +80,7 @@ class SendMessage private constructor() {
         lateinit var messages: List<Content>
         lateinit var userChats: List<ChatIdentifier>
         lateinit var receiverChats: List<ChatIdentifier>
+        lateinit var receiverNotifications: List<NotificationData>
         if (user != null && receiver != null) {
             chat = Chat(UUID.randomUUID().toString(), OwnerData(user.getEmail(), OwnerType.USER))
             notification = NotificationData(NotificationMainType.CHAT, NotificationSubType.NEW_MESSAGE, logged)
@@ -94,6 +95,10 @@ class SendMessage private constructor() {
             receiverChats = receiver.getChats()
             receiverChats.add(ChatIdentifier(chat.getID(), user.getEmail()))
             receiver.setChats(receiverChats)
+
+            receiverNotifications = receiver.getInbox()
+            receiverNotifications.add(notification)
+            receiver.setInbox(receiverNotifications)
 
             rwChat.insert(chat)
             rwUser.insert(user)

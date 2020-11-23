@@ -16,10 +16,10 @@ class User(
     private var about: String? = null
     private var imageURL: String? = null
     private var chats = mutableListOf<ChatIdentifier>()
-    private var communities = mutableListOf<MemberData>()
+    private var communities = mutableListOf<String>()
     private var followers = mutableListOf<String>()
     private var following = mutableListOf<String>()
-    private var groups = mutableListOf<MemberData>()
+    private var groups = mutableListOf<String>()
     private var inbox = mutableListOf<NotificationData>()
     private var topics = mutableListOf<String>()
 
@@ -50,8 +50,8 @@ class User(
     fun setInbox(inbox: List<NotificationData>){
         this.inbox = inbox as MutableList<NotificationData>
     }
-    fun setGroups(groups: List<MemberData>){
-        this.groups = groups as MutableList<MemberData>
+    fun setGroups(groups: List<String>){
+        this.groups = groups as MutableList<String>
     }
     fun setFollowers(followers: List<String>) {
         this.followers = followers as MutableList<String>
@@ -59,8 +59,8 @@ class User(
     fun setFollowing(following: List<String>) {
         this.followers = following as MutableList<String>
     }
-    fun setCommunities(communities: List<MemberData>) {
-        this.communities = communities as MutableList<MemberData>
+    fun setCommunities(communities: List<String>) {
+        this.communities = communities as MutableList<String>
     }
     fun setChats(chats: List<ChatIdentifier>) {
         this.chats = chats as MutableList<ChatIdentifier>

@@ -4,6 +4,7 @@ import br.meetingplace.server.db.chat.ChatDBInterface
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.requests.generic.operators.SimpleOperator
 
 class GroupDelete private constructor() {
@@ -13,23 +14,27 @@ class GroupDelete private constructor() {
     }
 
     fun delete(data: SimpleOperator, communityDB: CommunityDBInterface, userDB: UserDBInterface, chatDB: ChatDBInterface, groupDB: GroupDBInterface) {
-
-        val user = userDB.select(data.login.email)
         val group = groupDB.select(data.identifier.ID)
         lateinit var members: List<String>
         lateinit var groups: List<String>
+        lateinit var userGroups: List<String>
 
-        when (data.identifier.community) {
+        when (data.identifier.community && !data.identifier.owner.isNullOrBlank()) {
             true -> {
-                val community = data.identifier.owner?.let { communityDB.select(it) }
-                if (group != null && community != null && user != null && user.getEmail() in group.getModerators()) {
+                val community = communityDB.select(data.identifier.owner)
+                if (group != null && community != null && group.getApproved() && userDB.check(data.login.email) && data.login.email in group.getModerators()) {
                     val chat = chatDB.select(group.getChatID())
                     members = group.getMembers()
 
                     for (element in members) {
                         val member = userDB.select(element)
-                        if (member != null) {
-                            member.updateMemberIn(group.getGroupID(), true)
+                        val memberRole = group.getMemberRole(element)
+
+                        if (member != null && memberRole != null) {
+                            userGroups = member.getGroups()
+                            userGroups.remove(group.getGroupID())
+                            member.setGroups(userGroups)
+
                             userDB.insert(member)
                         }
                     }
@@ -42,19 +47,20 @@ class GroupDelete private constructor() {
                         chatDB.delete(chat)
 
                     groupDB.delete(group)
-                    userDB.insert(user)
                 }
             }
             false -> {
-                if (group != null && user != null && user.getEmail() in group.getModerators()) {
+                if (group != null && userDB.check(data.login.email) && data.login.email in group.getModerators()) {
                     val chat = chatDB.select(group.getChatID())
                     members = group.getMembers()
 
                     for (element in members) {
                         val member = userDB.select(element)
-                        if (member != null) {
-                            member.updateMemberIn(group.getGroupID(), true)
-                            userDB.insert(member)
+                        val memberRole = group.getMemberRole(element)
+                        if (member != null && memberRole != null) {
+                            userGroups = member.getGroups()
+                            userGroups.remove(group.getGroupID())
+                            member.setGroups(userGroups)
                         }
                     }
 
@@ -62,7 +68,6 @@ class GroupDelete private constructor() {
                         chatDB.delete(chat)
 
                     groupDB.delete(group)
-                    userDB.insert(user)
                 }
             }
         }

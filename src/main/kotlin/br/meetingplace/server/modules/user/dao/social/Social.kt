@@ -22,7 +22,7 @@ class Social private constructor() {
         lateinit var notification: NotificationData
         lateinit var externalFollowers: List<String>
         lateinit var userFollowing: List<String>
-        lateinit var userCommunities: List<MemberData>
+        lateinit var userCommunities: List<String>
         lateinit var externalInbox: List<NotificationData>
 
         if (user != null) {
@@ -52,10 +52,10 @@ class Social private constructor() {
                     if (community != null && !community.verifyMember(data.login.email)) {
 
                         userCommunities = user.getCommunities()
-                        userCommunities.add(MemberData(community.getID(), MemberType.NORMAL))
+                        userCommunities.add(community.getID())
                         user.setCommunities(userCommunities)
 
-                        community.updateMember(data.identifier.ID, MemberType.NORMAL, false)
+                        community.addMember(data.identifier.ID, MemberType.NORMAL)
                         rwUser.insert(user)
                         rwCommunity.insert(community)
                     }
@@ -68,7 +68,7 @@ class Social private constructor() {
         val user = rwUser.select(data.login.email)
         lateinit var externalFollowers: List<String>
         lateinit var userFollowing: List<String>
-        lateinit var userCommunities: List<MemberData>
+        lateinit var userCommunities: List<String>
         if (user != null) {
             when (data.identifier.community) {
                 false -> { //USER
@@ -88,19 +88,15 @@ class Social private constructor() {
                 }
                 true -> { //COMMUNITY
                     val community = rwCommunity.select(data.identifier.ID)
-
                     if (community != null && !community.verifyMember(data.login.email)) {
-                        val role = community.getMemberRole(user.getEmail())
-                        if (role != null) {
 
-                            userCommunities = user.getCommunities()
-                            userCommunities.remove(MemberData(community.getID(), role))
-                            user.setCommunities(userCommunities)
+                        userCommunities = user.getCommunities()
+                        userCommunities.remove(community.getID())
+                        user.setCommunities(userCommunities)
 
-                            community.updateMember(data.identifier.ID, role, true)
-                            rwUser.insert(user)
-                            rwCommunity.insert(community)
-                        }
+                        community.removeMember(data.identifier.ID)
+                        rwUser.insert(user)
+                        rwCommunity.insert(community)
                     }
                 }
             }

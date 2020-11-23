@@ -9,7 +9,7 @@ class Group(creator: String, private val owner: OwnerData, private val ID: Strin
             private var imageURL: String?, private var approved: Boolean) : Members() {
 
     init {
-        updateMember(creator, MemberType.MODERATOR, false)
+        addMember(creator, MemberType.MODERATOR)
     }
 
     fun getApproved() = approved
