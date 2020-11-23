@@ -4,30 +4,28 @@ import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.requests.generic.data.Login
 import br.meetingplace.server.requests.users.data.ProfileData
 
-class Profile private constructor() : ProfileInterface {
+class Profile private constructor() {
 
     companion object {
         private val Class = Profile()
         fun getClass() = Class
     }
 
-    override fun updateProfile(newProfile: ProfileData, rwUser: UserDBInterface) {
-        val user = rwUser.select(newProfile.login.email)
+    fun updateProfile(data: ProfileData, userDB: UserDBInterface) {
+        val user = userDB.select(data.login.email)
 
         if (user != null) {
-            user.updateProfile(
-                    if (!newProfile.about.isNullOrBlank()) newProfile.about else user.getAbout(),
-                    if (!newProfile.nationality.isNullOrBlank()) newProfile.nationality else user.getNationality(),
-                    if (!newProfile.gender.isNullOrBlank()) newProfile.gender else user.getGender()
-            )
-            rwUser.insert(user)
+            user.setAbout(data.about)
+            user.setGender(data.gender)
+            user.setNationality(data.nationality)
+            user.setImageURL(data.imageURL)
+            userDB.insert(user)
         }
     }
-
-    override fun clearNotifications(data: Login, rwUser: UserDBInterface) {
+    fun clearNotifications(data: Login, rwUser: UserDBInterface) {
         val user = rwUser.select(data.email)
         if (user != null) {
-            user.clearNotifications()
+            user.setInbox(listOf())
             rwUser.insert(user)
         }
     }

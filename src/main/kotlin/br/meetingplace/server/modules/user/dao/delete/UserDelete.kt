@@ -1,59 +1,82 @@
 package br.meetingplace.server.modules.user.dao.delete
 
+import br.meetingplace.server.db.community.CommunityDBInterface
+import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.requests.generic.data.Login
 
-class UserDelete private constructor() : UserDeleteInterface {
+class UserDelete private constructor() {
     companion object {
         private val Class = UserDelete()
         fun getClass() = Class
     }
 
-    override fun delete(data: Login, rwUser: UserDBInterface, rwTopic: TopicDBInterface) {
-        val user = rwUser.select(data.email)
+    fun delete(data: Login, userDB: UserDBInterface, topicDB: TopicDBInterface, groupDB: GroupDBInterface, communityDB: CommunityDBInterface) {
+        val user = userDB.select(data.email)
 
-        lateinit var followers: List<String>
-        lateinit var following: List<String>
+        lateinit var userFollowers: List<String>
+        lateinit var userFollowing: List<String>
+        lateinit var userGroups: List<MemberData>
+        lateinit var userCommunities: List<MemberData>
+        lateinit var externalFollowing: List<String>
+        lateinit var externalFollowers: List<String>
 
         if (user != null && data.email == user.getEmail() && data.password == user.getPassword()) {
-            followers = user.getFollowers()
-            following = user.getFollowing()
-            println(followers)
-            println(following)
-            for (index in followers.indices) {
-                val userExternal = rwUser.select(followers[index])
-                if (userExternal != null) {
-                    userExternal.updateFollowing(user.getEmail(), true)
-                    rwUser.insert(userExternal)
+            userFollowers = user.getFollowers()
+            userFollowing = user.getFollowing()
+            userGroups = user.getGroups()
+            userCommunities = user.getCommunities()
+
+            for (index in userFollowers.indices) {
+                val external = userDB.select(userFollowers[index])
+                if (external != null) {
+                    externalFollowing = external.getFollowing()
+                    externalFollowing.remove(user.getEmail())
+                    external.setFollowing(externalFollowing)
+                    userDB.insert(external)
                 }
             }
 
-            for (index in following.indices) {
-                val userExternal = rwUser.select(following[index])
-                if (userExternal != null) {
-                    userExternal.updateFollowers(user.getEmail(), true)
-                    rwUser.insert(userExternal)
+            for (index in userFollowing.indices) {
+                val external = userDB.select(userFollowing[index])
+                if (external != null) {
+                    externalFollowers = external.getFollowers()
+                    externalFollowers.remove(user.getEmail())
+                    external.setFollowing(externalFollowers)
+
+                    userDB.insert(external)
                 }
             }
-            /*
-                for(i in 0 until groupList.size){
-                    member = UserMember(management,groupList[i].getEmail())
-                    removeMember(member) // should use an override here
-                }
-             */
 
-            rwUser.delete(user)
-            deleteAllTopicsFromUser(data, rwUser = rwUser, rwTopic = rwTopic)
+            for (index in userGroups.indices) {
+                val group = groupDB.select(userGroups[index].ID)
+                if (group != null) {
+                    group.updateMember(user.getEmail(),userGroups[index].role, remove = true)
+                    groupDB.insert(group)
+                }
+            }
+
+            for (index in userCommunities.indices) {
+                val community = communityDB.select(userCommunities[index].ID)
+                if (community != null) {
+                    community.updateMember(user.getEmail(),userCommunities[index].role, remove = true)
+                    communityDB.insert(community)
+                }
+            }
+
+            userDB.delete(user)
+            deleteAllTopicsFromUser(data, rwUser = userDB, rwTopic = topicDB)
         }
     }
 
     private fun deleteAllTopicsFromUser(data: Login, rwUser: UserDBInterface, rwTopic: TopicDBInterface) {
         val user = rwUser.select(data.email)
-
+        lateinit var topics: List<String>
         if (user != null) {
-            val myTopics = user.getMyTopics()
-            for (element in myTopics) {
+            topics = user.getTopics()
+            for (element in topics) {
                 val topic = rwTopic.select(element, null)
                 if (topic != null)
                     rwTopic.delete(topic)

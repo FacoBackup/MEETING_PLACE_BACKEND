@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'br.meetingplace.server'
-version 'alpha-1.01'
+version 'alpha 1.0'
 
 repositories {
     jcenter()

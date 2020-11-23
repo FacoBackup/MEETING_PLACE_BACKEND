@@ -42,7 +42,7 @@ fun Route.userRouter() {
         }
         delete(UserPaths.USER) {
             val data = call.receive<Login>()
-            call.respond(UserDelete.getClass().delete(data, rwUser = UserRW.getClass(), rwTopic = TopicRW.getClass()))
+            call.respond(UserDelete.getClass().delete(data, userDB = UserRW.getClass(), topicDB = TopicRW.getClass()))
         }
 
         patch(UserPaths.NOTIFICATIONS) {

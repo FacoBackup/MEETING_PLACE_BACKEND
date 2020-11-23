@@ -41,6 +41,9 @@ class User(
     fun getGender() = gender
 
     //SETTERS
+    fun setImageURL(imageURL: String?){
+        this.imageURL = imageURL
+    }
     fun setTopics(topics: List<String>) {
         this.topics = topics as MutableList<String>
     }
