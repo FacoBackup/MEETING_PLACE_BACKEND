@@ -4,6 +4,7 @@ import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.global.methods.member.getMemberRole
 import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.requests.generic.data.Login
 
@@ -22,6 +23,7 @@ class UserDelete private constructor() {
         lateinit var userCommunities: List<String>
         lateinit var externalFollowing: List<String>
         lateinit var externalFollowers: List<String>
+        lateinit var members: List<MemberData>
 
         if (user != null && data.email == user.getEmail() && data.password == user.getPassword()) {
             userFollowers = user.getFollowers()
@@ -53,7 +55,12 @@ class UserDelete private constructor() {
             for (index in userGroups.indices) {
                 val group = groupDB.select(userGroups[index])
                 if (group != null) {
-                    group.removeMember(user.getEmail())
+                    members = group.getMembers()
+                    val role = getMemberRole(group.getMembers(),user.getEmail())
+                    if(role != null)
+                        members.remove(MemberData(user.getEmail(), role))
+                    group.setMembers(members)
+
                     groupDB.insert(group)
                 }
             }
@@ -61,7 +68,12 @@ class UserDelete private constructor() {
             for (index in userCommunities.indices) {
                 val community = communityDB.select(userCommunities[index])
                 if (community != null) {
-                    community.removeMember(user.getEmail())
+                    members = community.getMembers()
+                    val role = getMemberRole(community.getMembers(),user.getEmail())
+                    if(role != null)
+                        members.remove(MemberData(user.getEmail(), role))
+                    community.setMembers(members)
+
                     communityDB.insert(community)
                 }
             }

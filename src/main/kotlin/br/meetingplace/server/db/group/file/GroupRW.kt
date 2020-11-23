@@ -14,7 +14,7 @@ class GroupRW private constructor() : GroupDBInterface {
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
     override fun delete(data: Group) {
-        val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/GROUPS/${data.getGroupID()}.json")
+        val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/GROUPS/${data.getID()}.json")
         val file = File(directory)
         try {
             file.delete()
@@ -38,7 +38,7 @@ class GroupRW private constructor() : GroupDBInterface {
     }
 
     override fun insert(data: Group) {
-        val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/GROUPS/${data.getGroupID()}.json")
+        val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/GROUPS/${data.getID()}.json")
 
         try {
             val file = File(directory)

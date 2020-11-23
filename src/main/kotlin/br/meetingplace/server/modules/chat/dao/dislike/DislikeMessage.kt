@@ -25,7 +25,7 @@ class DislikeMessage private constructor() {
                         when (data.receiver.communityGroup) {
                             true -> {
                                 val community = rwCommunity.select(group.getOwner().ID)
-                                if (community != null && chat != null && group.getGroupID() in community.getGroups()) {
+                                if (community != null && chat != null && group.getID() in community.getGroups()) {
                                     liked = chat.getLiked()
                                     liked.remove(data.messageID)
                                     chat.setLiked(liked = liked)

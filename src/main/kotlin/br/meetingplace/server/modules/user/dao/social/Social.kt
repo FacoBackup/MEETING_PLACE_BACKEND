@@ -1,14 +1,10 @@
 package br.meetingplace.server.modules.user.dao.social
 
-import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.notification.NotificationData
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationMainType
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationSubType
-import br.meetingplace.server.modules.members.dto.MemberData
-import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.requests.generic.operators.SimpleOperator
-import kotlin.collections.indices as indices
 
 class Social private constructor() {
 
@@ -17,88 +13,53 @@ class Social private constructor() {
         fun getClass() = Class
     }
 
-    fun follow(data: SimpleOperator, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface) {
-        val user = rwUser.select(data.login.email)
+    fun follow(data: SimpleOperator, userDB: UserDBInterface) {
+        val user = userDB.select(data.login.email)
         lateinit var notification: NotificationData
         lateinit var externalFollowers: List<String>
         lateinit var userFollowing: List<String>
-        lateinit var userCommunities: List<String>
         lateinit var externalInbox: List<NotificationData>
 
         if (user != null) {
-            when (data.identifier.community) {
-                false -> { //USER
-                    val external = rwUser.select(data.identifier.ID)
-                    notification = NotificationData(NotificationMainType.USER, NotificationSubType.FOLLOWING, user.getEmail())
-                    if (external != null && user.getEmail() !in external.getFollowers()) {
-                        externalFollowers = external.getFollowers()
-                        externalFollowers.add(user.getEmail())
-                        external.setFollowers(externalFollowers)
+            val external = userDB.select(data.identifier.ID)
+            notification = NotificationData(NotificationMainType.USER, NotificationSubType.FOLLOWING, user.getEmail())
+            if (external != null && user.getEmail() !in external.getFollowers()) {
+                externalFollowers = external.getFollowers()
+                externalFollowers.add(user.getEmail())
+                external.setFollowers(externalFollowers)
 
-                        externalInbox = external.getInbox()
-                        externalInbox.add(notification)
-                        external.setInbox(externalInbox)
+                externalInbox = external.getInbox()
+                externalInbox.add(notification)
+                external.setInbox(externalInbox)
 
-                        userFollowing = user.getFollowing()
-                        userFollowing.add(external.getEmail())
-                        user.setFollowing(userFollowing)
+                userFollowing = user.getFollowing()
+                userFollowing.add(external.getEmail())
+                user.setFollowing(userFollowing)
 
-                        rwUser.insert(user)
-                        rwUser.insert(external)
-                    }
-                }
-                true -> { //COMMUNITY
-                    val community = rwCommunity.select(data.identifier.ID)
-                    if (community != null && !community.verifyMember(data.login.email)) {
-
-                        userCommunities = user.getCommunities()
-                        userCommunities.add(community.getID())
-                        user.setCommunities(userCommunities)
-
-                        community.addMember(data.identifier.ID, MemberType.NORMAL)
-                        rwUser.insert(user)
-                        rwCommunity.insert(community)
-                    }
-                }
+                userDB.insert(user)
+                userDB.insert(external)
             }
         }
     }
 
-    fun unfollow(data: SimpleOperator, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface) {
-        val user = rwUser.select(data.login.email)
+    fun unfollow(data: SimpleOperator, userDB: UserDBInterface) {
+        val user = userDB.select(data.login.email)
         lateinit var externalFollowers: List<String>
         lateinit var userFollowing: List<String>
-        lateinit var userCommunities: List<String>
+
         if (user != null) {
-            when (data.identifier.community) {
-                false -> { //USER
-                    val external = rwUser.select(data.identifier.ID)
-                    if (external != null && user.getEmail() !in external.getFollowers()) {
-                        externalFollowers = external.getFollowers()
-                        externalFollowers.remove(user.getEmail())
-                        external.setFollowers(externalFollowers)
+            val external = userDB.select(data.identifier.ID)
+            if (external != null && user.getEmail() !in external.getFollowers()) {
+                externalFollowers = external.getFollowers()
+                externalFollowers.remove(user.getEmail())
+                external.setFollowers(externalFollowers)
 
-                        userFollowing = user.getFollowing()
-                        userFollowing.remove(external.getEmail())
-                        user.setFollowing(userFollowing)
+                userFollowing = user.getFollowing()
+                userFollowing.remove(external.getEmail())
+                user.setFollowing(userFollowing)
 
-                        rwUser.insert(user)
-                        rwUser.insert(external)
-                    }
-                }
-                true -> { //COMMUNITY
-                    val community = rwCommunity.select(data.identifier.ID)
-                    if (community != null && !community.verifyMember(data.login.email)) {
-
-                        userCommunities = user.getCommunities()
-                        userCommunities.remove(community.getID())
-                        user.setCommunities(userCommunities)
-
-                        community.removeMember(data.identifier.ID)
-                        rwUser.insert(user)
-                        rwCommunity.insert(community)
-                    }
-                }
+                userDB.insert(user)
+                userDB.insert(external)
             }
         }
     }

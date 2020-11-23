@@ -22,11 +22,11 @@ class Profile private constructor() {
             userDB.insert(user)
         }
     }
-    fun clearNotifications(data: Login, rwUser: UserDBInterface) {
-        val user = rwUser.select(data.email)
+    fun clearNotifications(data: Login, userDB: UserDBInterface) {
+        val user = userDB.select(data.email)
         if (user != null) {
             user.setInbox(listOf())
-            rwUser.insert(user)
+            userDB.insert(user)
         }
     }
 }

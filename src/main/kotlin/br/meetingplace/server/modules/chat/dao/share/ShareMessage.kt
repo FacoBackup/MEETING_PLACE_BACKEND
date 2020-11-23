@@ -27,7 +27,7 @@ class ShareMessage private constructor() {
                         when (data.receiver.communityGroup) {
                             true -> {
                                 val community = communityDB.select(group.getOwner().ID)
-                                if (community != null && chat != null && group.getGroupID() in community.getGroups()) {
+                                if (community != null && chat != null && group.getID() in community.getGroups()) {
                                     val content = getContent(chat.getMessages(), data.messageID)
                                     if (content != null)
                                         SendMessage.getClass().sendMessage(MessageData("|Shared| ${content.content}", imageURL = data.content.imageURL, MessageType.SHARED, data.receiver, data.login), userDB, groupDB, communityDB, chatDB)

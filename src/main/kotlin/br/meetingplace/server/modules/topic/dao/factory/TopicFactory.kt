@@ -3,6 +3,8 @@ package br.meetingplace.server.modules.topic.dao.factory
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.global.methods.member.getMemberRole
+import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.modules.topic.dto.Topic
 import br.meetingplace.server.requests.topics.data.TopicData
 import java.util.*
@@ -51,7 +53,7 @@ class TopicFactory private constructor() {
 
         if (data.identifier != null && community != null && user != null) {
 
-            topic = Topic(approved = data.login.email in community.getModerators(), id = UUID.randomUUID().toString(), creator = user.getEmail(), footer = user.getUserName(), mainTopic = null)
+            topic = Topic(approved = getMemberRole(community.getMembers(),data.login.email) == MemberType.MODERATOR, id = UUID.randomUUID().toString(), creator = user.getEmail(), footer = user.getUserName(), mainTopic = null)
             topics = user.getTopics()
             topics.add(topic.getID())
             user.setTopics(topics)

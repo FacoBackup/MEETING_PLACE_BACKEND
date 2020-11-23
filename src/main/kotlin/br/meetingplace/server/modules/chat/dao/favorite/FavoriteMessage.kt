@@ -26,7 +26,7 @@ class FavoriteMessage private constructor() {
                         when (data.receiver.communityGroup) {
                             true -> {
                                 val community = rwCommunity.select(group.getOwner().ID)
-                                if (community != null && chat != null && group.getGroupID() in community.getGroups()) {
+                                if (community != null && chat != null && group.getID() in community.getGroups()) {
 
                                     liked = chat.getLiked()
                                     if (getContent(chat.getMessages(), data.messageID) != null) {

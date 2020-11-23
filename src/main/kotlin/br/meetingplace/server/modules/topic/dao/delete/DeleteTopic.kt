@@ -3,6 +3,7 @@ package br.meetingplace.server.modules.topic.dao.delete
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.global.methods.member.getMemberRole
 import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.modules.topic.dto.Topic
 import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
@@ -66,7 +67,7 @@ class DeleteTopic private constructor() {
         val community = data.communityID?.let { rwCommunity.select(it) }
         lateinit var approved: List<String>
         if (mainTopic != null && community != null && mainTopic.getID() in community.getTopics() &&
-                (mainTopic.getCreator() == data.login.email || community.getMemberRole(data.login.email) == MemberType.MODERATOR)) {
+                (mainTopic.getCreator() == data.login.email || getMemberRole(community.getMembers(),data.login.email) == MemberType.MODERATOR)) {
 
             approved = community.getTopics()
             approved.remove(mainTopic.getID())
@@ -83,7 +84,7 @@ class DeleteTopic private constructor() {
         lateinit var subtopics: List<String>
 
         if (subTopic != null && mainTopic != null && community != null && mainTopic.getID() in community.getTopics() &&
-                (subTopic.getCreator() == data.login.email || community.getMemberRole(data.login.email) == MemberType.MODERATOR)) {
+                (subTopic.getCreator() == data.login.email || getMemberRole(community.getMembers(),data.login.email)  == MemberType.MODERATOR)) {
 
             subtopics = mainTopic.getComments()
             subtopics.remove(subTopic.getID())

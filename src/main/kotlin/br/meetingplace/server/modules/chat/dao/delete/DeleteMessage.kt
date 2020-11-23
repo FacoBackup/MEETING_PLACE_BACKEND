@@ -27,7 +27,7 @@ class DeleteMessage private constructor() {
                         when (data.receiver.communityGroup) {
                             true -> {
                                 val community = rwCommunity.select(group.getOwner().ID)
-                                if (community != null && chat != null && group.getGroupID() in community.getGroups()) {
+                                if (community != null && chat != null && group.getID() in community.getGroups()) {
                                     messages = chat.getMessages()
                                     messages.remove(getContent(chat.getMessages(), data.messageID))
                                     chat.setMessages(messages)

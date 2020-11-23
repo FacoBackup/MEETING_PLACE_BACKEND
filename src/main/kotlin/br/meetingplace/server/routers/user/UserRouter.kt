@@ -4,6 +4,7 @@ import br.meetingplace.server.db.community.file.CommunityRW
 import br.meetingplace.server.db.group.file.GroupRW
 import br.meetingplace.server.db.topic.file.TopicRW
 import br.meetingplace.server.db.user.file.UserRW
+import br.meetingplace.server.modules.members.dao.remove.RemoveMember
 import br.meetingplace.server.modules.user.dao.delete.UserDelete
 import br.meetingplace.server.modules.user.dao.factory.UserFactory
 import br.meetingplace.server.modules.user.dao.profile.Profile
@@ -48,7 +49,7 @@ fun Route.userRouter() {
 
         patch(UserPaths.NOTIFICATIONS) {
             val data = call.receive<Login>()
-            call.respond(Profile.getClass().clearNotifications(data, rwUser = UserRW.getClass()))
+            call.respond(Profile.getClass().clearNotifications(data, userDB = UserRW.getClass()))
         }
 
         patch(UserPaths.PROFILE) {
@@ -57,11 +58,11 @@ fun Route.userRouter() {
         }
         patch(UserPaths.FOLLOW) {
             val follow = call.receive<SimpleOperator>()
-            call.respond(Social.getClass().follow(follow, rwUser = UserRW.getClass(), rwCommunity = CommunityRW.getClass()))
+            call.respond(Social.getClass().follow(follow, userDB = UserRW.getClass()))
         }
         patch(UserPaths.UNFOLLOW) {
             val unfollow = call.receive<SimpleOperator>()
-            call.respond(Social.getClass().unfollow(unfollow, rwUser = UserRW.getClass(), rwCommunity = CommunityRW.getClass()))
+            call.respond(Social.getClass().unfollow(unfollow, userDB = UserRW.getClass()))
         }
     }
 }
