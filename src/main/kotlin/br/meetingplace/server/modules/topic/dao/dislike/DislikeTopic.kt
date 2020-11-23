@@ -3,6 +3,8 @@ package br.meetingplace.server.modules.topic.dao.dislike
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.topic.dto.Topic
 import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
 
@@ -12,46 +14,50 @@ class DislikeTopic private constructor() {
         fun getClass() = Class
     }
 
-    fun dislike(data: TopicSimpleOperator, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface) {
-        if (rwUser.check(data.login.email)) {
+    fun dislike(data: TopicSimpleOperator, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface): Status {
+        return if (rwUser.check(data.login.email)) {
             when (data.communityID.isNullOrBlank()) {
                 true -> { //USER
-                    when (data.identifier.subTopicID.isNullOrBlank()) {
+                    return when (data.identifier.subTopicID.isNullOrBlank()) {
                         true -> {
                             val topic = rwTopic.select(mainTopic = null, id = data.identifier.mainTopicID)
                             if (topic != null)
                                 dislike(email = data.login.email, rwTopic = rwTopic, topic = topic)
+                            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
                         } //MAIN
                         false -> {
                             val topic = rwTopic.select(mainTopic = data.identifier.mainTopicID, id = data.identifier.subTopicID)
                             if (topic != null)
                                 dislike(topic, email = data.login.email, rwTopic)
+                            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
                         } //SUB
                     }
                 }
                 false -> { //COMMUNITY
-                    when (data.identifier.subTopicID.isNullOrBlank()) {
+                    return when (data.identifier.subTopicID.isNullOrBlank()) {
                         true -> {//MAIN
                             val topic = rwTopic.select(mainTopic = null, id = data.identifier.mainTopicID)
                             if (rwCommunity.check(data.communityID) && topic != null && topic.getApproved())
                                 dislike(email = data.login.email, rwTopic = rwTopic, topic = topic)
+                            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
                         }
                         false -> {//SUB
                             val topic = rwTopic.select(mainTopic = data.identifier.mainTopicID, id = data.identifier.subTopicID)
                             if (rwCommunity.check(data.communityID) && topic != null)
                                 dislike(email = data.login.email, rwTopic = rwTopic, topic = topic)
+                            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
                         }
                     }
                 }
             }
-        }
+        }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
-    private fun dislike(topic: Topic, email: String, rwTopic: TopicDBInterface) {
+    private fun dislike(topic: Topic, email: String, rwTopic: TopicDBInterface):Status{
         lateinit var dislikes: List<String>
         lateinit var likes: List<String>
 
-        when (checkLikeDislike(topic, email)) {
+        return when (checkLikeDislike(topic, email)) {
             0 -> {
                 likes = topic.getLikes()
                 likes.remove(email)
@@ -62,6 +68,7 @@ class DislikeTopic private constructor() {
                 topic.setLikes(likes)
                 topic.setDislikes(dislikes)
                 rwTopic.insert(topic)
+                Status(statusCode = 200, StatusMessages.OK)
             } // like to dislike
             1 -> {
                 dislikes = topic.getDislikes()
@@ -69,6 +76,7 @@ class DislikeTopic private constructor() {
 
                 topic.setDislikes(dislikes)
                 rwTopic.insert(topic)
+                Status(statusCode = 200, StatusMessages.OK)
             }
             2 -> {
                 dislikes = topic.getDislikes()
@@ -76,7 +84,9 @@ class DislikeTopic private constructor() {
 
                 topic.setDislikes(dislikes)
                 rwTopic.insert(topic)
+                Status(statusCode = 200, StatusMessages.OK)
             }
+            else->Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
     }
 

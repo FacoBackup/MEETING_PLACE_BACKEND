@@ -3,6 +3,8 @@ package br.meetingplace.server.modules.members.dao.remove
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
 import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.modules.members.dto.MemberType
@@ -13,10 +15,10 @@ class RemoveMember private constructor(){
         private val Class = RemoveMember()
         fun getClass () = Class
     }
-    fun removeMember(data: MemberOperator, communityDB: CommunityDBInterface, groupDB: GroupDBInterface, userDB: UserDBInterface){
+    fun removeMember(data: MemberOperator, communityDB: CommunityDBInterface, groupDB: GroupDBInterface, userDB: UserDBInterface): Status {
         lateinit var members: List<MemberData>
         lateinit var userMemberIn: List<String>
-        when(data.identifier.community){
+        return when(data.identifier.community){
             true->{
                 val community = communityDB.select(data.identifier.ID)
                 val newMember = userDB.select(data.memberEmail)
@@ -31,7 +33,8 @@ class RemoveMember private constructor(){
 
                     communityDB.insert(community)
                     userDB.insert(newMember)
-                }
+                    Status(statusCode = 200, StatusMessages.OK)
+                }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
             false->{
                 val group = groupDB.select(data.identifier.ID)
@@ -47,7 +50,8 @@ class RemoveMember private constructor(){
 
                     groupDB.insert(group)
                     userDB.insert(newMember)
-                }
+                    Status(statusCode = 200, StatusMessages.OK)
+                }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
         }
     }

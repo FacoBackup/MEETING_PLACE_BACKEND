@@ -4,6 +4,8 @@ import br.meetingplace.server.db.chat.ChatDBInterface
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
 import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.modules.members.dto.MemberType
@@ -15,13 +17,13 @@ class GroupDelete private constructor() {
         fun getClass() = Class
     }
 
-    fun delete(data: SimpleOperator, communityDB: CommunityDBInterface, userDB: UserDBInterface, chatDB: ChatDBInterface, groupDB: GroupDBInterface) {
+    fun delete(data: SimpleOperator, communityDB: CommunityDBInterface, userDB: UserDBInterface, chatDB: ChatDBInterface, groupDB: GroupDBInterface): Status {
         val group = groupDB.select(data.identifier.ID)
         lateinit var members: List<MemberData>
         lateinit var groups: List<String>
         lateinit var userGroups: List<String>
 
-        when (data.identifier.community && !data.identifier.owner.isNullOrBlank()) {
+        return when (data.identifier.community && !data.identifier.owner.isNullOrBlank()) {
             true -> {
                 val community = communityDB.select(data.identifier.owner)
                 if (group != null && community != null && group.getApproved() && userDB.check(data.login.email) && getMemberRole(group.getMembers(), data.login.email) == MemberType.MODERATOR) {
@@ -46,7 +48,8 @@ class GroupDelete private constructor() {
                         chatDB.delete(chat)
 
                     groupDB.delete(group)
-                }
+                    Status(statusCode = 200, StatusMessages.OK)
+                }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
             false -> {
                 if (group != null && userDB.check(data.login.email) && getMemberRole(group.getMembers(), data.login.email) == MemberType.MODERATOR) {
@@ -66,7 +69,8 @@ class GroupDelete private constructor() {
                         chatDB.delete(chat)
 
                     groupDB.delete(group)
-                }
+                    Status(statusCode = 200, StatusMessages.OK)
+                }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
         }
     }

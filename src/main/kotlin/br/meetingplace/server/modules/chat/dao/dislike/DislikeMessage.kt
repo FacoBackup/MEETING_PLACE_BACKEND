@@ -4,6 +4,7 @@ import br.meetingplace.server.db.chat.ChatDBInterface
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.requests.chat.operators.ChatSimpleOperator
 
 class DislikeMessage private constructor() {
@@ -12,7 +13,7 @@ class DislikeMessage private constructor() {
         fun getClass() = Class
     }
 
-    fun dislikeMessage(data: ChatSimpleOperator, rwUser: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface) {
+    fun dislikeMessage(data: ChatSimpleOperator, rwUser: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface): Status {
         val user = rwUser.select(data.login.email)
         lateinit var liked: List<String>
 

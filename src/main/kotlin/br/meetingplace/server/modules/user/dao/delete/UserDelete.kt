@@ -4,6 +4,8 @@ import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
 import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.requests.generic.data.Login
@@ -14,7 +16,7 @@ class UserDelete private constructor() {
         fun getClass() = Class
     }
 
-    fun delete(data: Login, userDB: UserDBInterface, topicDB: TopicDBInterface, groupDB: GroupDBInterface, communityDB: CommunityDBInterface) {
+    fun delete(data: Login, userDB: UserDBInterface, topicDB: TopicDBInterface, groupDB: GroupDBInterface, communityDB: CommunityDBInterface) : Status {
         val user = userDB.select(data.email)
 
         lateinit var userFollowers: List<String>
@@ -25,7 +27,7 @@ class UserDelete private constructor() {
         lateinit var externalFollowers: List<String>
         lateinit var members: List<MemberData>
 
-        if (user != null && data.email == user.getEmail() && data.password == user.getPassword()) {
+        return if (user != null && data.password == user.getPassword()) {
             userFollowers = user.getFollowers()
             userFollowing = user.getFollowing()
             userGroups = user.getGroups()
@@ -80,7 +82,9 @@ class UserDelete private constructor() {
 
             userDB.delete(user)
             deleteAllTopicsFromUser(data, rwUser = userDB, rwTopic = topicDB)
+            Status(statusCode = 200, StatusMessages.OK)
         }
+        else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
     private fun deleteAllTopicsFromUser(data: Login, rwUser: UserDBInterface, rwTopic: TopicDBInterface) {

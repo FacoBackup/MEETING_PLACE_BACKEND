@@ -5,6 +5,8 @@ import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.dto.Chat
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.dto.notification.NotificationData
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationMainType
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationSubType
@@ -24,7 +26,7 @@ class GroupFactory private constructor() {
         fun getClass() = Class
     }
 
-    fun create(data: CreationData, groupDB: GroupDBInterface, userDB: UserDBInterface, communityDB: CommunityDBInterface, chatDB: ChatDBInterface) {
+    fun create(data: CreationData, groupDB: GroupDBInterface, userDB: UserDBInterface, communityDB: CommunityDBInterface, chatDB: ChatDBInterface) : Status {
         val user = userDB.select(data.login.email)
         lateinit var members: List<MemberData>
         lateinit var notification: NotificationData
@@ -33,8 +35,8 @@ class GroupFactory private constructor() {
         lateinit var groupID: String
         lateinit var groups: List<String>
         lateinit var userInbox: List<NotificationData>
-        if (user != null && data.name.isNotEmpty() && groupID !in user.getGroups()) {
-            when (data.identifier.community) {
+        return if (user != null && data.name.isNotEmpty() && groupID !in user.getGroups()) {
+            return when (data.identifier.community) {
                 false -> {
                     groupID = UUID.randomUUID().toString()
                     newChat = Chat(UUID.randomUUID().toString(), OwnerData(groupID, OwnerType.GROUP))
@@ -47,6 +49,7 @@ class GroupFactory private constructor() {
                     groupDB.insert(newGroup)
                     chatDB.insert(newChat)
                     userDB.insert(user)
+                    Status(statusCode = 200, StatusMessages.OK)
                 }
                 true -> {
                     val community = communityDB.select(data.identifier.ID)
@@ -80,10 +83,11 @@ class GroupFactory private constructor() {
                         chatDB.insert(newChat)
                         userDB.insert(user)
                         communityDB.insert(community)
-                    }
+                        Status(statusCode = 200, StatusMessages.OK)
+                    }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
                 }
             }
-        }
+        }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
 }

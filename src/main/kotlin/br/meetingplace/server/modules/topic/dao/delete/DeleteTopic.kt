@@ -3,6 +3,8 @@ package br.meetingplace.server.modules.topic.dao.delete
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
 import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.modules.topic.dto.Topic
@@ -14,10 +16,10 @@ class DeleteTopic private constructor() {
         fun getClass() = Class
     }
 
-    fun delete(data: TopicSimpleOperator, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface) {
+    fun delete(data: TopicSimpleOperator, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface):Status{
 
-        if (rwUser.check(data.login.email)) {
-            when (data.communityID.isNullOrBlank()) {
+        return if (rwUser.check(data.login.email)) {
+            return when (data.communityID.isNullOrBlank()) {
                 true -> { //USER
                     when (data.identifier.subTopicID.isNullOrBlank()) {
                         true -> deleteUserMainTopic(data, rwTopic, rwUser) //MAIN
@@ -31,14 +33,15 @@ class DeleteTopic private constructor() {
                     }
                 }
             }
-        }
+        }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
-    private fun deleteUserMainTopic(data: TopicSimpleOperator, rwTopic: TopicDBInterface, rwUser: UserDBInterface) {
+    private fun deleteUserMainTopic(data: TopicSimpleOperator, rwTopic: TopicDBInterface, rwUser: UserDBInterface):Status{
         val user = rwUser.select(data.login.email)
         val topic = rwTopic.select(data.identifier.mainTopicID, null)
         lateinit var userTopics: List<String>
-        if (topic != null && user != null && topic.getCreator() == data.login.email) {
+
+        return if (topic != null && user != null && topic.getCreator() == data.login.email) {
             userTopics = user.getTopics()
             userTopics.remove(topic.getID())
             user.setTopics(userTopics)
@@ -46,27 +49,31 @@ class DeleteTopic private constructor() {
             deleteAllSubTopics(topic, rwTopic)
             rwTopic.delete(topic)
             rwUser.insert(user)
-        }
+            Status(statusCode = 200, StatusMessages.OK)
+        }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
-    private fun deleteUserSubTopic(data: TopicSimpleOperator, rwTopic: TopicDBInterface) {
+    private fun deleteUserSubTopic(data: TopicSimpleOperator, rwTopic: TopicDBInterface):Status{
         val subTopic = data.identifier.subTopicID?.let { rwTopic.select(it, data.identifier.mainTopicID) }
         val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
         lateinit var subtopics: List<String>
-        if (subTopic != null && mainTopic != null && subTopic.getCreator() == data.login.email) {
+
+        return if (subTopic != null && mainTopic != null && subTopic.getCreator() == data.login.email) {
             subtopics = mainTopic.getComments()
             subtopics.remove(subTopic.getID())
             mainTopic.setComments(subtopics)
             rwTopic.insert(mainTopic)
             rwTopic.delete(subTopic)
-        }
+            Status(statusCode = 200, StatusMessages.OK)
+        }else  Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
-    private fun deleteCommunityMainTopic(data: TopicSimpleOperator, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface) {
+    private fun deleteCommunityMainTopic(data: TopicSimpleOperator, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface):Status {
         val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
         val community = data.communityID?.let { rwCommunity.select(it) }
         lateinit var approved: List<String>
-        if (mainTopic != null && community != null && mainTopic.getID() in community.getTopics() &&
+
+        return if (mainTopic != null && community != null && mainTopic.getID() in community.getTopics() &&
                 (mainTopic.getCreator() == data.login.email || getMemberRole(community.getMembers(),data.login.email) == MemberType.MODERATOR)) {
 
             approved = community.getTopics()
@@ -74,16 +81,17 @@ class DeleteTopic private constructor() {
             community.setTopics(approved)
             deleteAllSubTopics(mainTopic, rwTopic)
             rwTopic.delete(mainTopic)
-        }
+            Status(statusCode = 200, StatusMessages.OK)
+        }else  Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
-    private fun deleteCommunitySubTopic(data: TopicSimpleOperator, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface) {
+    private fun deleteCommunitySubTopic(data: TopicSimpleOperator, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface):Status {
         val subTopic = data.identifier.subTopicID?.let { rwTopic.select(it, data.identifier.mainTopicID) }
         val mainTopic = rwTopic.select(data.identifier.mainTopicID, null)
         val community = data.communityID?.let { rwCommunity.select(it) }
         lateinit var subtopics: List<String>
 
-        if (subTopic != null && mainTopic != null && community != null && mainTopic.getID() in community.getTopics() &&
+        return if (subTopic != null && mainTopic != null && community != null && mainTopic.getID() in community.getTopics() &&
                 (subTopic.getCreator() == data.login.email || getMemberRole(community.getMembers(),data.login.email)  == MemberType.MODERATOR)) {
 
             subtopics = mainTopic.getComments()
@@ -92,7 +100,8 @@ class DeleteTopic private constructor() {
 
             rwTopic.insert(mainTopic)
             rwTopic.delete(subTopic)
-        }
+            Status(statusCode = 200, StatusMessages.OK)
+        }else  Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
     private fun deleteAllSubTopics(mainTopic: Topic, rwTopic: TopicDBInterface) {

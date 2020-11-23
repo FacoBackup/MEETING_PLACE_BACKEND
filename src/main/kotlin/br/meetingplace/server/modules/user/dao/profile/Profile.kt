@@ -1,6 +1,8 @@
 package br.meetingplace.server.modules.user.dao.profile
 
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.requests.generic.data.Login
 import br.meetingplace.server.requests.users.data.ProfileData
 
@@ -11,22 +13,28 @@ class Profile private constructor() {
         fun getClass() = Class
     }
 
-    fun updateProfile(data: ProfileData, userDB: UserDBInterface) {
+    fun updateProfile(data: ProfileData, userDB: UserDBInterface) : Status {
         val user = userDB.select(data.login.email)
 
-        if (user != null) {
-            user.setAbout(data.about)
-            user.setGender(data.gender)
-            user.setNationality(data.nationality)
-            user.setImageURL(data.imageURL)
+        return if (user != null) {
+            if(data.about != null)
+                user.setAbout(data.about)
+            if(data.gender != null)
+                user.setGender(data.gender)
+            if(data.nationality != null)
+                user.setNationality(data.nationality)
+            if(data.imageURL != null)
+                user.setImageURL(data.imageURL)
             userDB.insert(user)
-        }
+            Status(statusCode = 200, StatusMessages.OK)
+        } else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
-    fun clearNotifications(data: Login, userDB: UserDBInterface) {
+    fun clearNotifications(data: Login, userDB: UserDBInterface):Status {
         val user = userDB.select(data.email)
-        if (user != null) {
+        return if (user != null) {
             user.setInbox(listOf())
             userDB.insert(user)
-        }
+            Status(statusCode = 200, StatusMessages.OK)
+        } else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 }

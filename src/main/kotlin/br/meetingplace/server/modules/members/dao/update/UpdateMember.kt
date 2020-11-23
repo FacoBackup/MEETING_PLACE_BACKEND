@@ -3,6 +3,8 @@ package br.meetingplace.server.modules.members.dao.update
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
 import br.meetingplace.server.modules.members.dto.MemberData
 import br.meetingplace.server.modules.members.dto.MemberType
@@ -13,9 +15,9 @@ class UpdateMember private constructor(){
         private val Class = UpdateMember()
         fun getClass () = Class
     }
-    fun promote(data: MemberOperator, communityDB: CommunityDBInterface, groupDB: GroupDBInterface, userDB: UserDBInterface){
+    fun promote(data: MemberOperator, communityDB: CommunityDBInterface, groupDB: GroupDBInterface, userDB: UserDBInterface):Status{
         lateinit var members: List<MemberData>
-        when(data.identifier.community){
+        return when(data.identifier.community){
             true->{
                 val community = communityDB.select(data.identifier.ID)
                 if(userDB.check(data.login.email) && userDB.check(data.memberEmail) && community != null && getMemberRole(community.getMembers(),data.memberEmail) == MemberType.NORMAL && getMemberRole(community.getMembers(), data.login.email)  == MemberType.MODERATOR){
@@ -25,7 +27,8 @@ class UpdateMember private constructor(){
                     community.setMembers(members)
 
                     communityDB.insert(community)
-                }
+                    Status(statusCode = 200, StatusMessages.OK)
+                }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
             false->{
                 val group = groupDB.select(data.identifier.ID)
@@ -36,13 +39,14 @@ class UpdateMember private constructor(){
                     group.setMembers(members)
 
                     groupDB.insert(group)
-                }
+                    Status(statusCode = 200, StatusMessages.OK)
+                }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
         }
     }
-    fun lower(data: MemberOperator, communityDB: CommunityDBInterface, groupDB: GroupDBInterface, userDB: UserDBInterface){
+    fun lower(data: MemberOperator, communityDB: CommunityDBInterface, groupDB: GroupDBInterface, userDB: UserDBInterface): Status {
         lateinit var members: List<MemberData>
-        when(data.identifier.community){
+        return when(data.identifier.community){
             true->{
                 val community = communityDB.select(data.identifier.ID)
                 if(userDB.check(data.login.email) && userDB.check(data.memberEmail) && community != null && getMemberRole(community.getMembers(),data.memberEmail) == MemberType.MODERATOR && getMemberRole(community.getMembers(), data.login.email)  == MemberType.MODERATOR){
@@ -52,7 +56,8 @@ class UpdateMember private constructor(){
                     community.setMembers(members)
 
                     communityDB.insert(community)
-                }
+                    Status(statusCode = 200, StatusMessages.OK)
+                }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
             false->{
                 val group = groupDB.select(data.identifier.ID)
@@ -63,7 +68,8 @@ class UpdateMember private constructor(){
                     group.setMembers(members)
 
                     groupDB.insert(group)
-                }
+                    Status(statusCode = 200, StatusMessages.OK)
+                }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
         }
     }

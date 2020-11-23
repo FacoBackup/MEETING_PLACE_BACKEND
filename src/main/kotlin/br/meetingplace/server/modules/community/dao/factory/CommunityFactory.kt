@@ -3,6 +3,8 @@ package br.meetingplace.server.modules.community.dao.factory
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.community.dto.Community
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.dto.notification.NotificationData
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationMainType
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationSubType
@@ -19,14 +21,14 @@ class CommunityFactory private constructor() {
         fun getClass() = Class
     }
 
-    fun create(data: CreationData, userDB: UserDBInterface, communityDB: CommunityDBInterface) {
+    fun create(data: CreationData, userDB: UserDBInterface, communityDB: CommunityDBInterface): Status {
         val user = userDB.select(data.login.email)
         val community = communityDB.select(data.name)
 
         lateinit var newCommunity: Community
         lateinit var userCommunities: List<String>
 
-        if (user != null && community == null) {
+        return if (user != null && community == null) {
             newCommunity = Community(name = data.name, imageURL = data.imageURL, id = UUID.randomUUID().toString(), about = data.about, creator = user.getEmail())
             userCommunities = user.getCommunities()
             userCommunities.add(newCommunity.getID())
@@ -34,7 +36,8 @@ class CommunityFactory private constructor() {
 
             communityDB.insert(newCommunity)
             userDB.insert(user)
-        }
+            Status(statusCode = 200, StatusMessages.OK)
+        }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
     }
 
 //    fun delete(data: MemberOperator, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface) {

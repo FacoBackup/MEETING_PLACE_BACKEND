@@ -6,6 +6,7 @@ import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.dto.dependencies.data.Content
 import br.meetingplace.server.modules.chat.dto.dependencies.data.MessageType
+import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.methods.chat.getContent
 import br.meetingplace.server.requests.chat.operators.ChatComplexOperator
 import java.util.*
@@ -16,7 +17,7 @@ class QuoteMessage private constructor() {
         fun getClass() = Class
     }
 
-    fun quoteMessage(data: ChatComplexOperator, rwUser: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface) {
+    fun quoteMessage(data: ChatComplexOperator, rwUser: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface): Status {
         val user = rwUser.select(data.login.email)
         lateinit var messages: List<Content>
 

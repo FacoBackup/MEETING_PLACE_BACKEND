@@ -6,9 +6,7 @@ import br.meetingplace.server.db.group.file.GroupRW
 import br.meetingplace.server.db.user.file.UserRW
 import br.meetingplace.server.modules.groups.dao.delete.GroupDelete
 import br.meetingplace.server.modules.groups.dao.factory.GroupFactory
-import br.meetingplace.server.modules.groups.dao.members.GroupMembers
 import br.meetingplace.server.requests.generic.data.CreationData
-import br.meetingplace.server.requests.generic.operators.MemberOperator
 import br.meetingplace.server.requests.generic.operators.SimpleOperator
 import br.meetingplace.server.routers.groups.paths.GroupPaths
 import io.ktor.application.*
@@ -27,13 +25,15 @@ fun Route.groupRouter() {
             val group = call.receive<SimpleOperator>()
             call.respond(GroupDelete.getClass().delete(group, userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass(), chatDB = ChatRW.getClass()))
         }
-//        patch(GroupPaths.MEMBER) {
+        patch(GroupPaths.MEMBER) {
+            TODO("NOT YET IMPLEMENTED")
 //            val member = call.receive<MemberOperator>()
 //            call.respond(GroupMembers.getClass().addMember(member, userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass()))
-//        }
-//        delete(GroupPaths.MEMBER) {
+        }
+        delete(GroupPaths.MEMBER) {
+            TODO("NOT YET IMPLEMENTED")
 //            val member = call.receive<MemberOperator>()
 //            call.respond(GroupMembers.getClass().removeMember(member, userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass()))
-//        }
+        }
     }
 }

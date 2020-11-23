@@ -8,6 +8,7 @@ import br.meetingplace.server.modules.chat.dto.Chat
 import br.meetingplace.server.modules.chat.dto.ChatIdentifier
 import br.meetingplace.server.modules.chat.dto.dependencies.data.Content
 import br.meetingplace.server.modules.chat.dto.dependencies.data.MessageType
+import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.notification.NotificationData
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationMainType
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationSubType
@@ -22,7 +23,7 @@ class SendMessage private constructor() {
         fun getClass() = Class
     }
 
-    fun sendMessage(data: MessageData, userDB: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface) {
+    fun sendMessage(data: MessageData, userDB: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface): Status {
         lateinit var messages: List<Content>
 
         if (userDB.check(data.login.email) && data.receiver.receiverID != data.login.email) {
@@ -70,7 +71,7 @@ class SendMessage private constructor() {
         }
     }
 
-    private fun createChat(data: MessageData, rwUser: UserDBInterface, rwChat: ChatDBInterface) {
+    private fun createChat(data: MessageData, rwUser: UserDBInterface, rwChat: ChatDBInterface):Status {
         val logged = data.login.email
         val user = rwUser.select(data.login.email)
         val receiver = rwUser.select(data.receiver.receiverID)
