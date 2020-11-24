@@ -11,7 +11,7 @@ object Topic: Table("topic") {
     var id = varchar("topic_id", 32)
     var header = varchar("header", 1024)
     var body= varchar("body", 1024)
-    var approved = Boolean
+    var approved = bool("approved")
     val footer= varchar("footer", 128)
     val creatorID = varchar("creator_id",32).references(User.id)
     val mainTopicID = varchar("main_topic_id",32).references(id, onDelete = ReferenceOption.CASCADE).nullable()
