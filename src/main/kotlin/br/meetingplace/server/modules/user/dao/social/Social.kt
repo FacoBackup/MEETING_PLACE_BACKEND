@@ -8,12 +8,7 @@ import br.meetingplace.server.modules.global.dto.notification.types.Notification
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationSubType
 import br.meetingplace.server.requests.generic.operators.SimpleOperator
 
-class Social private constructor() {
-
-    companion object {
-        private val Class = Social()
-        fun getClass() = Class
-    }
+object Social {
 
     fun follow(data: SimpleOperator, userDB: UserDBInterface): Status {
         val user = userDB.select(data.login.email)

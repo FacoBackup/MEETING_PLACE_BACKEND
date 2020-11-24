@@ -7,16 +7,10 @@ import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
-import br.meetingplace.server.modules.members.dto.MemberType
+import br.meetingplace.server.modules.members.classes.MemberType
 import br.meetingplace.server.requests.community.Approval
-import br.meetingplace.server.requests.generic.operators.MemberOperator
 
-class Moderator private constructor() {
-
-    companion object {
-        private val Class = Moderator()
-        fun getClass() = Class
-    }
+object Moderator {
 
     fun approveTopic(data: Approval, communityDB: CommunityDBInterface, userDB: UserDBInterface, topicDB: TopicDBInterface):Status {
         val user = userDB.select(data.login.email)

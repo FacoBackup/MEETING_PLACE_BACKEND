@@ -5,14 +5,10 @@ import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
-import br.meetingplace.server.modules.topic.dto.Topic
+import br.meetingplace.server.modules.topic.classes.Topic
 import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
 
-class LikeTopic private constructor() {
-    companion object {
-        private val Class = LikeTopic()
-        fun getClass() = Class
-    }
+object LikeTopic {
 
     fun like(data: TopicSimpleOperator, userDB: UserDBInterface, topicDB: TopicDBInterface, communityDB: CommunityDBInterface): Status {
         return if (userDB.check(data.login.email)) {

@@ -1,6 +1,3 @@
 package br.meetingplace.server.requests.generic.operators
 
-import br.meetingplace.server.requests.generic.data.Identifier
-import br.meetingplace.server.requests.generic.data.Login
-
-data class SimpleOperator(val identifier: Identifier, val login: Login)
+data class SimpleOperator(val subjectID: String, val community: Boolean, val userID: String)

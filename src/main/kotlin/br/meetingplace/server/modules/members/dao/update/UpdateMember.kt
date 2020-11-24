@@ -6,15 +6,12 @@ import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
-import br.meetingplace.server.modules.members.dto.MemberData
-import br.meetingplace.server.modules.members.dto.MemberType
+import br.meetingplace.server.modules.members.classes.MemberData
+import br.meetingplace.server.modules.members.classes.MemberType
 import br.meetingplace.server.requests.generic.operators.MemberOperator
 
-class UpdateMember private constructor(){
-    companion object{
-        private val Class = UpdateMember()
-        fun getClass () = Class
-    }
+object UpdateMember {
+
     fun promote(data: MemberOperator, communityDB: CommunityDBInterface, groupDB: GroupDBInterface, userDB: UserDBInterface):Status{
         lateinit var members: List<MemberData>
         return when(data.identifier.community){

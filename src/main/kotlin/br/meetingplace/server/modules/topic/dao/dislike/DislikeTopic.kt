@@ -5,14 +5,10 @@ import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
-import br.meetingplace.server.modules.topic.dto.Topic
+import br.meetingplace.server.modules.topic.classes.Topic
 import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
 
-class DislikeTopic private constructor() {
-    companion object {
-        private val Class = DislikeTopic()
-        fun getClass() = Class
-    }
+object DislikeTopic{
 
     fun dislike(data: TopicSimpleOperator, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface): Status {
         return if (rwUser.check(data.login.email)) {

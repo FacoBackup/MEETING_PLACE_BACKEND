@@ -2,24 +2,13 @@ package br.meetingplace.server.modules.community.dao.factory
 
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
-import br.meetingplace.server.modules.community.dto.Community
+import br.meetingplace.server.modules.community.classes.Community
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
-import br.meetingplace.server.modules.global.dto.notification.NotificationData
-import br.meetingplace.server.modules.global.dto.notification.types.NotificationMainType
-import br.meetingplace.server.modules.global.dto.notification.types.NotificationSubType
-import br.meetingplace.server.modules.members.dto.MemberData
-import br.meetingplace.server.modules.members.dto.MemberType
 import br.meetingplace.server.requests.generic.data.CreationData
-import br.meetingplace.server.requests.generic.operators.MemberOperator
 import java.util.*
 
-class CommunityFactory private constructor() {
-
-    companion object {
-        private val Class = CommunityFactory()
-        fun getClass() = Class
-    }
+object CommunityFactory {
 
     fun create(data: CreationData, userDB: UserDBInterface, communityDB: CommunityDBInterface): Status {
         val user = userDB.select(data.login.email)

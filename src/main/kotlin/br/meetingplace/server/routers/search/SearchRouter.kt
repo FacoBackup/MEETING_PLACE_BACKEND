@@ -1,8 +1,10 @@
 package br.meetingplace.server.routers.search
 
-import br.meetingplace.server.db.community.file.CommunityRW
-import br.meetingplace.server.db.group.file.GroupRW
-import br.meetingplace.server.db.user.file.UserRW
+import br.meetingplace.server.db.community.CommunityDB
+import br.meetingplace.server.db.group.GroupDB
+import br.meetingplace.server.db.user.UserDB
+import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.search.dao.GroupSearch
 import br.meetingplace.server.modules.search.dao.UserSearch
 import br.meetingplace.server.requests.generic.operators.SimpleOperator
@@ -16,29 +18,29 @@ fun Route.searchRouter() {
     route("/api") {
         get(SearchPaths.GROUP) {
             val data = call.receive<SimpleOperator>()
-            val group = GroupSearch.getClass().seeGroup(data, rwUser = UserRW.getClass(), rwGroup = GroupRW.getClass())
+            val group = GroupSearch.getClass().seeGroup(data, rwUser = UserDB.getClass(), rwGroup = GroupDB.getClass())
 
-            if (group == null || group.getChatID().isBlank())
-                call.respond("Nothing found.")
+            if (group == null)
+                call.respond(Status(404, StatusMessages.NOT_FOUND))
             else
                 call.respond(group)
 
         }
         get(SearchPaths.COMMUNITY) {
             val data = call.receive<SimpleOperator>()
-            val search = CommunityRW.getClass().select(data.identifier.ID)
+            val search = CommunityDB.getClass().select(data.identifier.ID)
 
             if (search == null)
-                call.respond("Nothing found.")
+                call.respond(Status(404, StatusMessages.NOT_FOUND))
             else
                 call.respond(search)
         }
         get(SearchPaths.USER) {
             val data = call.receive<SimpleOperator>()
-            val search = UserSearch.getClass().searchUser(data, rwUser = UserRW.getClass())
+            val search = UserSearch.getClass().searchUser(data, rwUser = UserDB.getClass())
 
             if (search == null)
-                call.respond("Nothing found.")
+                call.respond(Status(404, StatusMessages.NOT_FOUND))
             else
                 call.respond(search)
         }

@@ -6,16 +6,12 @@ import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
-import br.meetingplace.server.modules.members.dto.MemberType
-import br.meetingplace.server.modules.topic.dto.Topic
+import br.meetingplace.server.modules.members.classes.MemberType
+import br.meetingplace.server.modules.topic.classes.Topic
 import br.meetingplace.server.requests.topics.data.TopicData
 import java.util.*
 
-class TopicFactory private constructor() {
-    companion object {
-        private val Class = TopicFactory()
-        fun getClass() = Class
-    }
+object TopicFactory {
 
     fun create(data: TopicData, topicDB: TopicDBInterface, userDB: UserDBInterface, communityDB: CommunityDBInterface): Status {
 

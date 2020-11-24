@@ -1,7 +1,7 @@
 package br.meetingplace.server.db.topic
 
 import br.meetingplace.server.modules.global.dto.http.status.Status
-import br.meetingplace.server.modules.topic.dto.Topic
+import br.meetingplace.server.modules.topic.classes.Topic
 
 interface TopicDBInterface {
     fun select(id: String, mainTopic: String?): Topic?

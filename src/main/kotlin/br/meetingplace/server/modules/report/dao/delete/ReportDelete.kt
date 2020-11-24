@@ -6,12 +6,7 @@ import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.requests.community.Approval
 
-class ReportDelete private constructor() {
-
-    companion object {
-        private val Class = ReportDelete()
-        fun getClass() = Class
-    }
+object ReportDelete {
 
     fun deleteReport(data: Approval, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface, rwReport: ReportDBInterface) : Status {
         TODO("Not yet implemented")

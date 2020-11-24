@@ -4,7 +4,7 @@ import br.meetingplace.server.db.chat.ChatDBInterface
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
-import br.meetingplace.server.modules.chat.dto.Chat
+import br.meetingplace.server.modules.chat.classes.Chat
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.dto.notification.NotificationData
@@ -13,18 +13,13 @@ import br.meetingplace.server.modules.global.dto.notification.types.Notification
 import br.meetingplace.server.modules.global.dto.owner.OwnerData
 import br.meetingplace.server.modules.global.dto.owner.OwnerType
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
-import br.meetingplace.server.modules.groups.dto.Group
-import br.meetingplace.server.modules.members.dto.MemberData
-import br.meetingplace.server.modules.members.dto.MemberType
+import br.meetingplace.server.modules.groups.classes.Group
+import br.meetingplace.server.modules.members.classes.MemberData
+import br.meetingplace.server.modules.members.classes.MemberType
 import br.meetingplace.server.requests.generic.data.CreationData
 import java.util.*
 
-class GroupFactory private constructor() {
-
-    companion object {
-        private val Class = GroupFactory()
-        fun getClass() = Class
-    }
+object GroupFactory {
 
     fun create(data: CreationData, groupDB: GroupDBInterface, userDB: UserDBInterface, communityDB: CommunityDBInterface, chatDB: ChatDBInterface) : Status {
         val user = userDB.select(data.login.email)

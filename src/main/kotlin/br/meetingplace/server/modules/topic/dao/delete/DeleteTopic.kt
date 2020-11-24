@@ -6,15 +6,11 @@ import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
-import br.meetingplace.server.modules.members.dto.MemberType
-import br.meetingplace.server.modules.topic.dto.Topic
+import br.meetingplace.server.modules.members.classes.MemberType
+import br.meetingplace.server.modules.topic.classes.Topic
 import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
 
-class DeleteTopic private constructor() {
-    companion object {
-        private val Class = DeleteTopic()
-        fun getClass() = Class
-    }
+object DeleteTopic{
 
     fun delete(data: TopicSimpleOperator, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface):Status{
 

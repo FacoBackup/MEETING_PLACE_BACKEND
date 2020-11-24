@@ -7,14 +7,10 @@ import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
-import br.meetingplace.server.modules.members.dto.MemberData
+import br.meetingplace.server.modules.members.classes.MemberData
 import br.meetingplace.server.requests.generic.data.Login
 
-class UserDelete private constructor() {
-    companion object {
-        private val Class = UserDelete()
-        fun getClass() = Class
-    }
+object UserDelete {
 
     fun delete(data: Login, userDB: UserDBInterface, topicDB: TopicDBInterface, groupDB: GroupDBInterface, communityDB: CommunityDBInterface) : Status {
         val user = userDB.select(data.email)

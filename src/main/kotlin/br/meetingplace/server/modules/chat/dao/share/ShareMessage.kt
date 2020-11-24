@@ -5,19 +5,13 @@ import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.dao.send.SendMessage
-import br.meetingplace.server.modules.chat.dto.dependencies.data.MessageType
-import br.meetingplace.server.modules.global.dto.http.status.Status
+import br.meetingplace.server.modules.chat.classes.message.MessageType
 import br.meetingplace.server.modules.global.methods.chat.getContent
 import br.meetingplace.server.requests.chat.data.MessageData
 import br.meetingplace.server.requests.chat.operators.ChatComplexOperator
 
-class ShareMessage private constructor() {
-    companion object {
-        private val Class = ShareMessage()
-        fun getClass() = Class
-    }
-
-    fun shareMessage(data: ChatComplexOperator, userDB: UserDBInterface, groupDB: GroupDBInterface, communityDB: CommunityDBInterface, chatDB: ChatDBInterface): Status {
+object ShareMessage {
+    fun shareMessage(data: ChatComplexOperator, userDB: UserDBInterface, groupDB: GroupDBInterface, communityDB: CommunityDBInterface, chatDB: ChatDBInterface) {
         val user = userDB.select(data.login.email)
         if (user != null) {
             when (data.source.userGroup || data.source.communityGroup) {

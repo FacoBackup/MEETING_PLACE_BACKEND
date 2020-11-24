@@ -6,15 +6,11 @@ import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
-import br.meetingplace.server.modules.report.dto.Report
+import br.meetingplace.server.modules.report.classes.Report
 import br.meetingplace.server.requests.community.ReportCreationData
 import java.util.*
 
-class ReportFactory private constructor() {
-    companion object {
-        private val Class = ReportFactory()
-        fun getClass() = Class
-    }
+object ReportFactory{
 
     fun createReport(data: ReportCreationData, rwUser: UserDBInterface, rwCommunity: CommunityDBInterface, rwTopic: TopicDBInterface, rwReport: ReportDBInterface): Status {
         val user = rwUser.select(data.login.email)

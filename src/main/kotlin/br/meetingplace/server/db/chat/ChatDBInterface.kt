@@ -1,6 +1,6 @@
 package br.meetingplace.server.db.chat
 
-import br.meetingplace.server.modules.chat.dto.Chat
+import br.meetingplace.server.modules.chat.classes.Chat
 import br.meetingplace.server.modules.global.dto.http.status.Status
 
 interface ChatDBInterface {

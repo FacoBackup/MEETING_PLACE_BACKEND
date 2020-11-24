@@ -1,16 +1,16 @@
 package br.meetingplace.server.routers.chat
 
-import br.meetingplace.server.db.chat.file.ChatRW
-import br.meetingplace.server.db.community.file.CommunityRW
-import br.meetingplace.server.db.group.file.GroupRW
-import br.meetingplace.server.db.user.file.UserRW
+import br.meetingplace.server.db.chat.ChatDB
+import br.meetingplace.server.db.community.CommunityDB
+import br.meetingplace.server.db.group.GroupDB
+import br.meetingplace.server.db.user.UserDB
 import br.meetingplace.server.modules.chat.dao.delete.DeleteMessage
 import br.meetingplace.server.modules.chat.dao.dislike.DislikeMessage
 import br.meetingplace.server.modules.chat.dao.favorite.FavoriteMessage
 import br.meetingplace.server.modules.chat.dao.quote.QuoteMessage
-import br.meetingplace.server.modules.search.dao.ChatSearch
 import br.meetingplace.server.modules.chat.dao.send.SendMessage
 import br.meetingplace.server.modules.chat.dao.share.ShareMessage
+import br.meetingplace.server.modules.search.dao.ChatSearch
 import br.meetingplace.server.requests.chat.data.MessageData
 import br.meetingplace.server.requests.chat.operators.ChatComplexOperator
 import br.meetingplace.server.requests.chat.operators.ChatFinderOperator
@@ -27,7 +27,7 @@ fun Route.chatRouter() {
 
         get(ChatPaths.CHAT) {
             val data = call.receive<ChatFinderOperator>()
-            val chat = ChatSearch.getClass().seeChat(data, rwCommunity = CommunityRW.getClass(), rwGroup = GroupRW.getClass(), rwUser = UserRW.getClass(), rwChat = ChatRW.getClass())
+            val chat = ChatSearch.getClass().seeChat(data, rwCommunity = CommunityDB.getClass(), rwGroup = GroupDB.getClass(), rwUser = UserDB.getClass(), rwChat = ChatDB.getClass())
             if (chat == null || chat.getID().isBlank()) {
                 call.respond("Nothing found.")
             } else
@@ -35,29 +35,29 @@ fun Route.chatRouter() {
         }
         post(ChatPaths.CHAT) {
             val data = call.receive<MessageData>()
-            call.respond(SendMessage.getClass().sendMessage(data, rwChat = ChatRW.getClass(), rwCommunity = CommunityRW.getClass(), rwGroup = GroupRW.getClass(), userDB = UserRW.getClass()))
+            call.respond(SendMessage.getClass().sendMessage(data, rwChat = ChatDB.getClass(), rwCommunity = CommunityDB.getClass(), rwGroup = GroupDB.getClass(), userDB = UserDB.getClass()))
         }
         delete(ChatPaths.CHAT) {
             val data = call.receive<ChatSimpleOperator>()
-            call.respond(DeleteMessage.getClass().deleteMessage(data, rwChat = ChatRW.getClass(), rwCommunity = CommunityRW.getClass(), rwGroup = GroupRW.getClass(), rwUser = UserRW.getClass()))
+            call.respond(DeleteMessage.getClass().deleteMessage(data, rwChat = ChatDB.getClass(), rwCommunity = CommunityDB.getClass(), rwGroup = GroupDB.getClass(), rwUser = UserDB.getClass()))
         }
 
         post(ChatPaths.QUOTE) {
             val data = call.receive<ChatComplexOperator>()
-            call.respond(QuoteMessage.getClass().quoteMessage(data, rwUser = UserRW.getClass(), rwGroup = GroupRW.getClass(), rwCommunity = CommunityRW.getClass(), rwChat = ChatRW.getClass()))
+            call.respond(QuoteMessage.getClass().quoteMessage(data, rwUser = UserDB.getClass(), rwGroup = GroupDB.getClass(), rwCommunity = CommunityDB.getClass(), rwChat = ChatDB.getClass()))
         }
 
         patch(ChatPaths.LIKE) {
             val data = call.receive<ChatSimpleOperator>()
-            call.respond(FavoriteMessage.getClass().favoriteMessage(data, rwUser = UserRW.getClass(), rwGroup = GroupRW.getClass(), rwCommunity = CommunityRW.getClass(), rwChat = ChatRW.getClass()))
+            call.respond(FavoriteMessage.getClass().favoriteMessage(data, rwUser = UserDB.getClass(), rwGroup = GroupDB.getClass(), rwCommunity = CommunityDB.getClass(), rwChat = ChatDB.getClass()))
         }
         patch(ChatPaths.DISLIKE) {
             val data = call.receive<ChatSimpleOperator>()
-            call.respond(DislikeMessage.getClass().dislikeMessage(data, rwUser = UserRW.getClass(), rwGroup = GroupRW.getClass(), rwCommunity = CommunityRW.getClass(), rwChat = ChatRW.getClass()))
+            call.respond(DislikeMessage.getClass().dislikeMessage(data, rwUser = UserDB.getClass(), rwGroup = GroupDB.getClass(), rwCommunity = CommunityDB.getClass(), rwChat = ChatDB.getClass()))
         }
         patch(ChatPaths.SHARE) {
             val data = call.receive<ChatComplexOperator>()
-            call.respond(ShareMessage.getClass().shareMessage(data, userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass(), chatDB = ChatRW.getClass()))
+            call.respond(ShareMessage.getClass().shareMessage(data, userDB = UserDB.getClass(), groupDB = GroupDB.getClass(), communityDB = CommunityDB.getClass(), chatDB = ChatDB.getClass()))
         }
     }
 }
