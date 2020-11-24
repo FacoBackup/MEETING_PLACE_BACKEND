@@ -1,6 +1,5 @@
 package br.meetingplace.server.modules.user.dao.factory
 
-import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.requests.users.data.UserCreationData

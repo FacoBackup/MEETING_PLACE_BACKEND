@@ -1,9 +1,5 @@
 package br.meetingplace.server.modules.chat.dao.delete
 
-import br.meetingplace.server.db.chat.ChatDBInterface
-import br.meetingplace.server.db.community.CommunityDBInterface
-import br.meetingplace.server.db.group.GroupDBInterface
-import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.dto.MessageDTO
 import br.meetingplace.server.modules.global.http.status.Status
 import br.meetingplace.server.modules.global.http.status.StatusMessages

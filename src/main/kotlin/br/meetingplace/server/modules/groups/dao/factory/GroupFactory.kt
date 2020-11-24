@@ -1,9 +1,6 @@
 package br.meetingplace.server.modules.groups.dao.factory
 
 import br.meetingplace.server.db.chat.ChatDBInterface
-import br.meetingplace.server.db.community.CommunityDBInterface
-import br.meetingplace.server.db.group.GroupDBInterface
-import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.chat.classes.Chat
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages

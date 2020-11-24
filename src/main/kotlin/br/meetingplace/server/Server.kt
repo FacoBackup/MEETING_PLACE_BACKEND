@@ -18,23 +18,22 @@ import org.jetbrains.exposed.sql.transactions.transaction
 fun main() {
     val dbSettings = Settings
     val port = System.getenv("PORT")?.toInt() ?: 8080
-    transaction {
-        embeddedServer(Netty, port) {
-            routing {
-                install(ContentNegotiation) {
-                    gson {
-                        setPrettyPrinting()
-                    }
+    embeddedServer(Netty, port) {
+        routing {
+            install(ContentNegotiation) {
+                gson {
+                    setPrettyPrinting()
                 }
-                topicRouter()
-                searchRouter()
-                userRouter()
-                communityRouter()
-                groupRouter()
-                chatRouter()
             }
-        }.start(wait = true)
-    }
+            topicRouter()
+            searchRouter()
+            userRouter()
+            communityRouter()
+            groupRouter()
+            chatRouter()
+        }
+    }.start(wait = true)
+
 }
 
 

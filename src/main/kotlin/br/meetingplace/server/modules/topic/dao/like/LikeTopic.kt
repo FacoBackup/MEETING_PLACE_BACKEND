@@ -1,8 +1,5 @@
 package br.meetingplace.server.modules.topic.dao.like
 
-import br.meetingplace.server.db.community.CommunityDBInterface
-import br.meetingplace.server.db.topic.TopicDBInterface
-import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.topic.db.Topic
