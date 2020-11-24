@@ -1,23 +1,17 @@
-package br.meetingplace.server.modules.community.classes
+package br.meetingplace.server.modules.community.db
 
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.jodatime.date
 import java.time.LocalDateTime
 
 
-class Community(private var name: String, private val id: String, private var about: String?,
-                private var imageURL: String?,private val creationDate: LocalDateTime): Table() {
+object Community: Table("community"){
 
-    fun getCreationDate () = creationDate
-    fun getName() = name
-    fun getID() = id
+    var name = varchar("community_name", 64)
+    val id = varchar("community_id", 32)
+    var about = varchar("community_about", 256).nullable()
+    var imageURL= varchar("community_image_url", 256).nullable()
+    val creationDate = date("date_of_creation")
 
-    fun setName(name: String){
-        this.name = name
-    }
-    fun setImageURL(imageURL: String?) {
-        this.imageURL = imageURL
-    }
-    fun setAbout(about: String?) {
-        this.about = about
-    }
+    override val primaryKey = PrimaryKey(id)
 }

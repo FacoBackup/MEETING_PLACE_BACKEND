@@ -2,7 +2,7 @@ package br.meetingplace.server.db.topic
 
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
-import br.meetingplace.server.modules.topic.classes.Topic
+import br.meetingplace.server.modules.topic.db.Topic
 import com.google.gson.GsonBuilder
 import java.io.File
 

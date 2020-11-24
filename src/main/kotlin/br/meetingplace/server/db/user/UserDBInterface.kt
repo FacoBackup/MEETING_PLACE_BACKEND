@@ -1,7 +1,7 @@
 package br.meetingplace.server.db.user
 
 import br.meetingplace.server.modules.global.dto.http.status.Status
-import br.meetingplace.server.modules.user.classes.User
+import br.meetingplace.server.modules.user.db.User
 
 interface UserDBInterface {
     fun select(id: String): User?

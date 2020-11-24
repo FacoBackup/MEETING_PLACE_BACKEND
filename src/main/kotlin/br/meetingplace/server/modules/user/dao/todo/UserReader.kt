@@ -2,7 +2,7 @@ package br.meetingplace.server.modules.user.dao.todo
 
 import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
-import br.meetingplace.server.modules.topic.classes.Topic
+import br.meetingplace.server.modules.topic.db.Topic
 import br.meetingplace.server.requests.generic.data.Login
 
 object UserReader {

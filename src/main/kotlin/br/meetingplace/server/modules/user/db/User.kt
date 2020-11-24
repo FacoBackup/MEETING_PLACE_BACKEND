@@ -1,9 +1,7 @@
-package br.meetingplace.server.modules.user.classes
+package br.meetingplace.server.modules.user.db
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.date
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 object User: Table("user"){
     val id = varchar("user_id", 32)
@@ -14,6 +12,8 @@ object User: Table("user"){
     var nationality = varchar("user_nationality", 64)
     var about = varchar("user_about", 64)
     var imageURL = varchar("user_image_url", 64)
+    val phoneNumber = varchar("user_number", 32).nullable()
+    val cityOfBirth = varchar("city_of_birth", 32)
 
     override val primaryKey = PrimaryKey(id)
 }

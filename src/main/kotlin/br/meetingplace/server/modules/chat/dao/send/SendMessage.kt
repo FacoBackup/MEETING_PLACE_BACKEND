@@ -4,8 +4,8 @@ import br.meetingplace.server.db.chat.ChatDBInterface
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
-import br.meetingplace.server.modules.chat.db.UserChat
-import br.meetingplace.server.modules.chat.db.message.Message
+import br.meetingplace.server.modules.chat.db.Chat
+import br.meetingplace.server.modules.chat.dto.MessageDTO
 import br.meetingplace.server.modules.chat.db.message.MessageType
 import br.meetingplace.server.modules.notification.dto.NotificationDTO
 import br.meetingplace.server.modules.global.dto.notification.types.NotificationMainType
@@ -18,7 +18,7 @@ import java.util.*
 object SendMessage {
 
     fun sendMessage(data: MessageData, userDB: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface) {
-        lateinit var messages: List<Message>
+        lateinit var messages: List<MessageDTO>
 
         if (userDB.check(data.login.email) && data.receiver.receiverID != data.login.email) {
             when (data.receiver.userGroup || data.receiver.communityGroup) {
@@ -32,7 +32,7 @@ object SendMessage {
                                 if (community != null && chat != null) {
                                     messages = chat.getMessages()
                                     messages.add(
-                                        Message(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), data.login.email, data.messageType
+                                        MessageDTO(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), data.login.email, data.messageType
                                             ?: MessageType.NORMAL)
                                     )
                                     chat.setMessages(messages = messages)
@@ -44,7 +44,7 @@ object SendMessage {
                                 if (chat != null) {
                                     messages = chat.getMessages()
                                     messages.add(
-                                        Message(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), data.login.email, data.messageType
+                                        MessageDTO(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), data.login.email, data.messageType
                                             ?: MessageType.NORMAL)
                                     )
                                     chat.setMessages(messages = messages)
@@ -59,7 +59,7 @@ object SendMessage {
                     val chat = rwChat.select(data.receiver.chatID)
                     if (chat != null) {
                         messages = chat.getMessages()
-                        messages.add(Message(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), data.login.email, data.messageType ?: MessageType.NORMAL))
+                        messages.add(MessageDTO(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), data.login.email, data.messageType ?: MessageType.NORMAL))
                         chat.setMessages(messages = messages)
 
                         rwChat.insert(chat)
@@ -75,8 +75,8 @@ object SendMessage {
         val receiver = rwUser.select(data.receiver.receiverID)
 
         lateinit var notification: NotificationDTO
-        lateinit var chat: UserChat
-        lateinit var messages: List<Message>
+        lateinit var chat: Chat
+        lateinit var messages: List<MessageDTO>
         lateinit var userChats: List<ChatIdentifier>
         lateinit var receiverChats: List<ChatIdentifier>
         lateinit var receiverNotifications: List<NotificationDTO>
@@ -84,7 +84,7 @@ object SendMessage {
             chat = Chat(UUID.randomUUID().toString(), OwnerData(user.getEmail(), OwnerType.USER))
             notification = NotificationDTO(NotificationMainType.CHAT, NotificationSubType.NEW_MESSAGE, logged)
             messages = chat.getMessages()
-            messages.add(Message(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), logged, data.messageType?: MessageType.NORMAL))
+            messages.add(MessageDTO(data.message, imageURL = data.imageURL, UUID.randomUUID().toString(), logged, data.messageType?: MessageType.NORMAL))
             chat.setMessages(messages = messages)
 
             userChats = user.getChats()

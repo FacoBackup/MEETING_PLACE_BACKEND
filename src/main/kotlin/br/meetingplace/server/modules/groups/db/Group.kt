@@ -1,31 +1,18 @@
-package br.meetingplace.server.modules.groups.classes
+package br.meetingplace.server.modules.groups.db
 
-import br.meetingplace.server.modules.global.dto.owner.OwnerData
+import br.meetingplace.server.modules.community.db.Community
 import org.jetbrains.exposed.sql.Table
-import java.time.LocalDateTime
+import org.jetbrains.exposed.sql.jodatime.date
 
-class Group( private val owner: OwnerData, private val ID: String,
-            private var name: String,private var about: String?,
-            private var imageURL: String?, private var approved: Boolean): Table(){
-    private val creationDate =  LocalDateTime.now()
 
-    fun getCreationDate () = creationDate
-    fun getApproved() = approved
-    fun getImageURL() = imageURL
-    fun getOwner() = owner
-    fun getNameGroup() = name
-    fun getID() = ID
+object Group: Table("group"){
+    val communityID = varchar("community_id", 32).references(Community.id)
+    val id= varchar("group_id", 32)
+    var name= varchar("group_name", 64)
+    var about= varchar("group_about", 256).nullable()
+    var imageURL = varchar("group_image_url", 256).nullable()
+    var approved = bool("approved")
+    val creationDate = date("date_of_creation")
 
-    fun setName(name: String) {
-        this.name = name
-    }
-    fun setApproved(approved: Boolean) {
-        this.approved = approved
-    }
-    fun setImageURL(imageURL: String?) {
-        this.imageURL = imageURL
-    }
-    fun setAbout(about: String) {
-        this.about = about
-    }
+    override val primaryKey = PrimaryKey(Community.id)
 }

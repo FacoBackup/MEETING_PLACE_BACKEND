@@ -1,6 +1,6 @@
-package br.meetingplace.server.modules.topic.classes
+package br.meetingplace.server.modules.topic.db
 
-import br.meetingplace.server.modules.user.classes.User
+import br.meetingplace.server.modules.user.db.User
 import org.jetbrains.exposed.sql.Table
 
 object TopicOpinions: Table("topic_opinions") {

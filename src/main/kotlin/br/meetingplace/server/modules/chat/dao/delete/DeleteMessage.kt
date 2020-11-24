@@ -4,7 +4,7 @@ import br.meetingplace.server.db.chat.ChatDBInterface
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.group.GroupDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
-import br.meetingplace.server.modules.chat.db.message.Message
+import br.meetingplace.server.modules.chat.dto.MessageDTO
 import br.meetingplace.server.modules.global.http.status.Status
 import br.meetingplace.server.modules.global.http.status.StatusMessages
 import br.meetingplace.server.modules.global.methods.chat.getContent
@@ -14,7 +14,7 @@ object DeleteMessage {
 
     fun deleteMessage(data: ChatSimpleOperator, rwUser: UserDBInterface, rwGroup: GroupDBInterface, rwCommunity: CommunityDBInterface, rwChat: ChatDBInterface): Status {
         val user = rwUser.select(data.login.email)
-        lateinit var messages: List<Message>
+        lateinit var messages: List<MessageDTO>
 
         return if (user != null) {
             when (data.receiver.userGroup || data.receiver.communityGroup) {

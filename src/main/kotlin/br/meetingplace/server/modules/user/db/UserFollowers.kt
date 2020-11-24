@@ -1,5 +1,8 @@
-package br.meetingplace.server.modules.user.classes
+package br.meetingplace.server.modules.user.db
 
 import org.jetbrains.exposed.sql.Table
 
-data class UserFollowers (val followerID: String, val followedID: String): Table()
+object UserFollowers : Table("user_followers"){
+    val followerID = varchar("follower_id", 32).references(User.id)
+    val followedID = varchar("followed_id", 32).references(User.id)
+}

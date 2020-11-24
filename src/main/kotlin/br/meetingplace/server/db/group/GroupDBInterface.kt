@@ -1,7 +1,7 @@
 package br.meetingplace.server.db.group
 
 import br.meetingplace.server.modules.global.dto.http.status.Status
-import br.meetingplace.server.modules.groups.classes.Group
+import br.meetingplace.server.modules.groups.db.Group
 
 interface GroupDBInterface {
     fun select(id: String): Group?

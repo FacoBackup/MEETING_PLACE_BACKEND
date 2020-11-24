@@ -13,7 +13,7 @@ import br.meetingplace.server.modules.global.dto.notification.types.Notification
 import br.meetingplace.server.modules.global.dto.owner.OwnerData
 import br.meetingplace.server.modules.global.dto.owner.OwnerType
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
-import br.meetingplace.server.modules.groups.classes.Group
+import br.meetingplace.server.modules.groups.db.Group
 import br.meetingplace.server.modules.members.classes.MemberData
 import br.meetingplace.server.modules.members.classes.MemberType
 import br.meetingplace.server.requests.generic.data.CreationData

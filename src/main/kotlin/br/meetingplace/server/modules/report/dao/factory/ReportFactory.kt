@@ -6,7 +6,7 @@ import br.meetingplace.server.db.topic.TopicDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
-import br.meetingplace.server.modules.report.classes.Report
+import br.meetingplace.server.modules.report.db.Report
 import br.meetingplace.server.requests.community.ReportCreationData
 import java.util.*
 

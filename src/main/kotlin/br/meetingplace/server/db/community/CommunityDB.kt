@@ -1,6 +1,6 @@
 package br.meetingplace.server.db.community
 
-import br.meetingplace.server.modules.community.classes.Community
+import br.meetingplace.server.modules.community.db.Community
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import com.google.gson.GsonBuilder

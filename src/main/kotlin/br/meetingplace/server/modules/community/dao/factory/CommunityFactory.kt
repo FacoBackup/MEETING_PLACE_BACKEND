@@ -2,7 +2,7 @@ package br.meetingplace.server.modules.community.dao.factory
 
 import br.meetingplace.server.db.community.CommunityDBInterface
 import br.meetingplace.server.db.user.UserDBInterface
-import br.meetingplace.server.modules.community.classes.Community
+import br.meetingplace.server.modules.community.db.Community
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.requests.generic.data.CreationData

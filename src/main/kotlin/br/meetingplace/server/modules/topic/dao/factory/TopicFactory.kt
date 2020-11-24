@@ -7,7 +7,7 @@ import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
 import br.meetingplace.server.modules.members.classes.MemberType
-import br.meetingplace.server.modules.topic.classes.Topic
+import br.meetingplace.server.modules.topic.db.Topic
 import br.meetingplace.server.requests.topics.data.TopicData
 import java.util.*
 

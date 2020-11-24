@@ -2,7 +2,7 @@ package br.meetingplace.server.db.report
 
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
-import br.meetingplace.server.modules.report.classes.Report
+import br.meetingplace.server.modules.report.db.Report
 import com.google.gson.GsonBuilder
 import org.jetbrains.exposed.sql.deleteWhere
 

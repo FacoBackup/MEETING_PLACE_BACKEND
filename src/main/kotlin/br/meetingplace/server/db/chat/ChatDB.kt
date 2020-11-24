@@ -1,8 +1,6 @@
 package br.meetingplace.server.db.chat
 
-import br.meetingplace.server.modules.chat.classes.Chat
-import br.meetingplace.server.modules.global.dto.http.status.Status
-import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
+import br.meetingplace.server.modules.global.http.status.Status
 import com.google.gson.GsonBuilder
 import java.io.File
 
@@ -10,7 +8,7 @@ object ChatDB: ChatDBInterface{
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
-    override fun delete(data: Chat): Status{
+    override fun delete(data: Chat): Status {
         val directory = (File("build.gradle").absolutePath.removeSuffix("build.gradle") + "/src/main/kotlin/br/meetingplace/DATA_BASE/CHATS/${data.getID()}.json")
 
         try {
