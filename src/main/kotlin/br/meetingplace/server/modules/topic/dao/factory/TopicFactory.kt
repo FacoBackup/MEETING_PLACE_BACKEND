@@ -1,122 +1,113 @@
 package br.meetingplace.server.modules.topic.dao.factory
 
-import br.meetingplace.server.modules.global.dto.http.status.Status
-import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
+import br.meetingplace.server.db.mapper.community.CommunityMapperInterface
+import br.meetingplace.server.db.mapper.topic.TopicMapperInterface
+import br.meetingplace.server.db.mapper.user.UserMapperInterface
+import br.meetingplace.server.modules.community.db.Community
+import br.meetingplace.server.modules.community.db.CommunityMember
+import br.meetingplace.server.modules.global.http.status.Status
+import br.meetingplace.server.modules.global.http.status.StatusMessages
 import br.meetingplace.server.modules.global.methods.member.getMemberRole
-import br.meetingplace.server.modules.members.classes.MemberType
 import br.meetingplace.server.modules.topic.db.Topic
-import br.meetingplace.server.requests.topics.data.TopicData
+import br.meetingplace.server.modules.user.db.User
+import br.meetingplace.server.requests.topics.data.TopicCreationData
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.joda.time.DateTime
+import org.joda.time.LocalDate
+import org.joda.time.LocalDateTime
+import java.text.DateFormat
 import java.util.*
 
 object TopicFactory {
 
-    fun create(data: TopicData, topicDB: TopicDBInterface, userDB: UserDBInterface, communityDB: CommunityDBInterface): Status {
-
-
-        when (data.communityID.isNullOrBlank()) {
-            true -> { //USER
-                return when (data.identifier == null) {
-                    true -> createUserMainTopic(data, userDB, topicDB) //MAIN
-                    false -> {
-                        val mainTopic = topicDB.select(data.identifier.mainTopicID, null)
-                        return if (userDB.check(data.login.email) && topicDB.check(data.identifier.mainTopicID) && mainTopic != null)
-                            createUserSubTopic(data, userDB = userDB, topicDB = topicDB, mainTopic = mainTopic)
-                        else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-                    }//SUB
+    fun create(data: TopicCreationData, userMapper: UserMapperInterface, topicMapper: TopicMapperInterface, memberMapper: CommunityMapperInterface): Status {
+        return try {
+            val user = User.select { User.id eq data.userID }.map { userMapper.mapUser(it) }.firstOrNull()
+            when (data.communityID.isNullOrBlank()) {
+                true -> {
+                    return if (user != null) {
+                        Topic.insert {
+                            it[id] = UUID.randomUUID().toString()
+                            it[header] = data.header
+                            it[body] = data.body
+                            it[imageURL] = data.imageURL
+                            it[approved] = true
+                            it[footer] = user.email
+                            it[creatorID] = user.id
+                            it[mainTopicID] = null
+                            it[communityID] = null
+                            it[creationDate] = DateTime.parse(LocalDateTime.now().toString("dd-MM-yyyy"))
+                        }
+                        Status(statusCode = 200, StatusMessages.OK)
+                    } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
+                }
+                false -> {
+                    val member = CommunityMember.select { CommunityMember.userID eq data.userID }.map { memberMapper.mapCommunityMembersDTO(it) }.firstOrNull()
+                    return if (!Community.select { Community.id eq data.communityID }.empty() && user != null && member != null) {
+                        Topic.insert {
+                            it[id] = UUID.randomUUID().toString()
+                            it[header] = data.header
+                            it[body] = data.body
+                            it[imageURL] = data.imageURL
+                            it[approved] = member.admin
+                            it[footer] = user.email
+                            it[creatorID] = user.id
+                            it[mainTopicID] = null
+                            it[communityID] = member.communityID
+                            it[creationDate] = DateTime.parse(LocalDateTime.now().toString("dd-MM-yyyy"))
+                        }
+                        Status(statusCode = 200, StatusMessages.OK)
+                    } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
                 }
             }
-            false -> { //COMMUNITY
-                return when (data.identifier == null) {
-                    true -> {
-                        if (communityDB.check(data.communityID))//MAIN
-                            createCommunityMainTopic(data, userDB, communityDB, topicDB)
-                        else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-                    }
-                    false -> {
-                        val mainTopic = topicDB.select(data.identifier.mainTopicID, null)
-                        if (communityDB.check(data.communityID) && topicDB.check(data.identifier.mainTopicID) && mainTopic != null) //SUB
-                            createCommunitySubTopic(data, communityDB = communityDB, topicDB = topicDB, userDB = userDB, mainTopic = mainTopic)
-                        else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-                    }
-
+        } catch (e: Exception) {
+            Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
+        }
+    }
+    fun createComment(data: TopicCreationData, userMapper: UserMapperInterface, topicMapper: TopicMapperInterface, memberMapper: CommunityMapperInterface): Status {
+        return try {
+            val user = User.select { User.id eq data.userID }.map { userMapper.mapUser(it) }.firstOrNull()
+            when (data.communityID.isNullOrBlank()) {
+                true -> {
+                    return if (user != null && !data.mainTopicID.isNullOrBlank() && !Topic.select {(Topic.id eq data.mainTopicID) and (Topic.communityID eq null)}.empty()) {
+                        Topic.insert {
+                            it[id] = UUID.randomUUID().toString()
+                            it[header] = data.header
+                            it[body] = data.body
+                            it[imageURL] = data.imageURL
+                            it[approved] = true
+                            it[footer] = user.email
+                            it[creatorID] = user.id
+                            it[mainTopicID] = data.mainTopicID
+                            it[communityID] = null
+                            it[creationDate] = DateTime.parse(LocalDateTime.now().toString("dd-MM-yyyy"))
+                        }
+                        Status(statusCode = 200, StatusMessages.OK)
+                    } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
+                }
+                false -> {
+                    val member = CommunityMember.select { CommunityMember.userID eq data.userID }.map { memberMapper.mapCommunityMembersDTO(it) }.firstOrNull()
+                    return if (!data.mainTopicID.isNullOrBlank() && !Topic.select { (Topic.id eq data.mainTopicID) and (Topic.approved eq true)}.empty() && user != null && member != null) {
+                        Topic.insert {
+                            it[id] = UUID.randomUUID().toString()
+                            it[header] = data.header
+                            it[body] = data.body
+                            it[imageURL] = data.imageURL
+                            it[approved] = true
+                            it[footer] = user.email
+                            it[creatorID] = user.id
+                            it[mainTopicID] = data.mainTopicID
+                            it[communityID] = member.communityID
+                            it[creationDate] = DateTime.parse(LocalDateTime.now().toString("dd-MM-yyyy"))
+                        }
+                        Status(statusCode = 200, StatusMessages.OK)
+                    } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
                 }
             }
-        }//WHEN
+        } catch (e: Exception) {
+            Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
+        }
     }
-
-    private fun createCommunityMainTopic(data: TopicData, userDB: UserDBInterface, communityDB: CommunityDBInterface, topicDB: TopicDBInterface) :Status{
-        val user = userDB.select(data.login.email)
-        val community = data.communityID?.let { communityDB.select(it) }
-        lateinit var topic: Topic
-        lateinit var topics: List<String>
-
-        return if (data.identifier != null && community != null && user != null) {
-            topic = Topic(approved = getMemberRole(community.getMembers(),data.login.email) == MemberType.MODERATOR, id = UUID.randomUUID().toString(), creator = user.getEmail(), footer = user.getUserName(), mainTopic = null)
-            topics = user.getTopics()
-            topics.add(topic.getID())
-            user.setTopics(topics)
-
-            topics = community.getTopics()
-            topics.add(topic.getID())
-            community.setTopics(topics)
-
-            userDB.insert(user)
-            communityDB.insert(community)
-            return topicDB.insert(topic)
-        }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-    }
-
-    private fun createCommunitySubTopic(data: TopicData, mainTopic: Topic, userDB: UserDBInterface, communityDB: CommunityDBInterface, topicDB: TopicDBInterface): Status {
-        val user = userDB.select(data.login.email)
-        val community = data.communityID?.let { communityDB.select(it) }
-        lateinit var topic: Topic
-        lateinit var comments: List<String>
-
-        return if (data.identifier != null && community != null && user != null && mainTopic.getApproved()) {
-            topic = Topic(approved = true, id = UUID.randomUUID().toString(), creator = user.getEmail(), footer = user.getUserName(), mainTopic = mainTopic.getMainTopic())
-
-            comments = mainTopic.getComments()
-            comments.add(topic.getID())
-            mainTopic.setComments(comments)
-
-            topicDB.insert(mainTopic)
-            userDB.insert(user)
-            return topicDB.insert(topic)
-        }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-    }
-
-    private fun createUserMainTopic(data: TopicData, userDB: UserDBInterface, topicDB: TopicDBInterface):Status {
-        val user = userDB.select(data.login.email)
-        lateinit var topics: List<String>
-
-        return if (user != null) {
-            val topic = Topic(approved = true, id = UUID.randomUUID().toString(), creator = user.getEmail(), footer = user.getUserName(), mainTopic = null)
-            topics = user.getTopics()
-            topics.add(topic.getID())
-            user.setTopics(topics)
-
-            userDB.insert(user)
-            return topicDB.insert(topic)
-        }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-    }
-
-    private fun createUserSubTopic(data: TopicData, mainTopic: Topic, userDB: UserDBInterface, topicDB: TopicDBInterface):Status {
-        val user = userDB.select(data.login.email)
-        lateinit var topic: Topic
-        lateinit var comments: List<String>
-
-        return if (data.identifier != null && user != null) {
-            topic = Topic(approved = true, id = UUID.randomUUID().toString(), creator = user.getEmail(), footer = user.getUserName(), mainTopic = mainTopic.getID())
-
-            comments = mainTopic.getComments()
-            comments.add(topic.getID())
-            mainTopic.setComments(comments)
-
-            topicDB.insert(mainTopic)
-
-            userDB.insert(user)
-            return topicDB.insert(topic)
-        }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-    }
-
 }

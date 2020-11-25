@@ -1,9 +1,7 @@
 package br.meetingplace.server.db.mapper.community
 
-import br.meetingplace.server.db.mapper.group.GroupMapperInterface
-import br.meetingplace.server.modules.chat.db.ChatOwner
 import br.meetingplace.server.modules.community.db.Community
-import br.meetingplace.server.modules.community.db.CommunityMembers
+import br.meetingplace.server.modules.community.db.CommunityMember
 import br.meetingplace.server.modules.community.dto.CommunityDTO
 import br.meetingplace.server.modules.community.dto.CommunityMembersDTO
 import org.jetbrains.exposed.sql.ResultRow
@@ -14,6 +12,6 @@ class CommunityMapper: CommunityMapperInterface {
     }
 
     override fun mapCommunityMembersDTO(it: ResultRow): CommunityMembersDTO {
-        return CommunityMembersDTO(communityID = it[CommunityMembers.communityID], admin = it[CommunityMembers.admin], userID = it[CommunityMembers.userID])
+        return CommunityMembersDTO(communityID = it[CommunityMember.communityID], admin = it[CommunityMember.admin], userID = it[CommunityMember.userID])
     }
 }

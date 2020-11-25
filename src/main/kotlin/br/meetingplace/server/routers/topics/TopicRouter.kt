@@ -1,15 +1,12 @@
 package br.meetingplace.server.routers.topics
 
-import br.meetingplace.server.db.community.CommunityDB
-import br.meetingplace.server.db.topic.TopicDB
-import br.meetingplace.server.db.user.UserDB
+
 import br.meetingplace.server.modules.topic.dao.delete.DeleteTopic
 import br.meetingplace.server.modules.topic.dao.dislike.DislikeTopic
 import br.meetingplace.server.modules.topic.dao.factory.TopicFactory
 import br.meetingplace.server.modules.topic.dao.like.LikeTopic
-import br.meetingplace.server.modules.user.dao.todo.UserReader
 import br.meetingplace.server.requests.generic.data.Login
-import br.meetingplace.server.requests.topics.data.TopicData
+import br.meetingplace.server.requests.topics.data.TopicCreationData
 import br.meetingplace.server.requests.topics.data.TopicIdentifier
 import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
 import br.meetingplace.server.routers.topics.paths.TopicPaths
@@ -47,7 +44,7 @@ fun Route.topicRouter() {
                 call.respond(topics)
         }
         post(TopicPaths.TOPIC) {
-            val new = call.receive<TopicData>()
+            val new = call.receive<TopicCreationData>()
             call.respond(TopicFactory.getClass().create(new, userDB = UserDB.getClass(), topicDB = TopicDB.getClass(), communityDB = CommunityDB.getClass()))
         }
         delete(TopicPaths.TOPIC) {
