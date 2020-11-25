@@ -7,9 +7,9 @@ import br.meetingplace.server.db.user.UserDB
 import br.meetingplace.server.modules.global.dto.http.status.Status
 import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
 import br.meetingplace.server.modules.user.dao.delete.UserDelete
-import br.meetingplace.server.modules.user.dao.factory.UserFactory
-import br.meetingplace.server.modules.user.dao.profile.Profile
-import br.meetingplace.server.modules.user.dao.social.Social
+import br.meetingplace.server.modules.user.dao.factory.UserFactoryDAO
+import br.meetingplace.server.modules.user.dao.profile.ProfileDAO
+import br.meetingplace.server.modules.user.dao.social.SocialDAO
 import br.meetingplace.server.requests.generic.data.Login
 import br.meetingplace.server.requests.generic.operators.SimpleOperator
 import br.meetingplace.server.requests.users.data.ProfileData
@@ -34,7 +34,7 @@ fun Route.userRouter() {
         }
         post(UserPaths.USER) {
             val user = call.receive<UserCreationData>()
-            call.respond(UserFactory.getClass().create(user, rwUser = UserDB.getClass()))
+            call.respond(UserFactoryDAO.getClass().create(user, rwUser = UserDB.getClass()))
         }
         delete(UserPaths.USER) {
             val data = call.receive<Login>()
@@ -43,20 +43,20 @@ fun Route.userRouter() {
 
         patch(UserPaths.NOTIFICATIONS) {
             val data = call.receive<Login>()
-            call.respond(Profile.getClass().clearNotifications(data, userDB = UserDB.getClass()))
+            call.respond(ProfileDAO.getClass().clearNotifications(data, userDB = UserDB.getClass()))
         }
 
         patch(UserPaths.PROFILE) {
             val user = call.receive<ProfileData>()
-            call.respond(Profile.getClass().updateProfile(user, userDB = UserDB.getClass()))
+            call.respond(ProfileDAO.getClass().updateProfile(user, userDB = UserDB.getClass()))
         }
         patch(UserPaths.FOLLOW) {
             val follow = call.receive<SimpleOperator>()
-            call.respond(Social.getClass().follow(follow, userDB = UserDB.getClass()))
+            call.respond(SocialDAO.getClass().follow(follow, userDB = UserDB.getClass()))
         }
         patch(UserPaths.UNFOLLOW) {
             val unfollow = call.receive<SimpleOperator>()
-            call.respond(Social.getClass().unfollow(unfollow, userDB = UserDB.getClass()))
+            call.respond(SocialDAO.getClass().unfollow(unfollow, userDB = UserDB.getClass()))
         }
     }
 }
