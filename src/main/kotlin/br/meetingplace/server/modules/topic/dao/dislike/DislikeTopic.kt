@@ -1,92 +1,51 @@
 package br.meetingplace.server.modules.topic.dao.dislike
 
-import br.meetingplace.server.modules.global.dto.http.status.Status
-import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
+import br.meetingplace.server.db.mapper.topic.TopicMapperInterface
+import br.meetingplace.server.modules.global.http.status.Status
+import br.meetingplace.server.modules.global.http.status.StatusMessages
 import br.meetingplace.server.modules.topic.db.Topic
+import br.meetingplace.server.modules.topic.db.TopicOpinions
+import br.meetingplace.server.modules.user.db.User
 import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 object DislikeTopic{
 
-    fun dislike(data: TopicSimpleOperator, rwUser: UserDBInterface, rwTopic: TopicDBInterface, rwCommunity: CommunityDBInterface): Status {
-        return if (rwUser.check(data.login.email)) {
-            when (data.communityID.isNullOrBlank()) {
-                true -> { //USER
-                    return when (data.identifier.subTopicID.isNullOrBlank()) {
-                        true -> {
-                            val topic = rwTopic.select(mainTopic = null, id = data.identifier.mainTopicID)
-                            if (topic != null)
-                                dislike(email = data.login.email, rwTopic = rwTopic, topic = topic)
-                            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-                        } //MAIN
-                        false -> {
-                            val topic = rwTopic.select(mainTopic = data.identifier.mainTopicID, id = data.identifier.subTopicID)
-                            if (topic != null)
-                                dislike(topic, email = data.login.email, rwTopic)
-                            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-                        } //SUB
+    fun dislike(data: TopicSimpleOperator, topicMapper: TopicMapperInterface): Status {
+        return if (!User.select { User.id eq data.userID }.empty() && !Topic.select { Topic.id eq data.topicID }.empty())
+            return when (checkLikeDislike(data.topicID, userID = data.userID, topicMapper = topicMapper)) {
+                0 -> {
+                    TopicOpinions.update({ (TopicOpinions.userID eq data.userID) and (TopicOpinions.topicID eq data.topicID) }) {
+                        it[liked] = false
                     }
+                    Status(statusCode = 200, StatusMessages.OK)
+                }// like to dislike
+                1 -> {
+                    TopicOpinions.deleteWhere { (TopicOpinions.userID eq data.userID) and (TopicOpinions.topicID eq data.topicID) }
+                    Status(statusCode = 200, StatusMessages.OK)
                 }
-                false -> { //COMMUNITY
-                    return when (data.identifier.subTopicID.isNullOrBlank()) {
-                        true -> {//MAIN
-                            val topic = rwTopic.select(mainTopic = null, id = data.identifier.mainTopicID)
-                            if (rwCommunity.check(data.communityID) && topic != null && topic.getApproved())
-                                dislike(email = data.login.email, rwTopic = rwTopic, topic = topic)
-                            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-                        }
-                        false -> {//SUB
-                            val topic = rwTopic.select(mainTopic = data.identifier.mainTopicID, id = data.identifier.subTopicID)
-                            if (rwCommunity.check(data.communityID) && topic != null)
-                                dislike(email = data.login.email, rwTopic = rwTopic, topic = topic)
-                            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-                        }
+                2 -> {
+                    TopicOpinions.insert {
+                        it[userID] = data.userID
+                        it[topicID] = data.topicID
+                        it[liked] = false
                     }
+                    Status(statusCode = 200, StatusMessages.OK)
                 }
+                else -> Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
-        }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
+        else Status(statusCode = 404, StatusMessages.NOT_FOUND)
     }
 
-    private fun dislike(topic: Topic, email: String, rwTopic: TopicDBInterface):Status{
-        lateinit var dislikes: List<String>
-        lateinit var likes: List<String>
+    private fun checkLikeDislike(topicID: String, topicMapper: TopicMapperInterface, userID: String): Int {
+        val opinions = TopicOpinions.select { (TopicOpinions.userID eq userID) and (TopicOpinions.topicID eq topicID)}.map { topicMapper.mapTopicOpinions(it)}.firstOrNull()
 
-        return when (checkLikeDislike(topic, email)) {
-            0 -> {
-                likes = topic.getLikes()
-                likes.remove(email)
-
-                dislikes = topic.getDislikes()
-                dislikes.add(email)
-
-                topic.setLikes(likes)
-                topic.setDislikes(dislikes)
-                return rwTopic.insert(topic)
-            } // like to dislike
-            1 -> {
-                dislikes = topic.getDislikes()
-                dislikes.remove(email)
-
-                topic.setDislikes(dislikes)
-                return rwTopic.insert(topic)
-            }
-            2 -> {
-                dislikes = topic.getDislikes()
-                dislikes.add(email)
-
-                topic.setDislikes(dislikes)
-                return rwTopic.insert(topic)
-            }
-            else->Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-        }
-    }
-
-    private fun checkLikeDislike(topic: Topic, user: String): Int {
-        return when (user) {
-            in topic.getLikes() // 0 ALREADY LIKED
-            -> 0
-            in topic.getDislikes() // 1 ALREADY DISLIKED
-            -> 1
-            else -> 2 // 2 hasn't DISLIKED or liked yet
+        return when{
+            opinions == null -> 2 // 2 hasn't DISLIKED or liked yet
+            opinions.liked -> 0
+            !opinions.liked -> 1 // 1 ALREADY DISLIKED
+            else -> 2
         }
     }
 }

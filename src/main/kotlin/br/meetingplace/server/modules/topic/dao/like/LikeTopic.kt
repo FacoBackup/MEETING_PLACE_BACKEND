@@ -1,92 +1,51 @@
 package br.meetingplace.server.modules.topic.dao.like
 
-import br.meetingplace.server.modules.global.dto.http.status.Status
-import br.meetingplace.server.modules.global.dto.http.status.StatusMessages
+import br.meetingplace.server.db.mapper.topic.TopicMapperInterface
+import br.meetingplace.server.modules.global.http.status.Status
+import br.meetingplace.server.modules.global.http.status.StatusMessages
 import br.meetingplace.server.modules.topic.db.Topic
+import br.meetingplace.server.modules.topic.db.TopicOpinions
+import br.meetingplace.server.modules.user.db.User
 import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+
 
 object LikeTopic {
-
-    fun like(data: TopicSimpleOperator, userDB: UserDBInterface, topicDB: TopicDBInterface, communityDB: CommunityDBInterface): Status {
-        return if (userDB.check(data.login.email)) {
-            when (data.communityID.isNullOrBlank()) {
-                true -> { //USER
-                    return when (data.identifier.subTopicID.isNullOrBlank()) {
-                        true -> {
-                            val topic = topicDB.select(mainTopic = null, id = data.identifier.mainTopicID)
-                            if (topic != null)
-                                like(email = data.login.email, topicDB = topicDB, topic = topic)
-                            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-                        } //MAIN
-                        false -> {
-                            val topic = topicDB.select(mainTopic = data.identifier.mainTopicID, id = data.identifier.subTopicID)
-                            if (topic != null)
-                                like(topic, email = data.login.email, topicDB)
-                            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-                        } //SUB
-                    }
+    fun like(data: TopicSimpleOperator, topicMapper: TopicMapperInterface): Status {
+        return if (!User.select { User.id eq data.userID }.empty() && !Topic.select { Topic.id eq data.topicID }.empty())
+            return when (checkLikeDislike(data.topicID, userID = data.userID, topicMapper = topicMapper)) {
+                0 -> { // like to null
+                    TopicOpinions.deleteWhere {(TopicOpinions.userID eq data.userID) and (TopicOpinions.topicID eq data.topicID)}
+                    Status(statusCode = 200, StatusMessages.OK)
                 }
-                false -> { //COMMUNITY
-                    return when (data.identifier.subTopicID.isNullOrBlank()) {
-                        true -> {//MAIN
-                            val topic = topicDB.select(mainTopic = null, id = data.identifier.mainTopicID)
-                            if (communityDB.check(data.communityID) && topic != null && topic.getApproved())
-                                like(email = data.login.email, topicDB = topicDB, topic = topic)
-                            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-                        }
-                        false -> {//SUB
-                            val topic = topicDB.select(mainTopic = data.identifier.mainTopicID, id = data.identifier.subTopicID)
-                            if (communityDB.check(data.communityID) && topic != null)
-                                like(email = data.login.email, topicDB = topicDB, topic = topic)
-                            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-                        }
+                1 -> {  // dislike to like
+                    TopicOpinions.update ({(TopicOpinions.userID eq data.userID) and (TopicOpinions.topicID eq data.topicID)}){
+                        it[liked] = true
                     }
+                    Status(statusCode = 200, StatusMessages.OK)
                 }
+                2 -> { // nothing yet
+                    TopicOpinions.insert {
+                        it[userID] = data.userID
+                        it[topicID] = data.topicID
+                        it[liked] = true
+                    }
+                    Status(statusCode = 200, StatusMessages.OK)
+                }
+                else-> Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
             }
-        }else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
+        else Status(statusCode = 404, StatusMessages.NOT_FOUND)
     }
 
-    private fun like(topic: Topic, email: String, topicDB: TopicDBInterface):Status {
-        lateinit var dislikes: List<String>
-        lateinit var likes: List<String>
+    private fun checkLikeDislike(topicID: String, topicMapper: TopicMapperInterface, userID: String): Int {
+        val opinions = TopicOpinions.select { (TopicOpinions.userID eq userID) and (TopicOpinions.topicID eq topicID)}.map { topicMapper.mapTopicOpinions(it)}.firstOrNull()
 
-        return when (checkLikeDislike(topic, email)) {
-            0 -> {
-                likes = topic.getLikes()
-                likes.remove(email)
-
-                topic.setLikes(dislikes)
-                return topicDB.insert(topic)
-            }
-            1 -> {
-                likes = topic.getLikes()
-                likes.add(email)
-
-                dislikes = topic.getDislikes()
-                dislikes.remove(email)
-
-                topic.setLikes(likes)
-                topic.setDislikes(dislikes)
-                return topicDB.insert(topic)
-            } //dislikeToLike
-            2 -> {
-                likes = topic.getLikes()
-                likes.add(email)
-
-                topic.setLikes(dislikes)
-                return topicDB.insert(topic)
-            }
-            else -> Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
-        }
-    }
-
-    private fun checkLikeDislike(topic: Topic, user: String): Int {// IF TRUE THE USER ALREADY LIKED OR DISLIKED THE THREAD
-        return when (user) {
-            in topic.getLikes() // 0 ALREADY LIKED
-            -> 0
-            in topic.getDislikes() // 1 ALREADY DISLIKED
-            -> 1
-            else -> 2 // 2 hasn't DISLIKED or liked yet
+        return when{
+            opinions == null -> 2 // nothing yet
+            opinions.liked -> 0 // like to null
+            !opinions.liked -> 1 // dislike to like
+            else -> 2
         }
     }
 }

@@ -1,29 +1,25 @@
 package br.meetingplace.server.modules.user.dao.social
 
-import br.meetingplace.server.db.mapper.user.UserMapperInterface
-import br.meetingplace.server.modules.community.dto.CommunityMembersDTO
+import br.meetingplace.server.modules.community.db.CommunityMember
 import br.meetingplace.server.modules.global.http.status.Status
 import br.meetingplace.server.modules.global.http.status.StatusMessages
 import br.meetingplace.server.modules.user.db.Social
-import br.meetingplace.server.modules.user.dto.SocialDTO
 import br.meetingplace.server.requests.generic.operators.SimpleOperator
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.*
 
 object SocialDAO {
 
     fun follow(data: SimpleOperator): Status {
-        try {
+        return try {
             when(data.community){
-                true->{
-                    TODO("Not yet implemented")
+                true-> CommunityMember.insert {
+                    it[communityID] = data.subjectID
+                    it[userID] = data.userID
+                    it[admin] = false
                 }
-                false->{
-                    if(verifyuser(data.userID) && verifyuser(data.subjectID)){
-                        Social.insert {
-                            it[Social.followedID] = data.subjectID
-                            it[Social.followerID] = data.userID
-                        }
-                    }
+                false-> Social.insert {
+                    it[followedID] = data.subjectID
+                    it[followerID] = data.userID
                 }
             }
             Status(statusCode = 200, StatusMessages.OK)
@@ -32,7 +28,16 @@ object SocialDAO {
         }
     }
 
-    fun unfollow(data: SimpleOperator, userDB: UserDBInterface):Status{
+    fun unfollow(data: SimpleOperator):Status{
+        return try {
+            when(data.community){
+                true-> CommunityMember.deleteWhere {(CommunityMember.userID eq data.userID) and (CommunityMember.communityID eq data.subjectID)}
 
+                false-> Social.deleteWhere {(Social.followerID eq data.userID) and (Social.followedID eq data.subjectID)}
+            }
+            Status(statusCode = 200, StatusMessages.OK)
+        }catch (e: Exception){
+            Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
+        }
     }
 }
