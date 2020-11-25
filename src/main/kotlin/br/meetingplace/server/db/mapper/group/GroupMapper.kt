@@ -1,7 +1,7 @@
 package br.meetingplace.server.db.mapper.group
 
 import br.meetingplace.server.modules.groups.db.Group
-import br.meetingplace.server.modules.groups.db.GroupMembers
+import br.meetingplace.server.modules.groups.db.GroupMember
 import br.meetingplace.server.modules.groups.dto.GroupDTO
 import br.meetingplace.server.modules.groups.dto.GroupMembersDTO
 import org.jetbrains.exposed.sql.ResultRow
@@ -12,6 +12,6 @@ class GroupMapper: GroupMapperInterface {
     }
 
     override fun mapGroupMembers(it: ResultRow): GroupMembersDTO {
-        return GroupMembersDTO(groupID = it[GroupMembers.groupID], admin = it[GroupMembers.admin], userID = it[GroupMembers.userID])
+        return GroupMembersDTO(groupID = it[GroupMember.groupID], admin = it[GroupMember.admin], userID = it[GroupMember.userID])
     }
 }
