@@ -26,7 +26,7 @@ object SocialDAO {
                     }
                 }
             }
-
+            Status(statusCode = 200, StatusMessages.OK)
         }catch (e: Exception){
             Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
         }

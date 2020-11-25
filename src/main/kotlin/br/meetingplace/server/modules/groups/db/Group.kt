@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.jodatime.date
 
 
 object Group: Table("group"){
-    val communityID = varchar("community_id", 32).references(Community.id)
+    val communityID = varchar("community_id", 32).references(Community.id).nullable()
     val id= varchar("group_id", 32)
     var name= varchar("group_name", 64)
     var about= varchar("group_about", 256).nullable()
