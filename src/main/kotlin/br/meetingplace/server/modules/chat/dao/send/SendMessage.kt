@@ -4,8 +4,8 @@ import br.meetingplace.server.db.mapper.chat.ChatMapperInterface
 import br.meetingplace.server.modules.chat.db.Chat
 import br.meetingplace.server.modules.chat.db.ChatOwner
 import br.meetingplace.server.modules.chat.db.Message
-import br.meetingplace.server.modules.global.http.status.Status
-import br.meetingplace.server.modules.global.http.status.StatusMessages
+import br.meetingplace.server.responses.status.Status
+import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.user.db.User
 import br.meetingplace.server.requests.chat.data.MessageData
 import org.jetbrains.exposed.sql.and
@@ -18,7 +18,7 @@ import java.util.*
 
 object SendMessage {
 
-    fun sendMessage(data: MessageData, chatMapper: ChatMapperInterface): Status{
+    fun sendMessage(data: MessageData, chatMapper: ChatMapperInterface): Status {
         return try {
             val chat = Chat.select {Chat.id eq data.chatID}.firstOrNull()
             if(chat != null)

@@ -1,6 +1,9 @@
 package br.meetingplace.server.routers.topics
 
 
+import br.meetingplace.server.db.mapper.community.CommunityMapper
+import br.meetingplace.server.db.mapper.topic.TopicMapper
+import br.meetingplace.server.db.mapper.user.UserMapper
 import br.meetingplace.server.modules.topic.dao.delete.DeleteTopic
 import br.meetingplace.server.modules.topic.dao.dislike.DislikeTopic
 import br.meetingplace.server.modules.topic.dao.factory.TopicFactory
@@ -18,48 +21,51 @@ import io.ktor.routing.*
 fun Route.topicRouter() {
     route("/api") {
         get(TopicPaths.MY_TOPICS) {
-            val data = call.receive<Login>()
-            val topics = UserReader.getClass().getMyTopics(data, rwUser = UserDB.getClass(), rwTopic = TopicDB.getClass())
-            if (topics.isEmpty())
-                call.respond("Nothing Found.")
-            else
-                call.respond(topics)
+            TODO("NOT YET IMPLEMENTED")
+//            val data = call.receive<Login>()
+//            val topics = UserReader.getMyTopics(data, rwUser = UserDB, rwTopic = TopicDB)
+//            if (topics.isEmpty())
+//                call.respond("Nothing Found.")
+//            else
+//                call.respond(topics)
         }
         get(TopicPaths.TOPIC) {
-            val data = call.receive<TopicIdentifier>()
-            val search = if (!data.subTopicID.isNullOrBlank()) TopicDB.getClass().select(data.subTopicID, data.mainTopicID)
-            else TopicDB.getClass().select(data.mainTopicID, null)
-
-            if (search == null)
-                call.respond("Nothing found.")
-            else
-                call.respond(search)
+            TODO("NOT YET IMPLEMENTED")
+//            val data = call.receive<TopicIdentifier>()
+//            val search = if (!data.subTopicID.isNullOrBlank()) TopicDB.select(data.subTopicID, data.mainTopicID)
+//            else TopicDB.select(data.mainTopicID, null)
+//
+//            if (search == null)
+//                call.respond("Nothing found.")
+//            else
+//                call.respond(search)
         }
         get(TopicPaths.TIMELINE) {
-            val data = call.receive<Login>()
-            val topics = UserReader.getClass().getMyTimeline(data, rwTopic = TopicDB.getClass(), rwUser = UserDB.getClass())
-            if (topics.isEmpty())
-                call.respond("Nothing Found.")
-            else
-                call.respond(topics)
+            TODO("NOT YET IMPLEMENTED")
+//            val data = call.receive<Login>()
+//            val topics = UserReader.getMyTimeline(data, rwTopic = TopicDB, rwUser = UserDB)
+//            if (topics.isEmpty())
+//                call.respond("Nothing Found.")
+//            else
+//                call.respond(topics)
         }
         post(TopicPaths.TOPIC) {
             val new = call.receive<TopicCreationData>()
-            call.respond(TopicFactory.getClass().create(new, userDB = UserDB.getClass(), topicDB = TopicDB.getClass(), communityDB = CommunityDB.getClass()))
+            call.respond(TopicFactory.create(new, userMapper = UserMapper, communityMapper = CommunityMapper))
         }
         delete(TopicPaths.TOPIC) {
             val topic = call.receive<TopicSimpleOperator>()
-            call.respond(DeleteTopic.getClass().delete(topic, rwUser = UserDB.getClass(), rwTopic = TopicDB.getClass(), rwCommunity = CommunityDB.getClass()))
+            call.respond(DeleteTopic.deleteTopic(topic))
         }
 
         patch(TopicPaths.LIKE) {
             val post = call.receive<TopicSimpleOperator>()
-            call.respond(LikeTopic.getClass().like(post, userDB = UserDB.getClass(), topicDB = TopicDB.getClass(), communityDB = CommunityDB.getClass()))
+            call.respond(LikeTopic.like(post, topicMapper = TopicMapper))
         }
 
         patch(TopicPaths.DISLIKE) {
             val post = call.receive<TopicSimpleOperator>()
-            call.respond(DislikeTopic.getClass().dislike(post, rwUser = UserDB.getClass(), rwTopic = TopicDB.getClass(), rwCommunity = CommunityDB.getClass()))
+            call.respond(DislikeTopic.dislike(post, topicMapper = TopicMapper))
         }
 
     }

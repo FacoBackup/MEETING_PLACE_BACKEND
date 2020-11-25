@@ -1,9 +1,10 @@
-package br.meetingplace.server.modules.chat.dao.dislike
+package br.meetingplace.server.modules.chat.dao.like
 
 import br.meetingplace.server.requests.chat.operators.ChatSimpleOperator
 
-object DislikeMessage {
-    fun dislikeMessage(data: ChatSimpleOperator) {
+object LikeMessage{
+
+    fun favoriteMessage(data: ChatSimpleOperator) {
         TODO("NOT YET IMPLEMENTED")
 //        val user = rwUser.select(data.login.email)
 //        lateinit var liked: List<String>
@@ -18,17 +19,26 @@ object DislikeMessage {
 //                            true -> {
 //                                val community = rwCommunity.select(group.getOwner().ID)
 //                                if (community != null && chat != null && group.getID() in community.getGroups()) {
+//
 //                                    liked = chat.getLiked()
-//                                    liked.remove(data.messageID)
-//                                    chat.setLiked(liked = liked)
+//                                    if (getContent(chat.getMessages(), data.messageID) != null) {
+//                                        liked.add(data.messageID)
+//                                        chat.setLiked(liked = liked)
+//                                    }
+//
+//
 //                                    rwChat.insert(chat)
 //                                }
 //                            }
 //                            false -> {
 //                                if (chat != null) {
 //                                    liked = chat.getLiked()
-//                                    liked.remove(data.messageID)
-//                                    chat.setLiked(liked = liked)
+//                                    if (getContent(chat.getMessages(), data.messageID) != null) {
+//                                        liked.add(data.messageID)
+//                                        chat.setLiked(liked = liked)
+//                                    }
+//
+//
 //                                    rwChat.insert(chat)
 //                                }
 //                            }
@@ -39,8 +49,11 @@ object DislikeMessage {
 //                    val chat = rwChat.select(data.receiver.chatID)
 //                    if (chat != null) {
 //                        liked = chat.getLiked()
-//                        liked.remove(data.messageID)
-//                        chat.setLiked(liked = liked)
+//                        if (getContent(chat.getMessages(), data.messageID) != null) {
+//                            liked.add(data.messageID)
+//                            chat.setLiked(liked = liked)
+//                        }
+//
 //                        rwChat.insert(chat)
 //                    }
 //                }

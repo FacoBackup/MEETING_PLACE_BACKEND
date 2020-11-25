@@ -1,12 +1,10 @@
 package br.meetingplace.server.modules.user.dao.delete
 
-import br.meetingplace.server.modules.global.http.status.Status
-import br.meetingplace.server.modules.global.http.status.StatusMessages
-import br.meetingplace.server.modules.topic.db.Topic
+import br.meetingplace.server.responses.status.Status
+import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.user.db.User
 import br.meetingplace.server.requests.generic.data.Login
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
 
 object UserDelete {
 

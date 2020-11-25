@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.user.dao.social
 
 import br.meetingplace.server.modules.community.db.CommunityMember
-import br.meetingplace.server.modules.global.http.status.Status
-import br.meetingplace.server.modules.global.http.status.StatusMessages
+import br.meetingplace.server.responses.status.Status
+import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.user.db.Social
 import br.meetingplace.server.requests.generic.operators.SimpleOperator
 import org.jetbrains.exposed.sql.*
@@ -28,7 +28,7 @@ object SocialDAO {
         }
     }
 
-    fun unfollow(data: SimpleOperator):Status{
+    fun unfollow(data: SimpleOperator): Status {
         return try {
             when(data.community){
                 true-> CommunityMember.deleteWhere {(CommunityMember.userID eq data.userID) and (CommunityMember.communityID eq data.subjectID)}

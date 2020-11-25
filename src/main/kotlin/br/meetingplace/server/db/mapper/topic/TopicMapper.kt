@@ -6,9 +6,9 @@ import br.meetingplace.server.modules.topic.dto.TopicDTO
 import br.meetingplace.server.modules.topic.dto.TopicOpinionsDTO
 import org.jetbrains.exposed.sql.ResultRow
 
-class TopicMapper: TopicMapperInterface {
+object TopicMapper: TopicMapperInterface {
     override fun mapTopic(it: ResultRow): TopicDTO {
-        return TopicDTO(id =  it[Topic.id], header =  it[Topic.header], body =  it[Topic.body], approved =  it[Topic.approved], footer =  it[Topic.footer], creatorID =  it[Topic.creatorID], mainTopicID =  it[Topic.mainTopicID], creationDate =  it[Topic.creationDate].toString("dd-MM-yyyy"))
+        return TopicDTO(id =  it[Topic.id], header =  it[Topic.header], body =  it[Topic.body], approved =  it[Topic.approved], footer =  it[Topic.footer], creatorID =  it[Topic.creatorID], mainTopicID =  it[Topic.mainTopicID], creationDate =  it[Topic.creationDate].toString("dd-MM-yyyy"), communityID = it[Topic.communityID], imageURL = it[Topic.imageURL])
     }
 
     override fun mapTopicOpinions(it: ResultRow): TopicOpinionsDTO {

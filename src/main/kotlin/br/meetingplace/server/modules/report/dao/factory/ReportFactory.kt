@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.report.dao.factory
 
 import br.meetingplace.server.modules.community.db.CommunityMember
-import br.meetingplace.server.modules.global.http.status.Status
-import br.meetingplace.server.modules.global.http.status.StatusMessages
+import br.meetingplace.server.responses.status.Status
+import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.report.db.Report
 import br.meetingplace.server.modules.topic.db.Topic
 import br.meetingplace.server.modules.user.db.User

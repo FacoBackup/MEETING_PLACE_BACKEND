@@ -1,14 +1,11 @@
 package br.meetingplace.server.modules.user.dao.factory
 
-import br.meetingplace.server.modules.global.http.status.Status
-import br.meetingplace.server.modules.global.http.status.StatusMessages
+import br.meetingplace.server.responses.status.Status
+import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.user.db.User
-import br.meetingplace.server.modules.user.dto.UserDTO
 import br.meetingplace.server.requests.users.data.UserCreationData
-import com.typesafe.config.ConfigException
 import org.jetbrains.exposed.sql.insert
 import org.joda.time.DateTime
-import org.joda.time.LocalDate
 import java.util.*
 
 

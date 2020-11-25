@@ -6,7 +6,7 @@ import br.meetingplace.server.modules.community.dto.CommunityDTO
 import br.meetingplace.server.modules.community.dto.CommunityMembersDTO
 import org.jetbrains.exposed.sql.ResultRow
 
-class CommunityMapper: CommunityMapperInterface {
+object CommunityMapper: CommunityMapperInterface {
     override fun mapCommunityDTO(it: ResultRow): CommunityDTO {
         return CommunityDTO(name = it[Community.name], id = it[Community.id],about = it[Community.imageURL], imageURL =  it[Community.imageURL], creationDate = it[Community.creationDate].toString("dd-MM-yyyy"))
     }

@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.groups.dao.delete
 
 import br.meetingplace.server.db.mapper.group.GroupMapperInterface
-import br.meetingplace.server.modules.global.http.status.Status
-import br.meetingplace.server.modules.global.http.status.StatusMessages
+import br.meetingplace.server.responses.status.Status
+import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.groups.db.Group
 import br.meetingplace.server.modules.groups.db.GroupMember
 import br.meetingplace.server.modules.user.db.User

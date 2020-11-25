@@ -1,9 +1,6 @@
 package br.meetingplace.server.routers.community
 
-import br.meetingplace.server.db.community.CommunityDB
-import br.meetingplace.server.db.group.GroupDB
-import br.meetingplace.server.db.topic.TopicDB
-import br.meetingplace.server.db.user.UserDB
+import br.meetingplace.server.db.mapper.group.GroupMapper
 import br.meetingplace.server.modules.community.dao.factory.CommunityFactory
 import br.meetingplace.server.modules.community.dao.moderators.Moderator
 import br.meetingplace.server.requests.community.Approval
@@ -18,15 +15,11 @@ fun Route.communityRouter() {
     route("/api") {
         post(CommunityPaths.COMMUNITY) {
             val data = call.receive<CreationData>()
-            call.respond(CommunityFactory.getClass().create(data, userDB = UserDB.getClass(), communityDB = CommunityDB.getClass()))
+            call.respond(CommunityFactory.create(data))
         }
         patch(CommunityPaths.GROUP) {
             val data = call.receive<Approval>()
-            call.respond(Moderator.getClass().approveGroup(data, communityDB = CommunityDB.getClass(), userDB = UserDB.getClass(), groupDB = GroupDB.getClass()))
-        }
-        patch(CommunityPaths.TOPIC) {
-            val data = call.receive<Approval>()
-            call.respond(Moderator.getClass().approveTopic(data, communityDB = CommunityDB.getClass(), userDB = UserDB.getClass(), topicDB = TopicDB.getClass()))
+            call.respond(Moderator.approveGroup(data, groupMapper = GroupMapper))
         }
     }
 }

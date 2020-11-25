@@ -5,8 +5,8 @@ import br.meetingplace.server.db.mapper.topic.TopicMapperInterface
 import br.meetingplace.server.db.mapper.user.UserMapperInterface
 import br.meetingplace.server.modules.community.db.Community
 import br.meetingplace.server.modules.community.db.CommunityMember
-import br.meetingplace.server.modules.global.http.status.Status
-import br.meetingplace.server.modules.global.http.status.StatusMessages
+import br.meetingplace.server.responses.status.Status
+import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.topic.db.Topic
 import br.meetingplace.server.modules.user.db.User
 import br.meetingplace.server.requests.topics.data.TopicCreationData
@@ -14,14 +14,12 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.joda.time.DateTime
-import org.joda.time.LocalDate
 import org.joda.time.LocalDateTime
-import java.text.DateFormat
 import java.util.*
 
 object TopicFactory {
 
-    fun create(data: TopicCreationData, userMapper: UserMapperInterface, topicMapper: TopicMapperInterface, memberMapper: CommunityMapperInterface): Status {
+    fun create(data: TopicCreationData, userMapper: UserMapperInterface, communityMapper: CommunityMapperInterface): Status {
         return try {
             val user = User.select { User.id eq data.userID }.map { userMapper.mapUser(it) }.firstOrNull()
             when (data.communityID.isNullOrBlank()) {
@@ -43,7 +41,7 @@ object TopicFactory {
                     } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
                 }
                 false -> {
-                    val member = CommunityMember.select { CommunityMember.userID eq data.userID }.map { memberMapper.mapCommunityMembersDTO(it) }.firstOrNull()
+                    val member = CommunityMember.select { CommunityMember.userID eq data.userID }.map { communityMapper.mapCommunityMembersDTO(it) }.firstOrNull()
                     return if (!Community.select { Community.id eq data.communityID }.empty() && user != null && member != null) {
                         Topic.insert {
                             it[id] = UUID.randomUUID().toString()
@@ -65,7 +63,7 @@ object TopicFactory {
             Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
     }
-    fun createComment(data: TopicCreationData, userMapper: UserMapperInterface, topicMapper: TopicMapperInterface, memberMapper: CommunityMapperInterface): Status {
+    fun createComment(data: TopicCreationData, userMapper: UserMapperInterface, memberMapper: CommunityMapperInterface): Status {
         return try {
             val user = User.select { User.id eq data.userID }.map { userMapper.mapUser(it) }.firstOrNull()
             when (data.communityID.isNullOrBlank()) {

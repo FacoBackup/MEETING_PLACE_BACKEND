@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.report.dao.delete
 
-import br.meetingplace.server.modules.global.http.status.Status
-import br.meetingplace.server.modules.global.http.status.StatusMessages
+import br.meetingplace.server.responses.status.Status
+import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.report.db.Report
 import br.meetingplace.server.requests.report.ReportOperator
 import org.jetbrains.exposed.sql.and

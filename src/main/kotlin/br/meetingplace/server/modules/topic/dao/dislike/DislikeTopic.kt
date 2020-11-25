@@ -1,14 +1,13 @@
 package br.meetingplace.server.modules.topic.dao.dislike
 
 import br.meetingplace.server.db.mapper.topic.TopicMapperInterface
-import br.meetingplace.server.modules.global.http.status.Status
-import br.meetingplace.server.modules.global.http.status.StatusMessages
+import br.meetingplace.server.responses.status.Status
+import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.topic.db.Topic
 import br.meetingplace.server.modules.topic.db.TopicOpinions
 import br.meetingplace.server.modules.user.db.User
 import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 object DislikeTopic{
 

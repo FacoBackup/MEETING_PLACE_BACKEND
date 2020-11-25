@@ -5,12 +5,11 @@ import br.meetingplace.server.db.mapper.group.GroupMapperInterface
 import br.meetingplace.server.modules.chat.db.Chat
 import br.meetingplace.server.modules.community.db.Community
 import br.meetingplace.server.modules.community.db.CommunityMember
-import br.meetingplace.server.modules.global.http.status.Status
-import br.meetingplace.server.modules.global.http.status.StatusMessages
+import br.meetingplace.server.responses.status.Status
+import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.groups.db.Group
 import br.meetingplace.server.modules.user.db.User
 import br.meetingplace.server.requests.generic.data.CreationData
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.joda.time.DateTime
@@ -19,7 +18,7 @@ import java.util.*
 
 object GroupFactory {
 
-    fun create(data: CreationData, communityMemberMapper: CommunityMapperInterface, groupMapper: GroupMapperInterface) : Status {
+    fun create(data: CreationData, communityMapper: CommunityMapperInterface) : Status {
         return try {
             when(data.communityID.isNullOrBlank()){
                 true->{ //user
@@ -42,7 +41,7 @@ object GroupFactory {
                     }
                 }
                 false->{ //community
-                    val member = CommunityMember.select { CommunityMember.userID eq data.userID }.map { communityMemberMapper.mapCommunityMembersDTO(it)}.firstOrNull()
+                    val member = CommunityMember.select { CommunityMember.userID eq data.userID }.map { communityMapper.mapCommunityMembersDTO(it)}.firstOrNull()
                     if(!User.select {User.id eq data.userID}.empty() && !Community.select { Community.id eq data.communityID}.empty() && member != null){
                         Group.insert {
                             it[id] = UUID.randomUUID().toString()

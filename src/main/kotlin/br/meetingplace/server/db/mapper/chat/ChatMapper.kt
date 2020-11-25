@@ -10,7 +10,7 @@ import br.meetingplace.server.modules.chat.dto.MessageDTO
 import br.meetingplace.server.modules.chat.dto.MessageOpinionsDTO
 import org.jetbrains.exposed.sql.ResultRow
 
-class ChatMapper: ChatMapperInterface{
+object ChatMapper: ChatMapperInterface{
     override fun mapChat(it: ResultRow): ChatDTO {
         return ChatDTO(id = it[Chat.id], groupID = it[Chat.groupID], creationDate = it[Chat.creationDate].toString("dd-MM-yyyy"))
     }

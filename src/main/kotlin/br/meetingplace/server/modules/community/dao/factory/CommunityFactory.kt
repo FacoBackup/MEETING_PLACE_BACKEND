@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.community.dao.factory
 
 import br.meetingplace.server.modules.community.db.Community
-import br.meetingplace.server.modules.global.http.status.Status
-import br.meetingplace.server.modules.global.http.status.StatusMessages
+import br.meetingplace.server.responses.status.Status
+import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.user.db.User
 import br.meetingplace.server.requests.generic.data.CreationData
 import org.jetbrains.exposed.sql.insert
