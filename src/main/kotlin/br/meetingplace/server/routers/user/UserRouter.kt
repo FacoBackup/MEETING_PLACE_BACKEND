@@ -1,38 +1,52 @@
 package br.meetingplace.server.routers.user
 
+import br.meetingplace.server.db.mapper.user.UserMapper
 import br.meetingplace.server.modules.user.dao.delete.UserDeleteDAO
 import br.meetingplace.server.modules.user.dao.factory.UserFactoryDAO
 import br.meetingplace.server.modules.user.dao.profile.ProfileDAO
 import br.meetingplace.server.modules.user.dao.social.SocialDAO
-import br.meetingplace.server.requests.generic.data.Login
+import br.meetingplace.server.modules.user.db.User
+import br.meetingplace.server.requests.generic.data.Simple
 import br.meetingplace.server.requests.generic.operators.SimpleOperator
 import br.meetingplace.server.requests.users.data.ProfileData
 import br.meetingplace.server.requests.users.data.UserCreationData
+import br.meetingplace.server.responses.status.Status
+import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.routers.user.paths.UserPaths
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.postgresql.util.PSQLException
+import java.sql.SQLException
 
 fun Route.userRouter() {
 
     route("/api") {
         get(UserPaths.USER) {
-            TODO("NOT YET IMPLEMENTED")
-//            val data = call.receive<Login>()
-//            val user = UserDB.select(data.email)
-//
-//            if (user == null)
-//                call.respond(Status(404, StatusMessages.NOT_FOUND))
-//            else
-//                call.respond(user)
+
+            val data = call.receive<Simple>()
+            val user = try {
+                transaction { User.select { User.id eq data.userID }.map { UserMapper.mapUser(it) }  }.firstOrNull()
+            }catch(sql: SQLException){
+                null
+            }catch (psql: PSQLException){
+                null
+            }
+
+            if (user == null)
+                call.respond(Status(404, StatusMessages.NOT_FOUND))
+            else
+                call.respond(user)
         }
         post(UserPaths.USER) {
             val user = call.receive<UserCreationData>()
             call.respond(UserFactoryDAO.create(user))
         }
         delete(UserPaths.USER) {
-            val data = call.receive<Login>()
+            val data = call.receive<Simple>()
             call.respond(UserDeleteDAO.delete(data))
         }
         patch(UserPaths.PROFILE) {

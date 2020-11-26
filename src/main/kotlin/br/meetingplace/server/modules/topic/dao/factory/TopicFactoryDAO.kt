@@ -2,8 +2,8 @@ package br.meetingplace.server.modules.topic.dao.factory
 
 import br.meetingplace.server.db.mapper.community.CommunityMapperInterface
 import br.meetingplace.server.db.mapper.user.UserMapperInterface
-import br.meetingplace.server.modules.communityTODOTRANSACTIONS.db.Community
-import br.meetingplace.server.modules.communityTODOTRANSACTIONS.db.CommunityMember
+import br.meetingplace.server.modules.community.db.Community
+import br.meetingplace.server.modules.community.db.CommunityMember
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.topic.db.Topic

@@ -1,9 +1,9 @@
 package br.meetingplace.server.modules.members.dao.update
 
-import br.meetingplace.server.modules.communityTODOTRANSACTIONS.db.CommunityMember
+import br.meetingplace.server.modules.community.db.CommunityMember
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
-import br.meetingplace.server.modules.groupsTODOTRANSACTIONS.db.GroupMember
+import br.meetingplace.server.modules.groups.db.GroupMember
 import br.meetingplace.server.requests.generic.operators.MemberOperator
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select

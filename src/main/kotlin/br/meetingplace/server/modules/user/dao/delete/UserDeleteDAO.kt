@@ -3,17 +3,16 @@ package br.meetingplace.server.modules.user.dao.delete
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.user.db.User
-import br.meetingplace.server.requests.generic.data.Login
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import br.meetingplace.server.requests.generic.data.Simple
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object UserDeleteDAO {
 
-    fun delete(login: Login): Status {
+    fun delete(data: Simple): Status {
         return try{
             transaction {
-                User.deleteWhere { User.id eq login.email }
+                User.deleteWhere { User.id eq data.userID }
             }
             Status(200, StatusMessages.OK)
         }catch (e: Exception){

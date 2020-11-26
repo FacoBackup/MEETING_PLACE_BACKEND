@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.report.db
 
-import br.meetingplace.server.modules.communityTODOTRANSACTIONS.db.Community
+import br.meetingplace.server.modules.community.db.Community
 import br.meetingplace.server.modules.topic.db.Topic
 import br.meetingplace.server.modules.user.db.User
 import org.jetbrains.exposed.sql.ReferenceOption

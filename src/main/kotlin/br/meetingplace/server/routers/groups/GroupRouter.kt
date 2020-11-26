@@ -3,8 +3,8 @@ package br.meetingplace.server.routers.groups
 
 import br.meetingplace.server.db.mapper.community.CommunityMapper
 import br.meetingplace.server.db.mapper.group.GroupMapper
-import br.meetingplace.server.modules.groupsTODOTRANSACTIONS.dao.delete.GroupDelete
-import br.meetingplace.server.modules.groupsTODOTRANSACTIONS.dao.factory.GroupFactory
+import br.meetingplace.server.modules.groups.dao.delete.GroupDelete
+import br.meetingplace.server.modules.groups.dao.factory.GroupFactory
 import br.meetingplace.server.requests.generic.data.CreationData
 import br.meetingplace.server.requests.generic.operators.SimpleOperator
 import br.meetingplace.server.routers.groups.paths.GroupPaths
