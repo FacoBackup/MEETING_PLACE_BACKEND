@@ -15,7 +15,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 
 fun main() {
-    val db = dbSettings("", "", "", "")
+    val db = dbSettings(host = "", dbName = "", driver = "org.postgresql.Driver", user = "", password = "" )
 
     if(db != null){
         val port = System.getenv("PORT")?.toInt() ?: 8080

@@ -1,13 +1,13 @@
 package br.meetingplace.server.db.mapper.chat
 
-import br.meetingplace.server.modules.chat.db.Chat
-import br.meetingplace.server.modules.chat.db.ChatOwner
-import br.meetingplace.server.modules.chat.db.Message
-import br.meetingplace.server.modules.chat.db.MessageOpinions
-import br.meetingplace.server.modules.chat.dto.ChatDTO
-import br.meetingplace.server.modules.chat.dto.ChatOwnerDTO
-import br.meetingplace.server.modules.chat.dto.MessageDTO
-import br.meetingplace.server.modules.chat.dto.MessageOpinionsDTO
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.db.Chat
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.db.ChatOwner
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.db.Message
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.db.MessageOpinions
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.dto.ChatDTO
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.dto.ChatOwnerDTO
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.dto.MessageDTO
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.dto.MessageOpinionsDTO
 import org.jetbrains.exposed.sql.ResultRow
 
 object ChatMapper: ChatMapperInterface{

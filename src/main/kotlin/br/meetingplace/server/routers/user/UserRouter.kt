@@ -1,7 +1,6 @@
 package br.meetingplace.server.routers.user
 
-import br.meetingplace.server.db.mapper.user.UserMapper
-import br.meetingplace.server.modules.user.dao.delete.UserDelete
+import br.meetingplace.server.modules.user.dao.delete.UserDeleteDAO
 import br.meetingplace.server.modules.user.dao.factory.UserFactoryDAO
 import br.meetingplace.server.modules.user.dao.profile.ProfileDAO
 import br.meetingplace.server.modules.user.dao.social.SocialDAO
@@ -34,7 +33,7 @@ fun Route.userRouter() {
         }
         delete(UserPaths.USER) {
             val data = call.receive<Login>()
-            call.respond(UserDelete.delete(data))
+            call.respond(UserDeleteDAO.delete(data))
         }
         patch(UserPaths.PROFILE) {
             val user = call.receive<ProfileData>()

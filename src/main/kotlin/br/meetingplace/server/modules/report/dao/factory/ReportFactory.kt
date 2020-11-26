@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.report.dao.factory
 
-import br.meetingplace.server.modules.community.db.CommunityMember
+import br.meetingplace.server.modules.communityTODOTRANSACTIONS.db.CommunityMember
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.report.db.Report
@@ -10,6 +10,7 @@ import br.meetingplace.server.requests.community.ReportCreationData
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import org.joda.time.LocalDateTime
 import java.util.*
@@ -18,9 +19,9 @@ object ReportFactory{
 
     fun createReport(data: ReportCreationData): Status {
         return try {
-            return if(!User.select {User.id eq data.userID}.empty() &&
-                    !CommunityMember.select { (CommunityMember.communityID eq data.communityID) and (CommunityMember.userID eq data.userID)}.empty() &&
-                    !Topic.select { (Topic.id eq data.topicID) and (Topic.communityID eq data.communityID)}.empty()) {
+            return if(transaction { User.select {User.id eq data.userID} }.firstOrNull() != null &&
+                    transaction { CommunityMember.select { (CommunityMember.communityID eq data.communityID) and (CommunityMember.userID eq data.userID)} }.firstOrNull() != null &&
+                    transaction { Topic.select { (Topic.id eq data.topicID) and (Topic.communityID eq data.communityID)} }.firstOrNull() != null) {
                         Report.insert {
                             it[id] = UUID.randomUUID().toString()
                             it[creatorID] = data.userID

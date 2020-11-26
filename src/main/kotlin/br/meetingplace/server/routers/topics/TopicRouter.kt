@@ -4,13 +4,11 @@ package br.meetingplace.server.routers.topics
 import br.meetingplace.server.db.mapper.community.CommunityMapper
 import br.meetingplace.server.db.mapper.topic.TopicMapper
 import br.meetingplace.server.db.mapper.user.UserMapper
-import br.meetingplace.server.modules.topic.dao.delete.DeleteTopic
-import br.meetingplace.server.modules.topic.dao.dislike.DislikeTopic
-import br.meetingplace.server.modules.topic.dao.factory.TopicFactory
-import br.meetingplace.server.modules.topic.dao.like.LikeTopic
-import br.meetingplace.server.requests.generic.data.Login
+import br.meetingplace.server.modules.topic.dao.delete.TopicDeleteDAO
+import br.meetingplace.server.modules.topic.dao.dislike.TopicDislikeDAO
+import br.meetingplace.server.modules.topic.dao.factory.TopicFactoryDAO
+import br.meetingplace.server.modules.topic.dao.like.TopicLikeDAO
 import br.meetingplace.server.requests.topics.data.TopicCreationData
-import br.meetingplace.server.requests.topics.data.TopicIdentifier
 import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
 import br.meetingplace.server.routers.topics.paths.TopicPaths
 import io.ktor.application.*
@@ -51,21 +49,21 @@ fun Route.topicRouter() {
         }
         post(TopicPaths.TOPIC) {
             val new = call.receive<TopicCreationData>()
-            call.respond(TopicFactory.create(new, userMapper = UserMapper, communityMapper = CommunityMapper))
+            call.respond(TopicFactoryDAO.create(new, userMapper = UserMapper, communityMapper = CommunityMapper))
         }
         delete(TopicPaths.TOPIC) {
             val topic = call.receive<TopicSimpleOperator>()
-            call.respond(DeleteTopic.deleteTopic(topic))
+            call.respond(TopicDeleteDAO.deleteTopic(topic))
         }
 
         patch(TopicPaths.LIKE) {
             val post = call.receive<TopicSimpleOperator>()
-            call.respond(LikeTopic.like(post, topicMapper = TopicMapper))
+            call.respond(TopicLikeDAO.like(post, topicMapper = TopicMapper))
         }
 
         patch(TopicPaths.DISLIKE) {
             val post = call.receive<TopicSimpleOperator>()
-            call.respond(DislikeTopic.dislike(post, topicMapper = TopicMapper))
+            call.respond(TopicDislikeDAO.dislike(post, topicMapper = TopicMapper))
         }
 
     }

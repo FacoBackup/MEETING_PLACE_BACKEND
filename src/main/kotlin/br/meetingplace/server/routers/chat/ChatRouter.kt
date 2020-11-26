@@ -1,12 +1,12 @@
 package br.meetingplace.server.routers.chat
 
 import br.meetingplace.server.db.mapper.chat.ChatMapper
-import br.meetingplace.server.modules.chat.dao.delete.DeleteMessage
-import br.meetingplace.server.modules.chat.dao.dislike.DislikeMessage
-import br.meetingplace.server.modules.chat.dao.like.LikeMessage
-import br.meetingplace.server.modules.chat.dao.quote.QuoteMessage
-import br.meetingplace.server.modules.chat.dao.send.SendMessage
-import br.meetingplace.server.modules.chat.dao.share.ShareMessage
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.dao.delete.DeleteMessage
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.dao.dislike.DislikeMessage
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.dao.like.LikeMessage
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.dao.quote.QuoteMessage
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.dao.send.SendMessage
+import br.meetingplace.server.modules.chatTODOTRANSACTIONS.dao.share.ShareMessage
 import br.meetingplace.server.requests.chat.data.MessageData
 import br.meetingplace.server.requests.chat.operators.ChatComplexOperator
 import br.meetingplace.server.requests.chat.operators.ChatSimpleOperator

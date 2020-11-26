@@ -1,9 +1,9 @@
 package br.meetingplace.server.db.mapper.community
 
-import br.meetingplace.server.modules.community.db.Community
-import br.meetingplace.server.modules.community.db.CommunityMember
-import br.meetingplace.server.modules.community.dto.CommunityDTO
-import br.meetingplace.server.modules.community.dto.CommunityMembersDTO
+import br.meetingplace.server.modules.communityTODOTRANSACTIONS.db.Community
+import br.meetingplace.server.modules.communityTODOTRANSACTIONS.db.CommunityMember
+import br.meetingplace.server.modules.communityTODOTRANSACTIONS.dto.CommunityDTO
+import br.meetingplace.server.modules.communityTODOTRANSACTIONS.dto.CommunityMembersDTO
 import org.jetbrains.exposed.sql.ResultRow
 
 object CommunityMapper: CommunityMapperInterface {

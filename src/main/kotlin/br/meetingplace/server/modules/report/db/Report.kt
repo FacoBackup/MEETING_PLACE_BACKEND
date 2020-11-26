@@ -1,12 +1,11 @@
 package br.meetingplace.server.modules.report.db
 
-import br.meetingplace.server.modules.community.db.Community
+import br.meetingplace.server.modules.communityTODOTRANSACTIONS.db.Community
 import br.meetingplace.server.modules.topic.db.Topic
 import br.meetingplace.server.modules.user.db.User
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.date
-import java.time.LocalDateTime
 
 object Report: Table("report"){
         val id = varchar("report_id", 32)

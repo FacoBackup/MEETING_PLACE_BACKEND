@@ -1,8 +1,8 @@
 package br.meetingplace.server.routers.community
 
 import br.meetingplace.server.db.mapper.group.GroupMapper
-import br.meetingplace.server.modules.community.dao.factory.CommunityFactory
-import br.meetingplace.server.modules.community.dao.moderators.Moderator
+import br.meetingplace.server.modules.communityTODOTRANSACTIONS.dao.factory.CommunityFactory
+import br.meetingplace.server.modules.communityTODOTRANSACTIONS.dao.moderators.Moderator
 import br.meetingplace.server.requests.community.Approval
 import br.meetingplace.server.requests.generic.data.CreationData
 import br.meetingplace.server.routers.community.paths.CommunityPaths

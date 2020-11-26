@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.topic.db
 
 
-import br.meetingplace.server.modules.community.db.Community
+import br.meetingplace.server.modules.communityTODOTRANSACTIONS.db.Community
 import br.meetingplace.server.modules.user.db.User
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
