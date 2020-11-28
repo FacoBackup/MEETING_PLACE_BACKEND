@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 object ChatOwner: Table("chat_owner"){
-    val chatID = varchar("chat_id", 32).references(Chat.id, onDelete = ReferenceOption.CASCADE)
-    val userID = varchar("user_id", 32).references(User.id, onDelete = ReferenceOption.CASCADE)
-    val receiverID = varchar("receiver_id", 32).references(User.id, onDelete = ReferenceOption.CASCADE)
+    val chatID = varchar("chat_id", 36).references(Chat.id, onDelete = ReferenceOption.CASCADE)
+    val userID = varchar("user_id", 36).references(User.id, onDelete = ReferenceOption.CASCADE)
+    val receiverID = varchar("receiver_id", 36).references(User.id, onDelete = ReferenceOption.CASCADE)
 }

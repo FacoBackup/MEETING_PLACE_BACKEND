@@ -29,7 +29,7 @@ fun Route.userRouter() {
 
             val data = call.receive<Simple>()
             val user = try {
-                transaction { User.select { User.id eq data.userID }.map { UserMapper.mapUser(it) }  }.firstOrNull()
+                transaction { User.select { User.userName eq data.userID }.map { UserMapper.mapUser(it) }  }.firstOrNull()
             }catch(sql: SQLException){
                 null
             }catch (psql: PSQLException){

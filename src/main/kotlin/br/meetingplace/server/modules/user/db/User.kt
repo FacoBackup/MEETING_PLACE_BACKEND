@@ -4,7 +4,7 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.date
 
 object User: Table("user"){
-    val id = varchar("user_id", 32)
+    val id = varchar("user_id", 36)
     var userName = varchar("user_name", 64)
     var birth = date("date_of_birth")
     var email = varchar("user_email", 64)

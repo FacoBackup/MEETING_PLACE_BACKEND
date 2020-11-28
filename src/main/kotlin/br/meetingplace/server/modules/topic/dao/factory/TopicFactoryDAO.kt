@@ -15,13 +15,14 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import org.joda.time.LocalDateTime
+import org.joda.time.format.DateTimeFormat
 import java.util.*
 
 object TopicFactoryDAO {
 
     fun create(data: TopicCreationData, userMapper: UserMapperInterface, communityMapper: CommunityMapperInterface): Status {
         return try {
-            val user = transaction { User.select { User.id eq data.userID }.map { userMapper.mapUser(it) } }.firstOrNull()
+            val user = transaction { User.select { User.id eq data.userID }.map { userMapper.mapUser(it) }.firstOrNull() }
             when (data.communityID.isNullOrBlank()) {
                 true -> {
                     return if (user != null) {
@@ -43,8 +44,8 @@ object TopicFactoryDAO {
                     } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
                 }
                 false -> {
-                    val member = transaction { CommunityMember.select { CommunityMember.userID eq data.userID }.map { communityMapper.mapCommunityMembersDTO(it) } }.firstOrNull()
-                    return if (transaction { Community.select { Community.id eq data.communityID } }.firstOrNull() != null
+                    val member = transaction { CommunityMember.select { CommunityMember.userID eq data.userID }.map { communityMapper.mapCommunityMembersDTO(it) }.firstOrNull() }
+                    return if (transaction { Community.select { Community.id eq data.communityID }.firstOrNull() }!= null
                         && user != null && member != null) {
                         transaction {
                             Topic.insert {
@@ -57,7 +58,7 @@ object TopicFactoryDAO {
                                 it[creatorID] = user.id
                                 it[mainTopicID] = null
                                 it[communityID] = member.communityID
-                                it[creationDate] = DateTime.parse(LocalDateTime.now().toString("dd-MM-yyyy"))
+                                it[creationDate] = DateTimeFormat.forPattern("dd-MM-yyyy").parseDateTime(LocalDateTime.now().toString("dd-MM-yyyy"))
                             }
                         }
                         Status(statusCode = 200, StatusMessages.OK)
@@ -65,15 +66,16 @@ object TopicFactoryDAO {
                 }
             }
         } catch (e: Exception) {
+            println(e.message)
             Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
     }
     fun createComment(data: TopicCreationData, userMapper: UserMapperInterface, memberMapper: CommunityMapperInterface): Status {
         return try {
-            val user = transaction { User.select { User.id eq data.userID }.map { userMapper.mapUser(it) } }.firstOrNull()
+            val user = transaction { User.select { User.id eq data.userID }.map { userMapper.mapUser(it) }.firstOrNull() }
             when (data.communityID.isNullOrBlank()) {
                 true -> {
-                    return if (user != null && !data.mainTopicID.isNullOrBlank() && transaction { Topic.select {(Topic.id eq data.mainTopicID) and (Topic.communityID eq null)} }.firstOrNull() != null) {
+                    return if (user != null && !data.mainTopicID.isNullOrBlank() && transaction { !Topic.select {(Topic.id eq data.mainTopicID) and (Topic.communityID eq null)}.empty() }) {
                         transaction {
                             Topic.insert {
                                 it[id] = UUID.randomUUID().toString()
@@ -92,8 +94,8 @@ object TopicFactoryDAO {
                     } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
                 }
                 false -> {
-                    val member = CommunityMember.select { CommunityMember.userID eq data.userID }.map { memberMapper.mapCommunityMembersDTO(it) }.firstOrNull()
-                    return if (!data.mainTopicID.isNullOrBlank() && transaction { Topic.select { (Topic.id eq data.mainTopicID) and (Topic.approved eq true)} }.firstOrNull() != null && user != null && member != null) {
+                    val member = transaction { CommunityMember.select { CommunityMember.userID eq data.userID }.map { memberMapper.mapCommunityMembersDTO(it) }.firstOrNull() }
+                    return if (!data.mainTopicID.isNullOrBlank() && transaction { !Topic.select { (Topic.id eq data.mainTopicID) and (Topic.approved eq true)}.empty() } && user != null && member != null) {
                         transaction {
                             Topic.insert {
                                 it[id] = UUID.randomUUID().toString()
