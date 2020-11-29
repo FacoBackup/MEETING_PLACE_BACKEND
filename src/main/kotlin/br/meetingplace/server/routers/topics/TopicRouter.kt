@@ -8,36 +8,26 @@ import br.meetingplace.server.modules.topic.dao.delete.TopicDeleteDAO
 import br.meetingplace.server.modules.topic.dao.dislike.TopicDislikeDAO
 import br.meetingplace.server.modules.topic.dao.factory.TopicFactoryDAO
 import br.meetingplace.server.modules.topic.dao.like.TopicLikeDAO
+import br.meetingplace.server.modules.topic.db.Topic
+import br.meetingplace.server.modules.topic.db.TopicOpinions
+import br.meetingplace.server.requests.generic.data.Simple
 import br.meetingplace.server.requests.topics.data.TopicCreationData
 import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
+import br.meetingplace.server.responses.status.Status
+import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.routers.topics.paths.TopicPaths
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
+import javax.annotation.processing.SupportedAnnotationTypes
 
 fun Route.topicRouter() {
     route("/api") {
-        get(TopicPaths.MY_TOPICS) {
-            TODO("NOT YET IMPLEMENTED")
-//            val data = call.receive<Login>()
-//            val topics = UserReader.getMyTopics(data, rwUser = UserDB, rwTopic = TopicDB)
-//            if (topics.isEmpty())
-//                call.respond("Nothing Found.")
-//            else
-//                call.respond(topics)
-        }
-        get(TopicPaths.TOPIC) {
-            TODO("NOT YET IMPLEMENTED")
-//            val data = call.receive<TopicIdentifier>()
-//            val search = if (!data.subTopicID.isNullOrBlank()) TopicDB.select(data.subTopicID, data.mainTopicID)
-//            else TopicDB.select(data.mainTopicID, null)
-//
-//            if (search == null)
-//                call.respond("Nothing found.")
-//            else
-//                call.respond(search)
-        }
+
         get(TopicPaths.TIMELINE) {
             TODO("NOT YET IMPLEMENTED")
 //            val data = call.receive<Login>()
@@ -47,6 +37,7 @@ fun Route.topicRouter() {
 //            else
 //                call.respond(topics)
         }
+
         post(TopicPaths.TOPIC) {
             val new = call.receive<TopicCreationData>()
             call.respond(TopicFactoryDAO.create(new, userMapper = UserMapper, communityMapper = CommunityMapper))
@@ -55,16 +46,52 @@ fun Route.topicRouter() {
             val topic = call.receive<TopicSimpleOperator>()
             call.respond(TopicDeleteDAO.deleteTopic(topic))
         }
+        get(TopicPaths.TOPIC) {
+            val data = call.receive<Simple>()
+            val topics = transaction { Topic.select { Topic.creatorID eq data.userID }.map { TopicMapper.mapTopic(it) } }
+            if (topics.isEmpty())
+                call.respond(Status(404, StatusMessages.NOT_FOUND))
+            else
+                call.respond(topics)
+        }
 
-        patch(TopicPaths.LIKE) {
+        post(TopicPaths.COMMENT) {
+            val new = call.receive<TopicCreationData>()
+            call.respond(TopicFactoryDAO.createComment(new, userMapper = UserMapper, communityMapper = CommunityMapper))
+        }
+        get (TopicPaths.COMMENT){
+            val data = call.receive<TopicSimpleOperator>()
+            val topics = transaction { Topic.select { Topic.mainTopicID eq data.topicID }.map { TopicMapper.mapTopic(it) } }
+            if (topics.isEmpty())
+                call.respond(Status(404, StatusMessages.NOT_FOUND))
+            else
+                call.respond(topics)
+        }
+
+
+        put(TopicPaths.LIKE) {
             val post = call.receive<TopicSimpleOperator>()
             call.respond(TopicLikeDAO.like(post, topicMapper = TopicMapper))
         }
-
-        patch(TopicPaths.DISLIKE) {
+        get(TopicPaths.LIKE) {
+            val data = call.receive<TopicSimpleOperator>()
+            val opinions = transaction { TopicOpinions.select { (TopicOpinions.topicID eq data.topicID) and (br.meetingplace.server.modules.topic.db.TopicOpinions.liked eq true) }.map { br.meetingplace.server.db.mapper.topic.TopicMapper.mapTopicOpinions(it) } }
+            if (opinions.isEmpty())
+                call.respond(br.meetingplace.server.responses.status.Status(404, br.meetingplace.server.responses.status.StatusMessages.NOT_FOUND))
+            else
+                call.respond(opinions)
+        }
+        put(TopicPaths.DISLIKE) {
             val post = call.receive<TopicSimpleOperator>()
             call.respond(TopicDislikeDAO.dislike(post, topicMapper = TopicMapper))
         }
-
+        get(TopicPaths.DISLIKE) {
+            val data = call.receive<TopicSimpleOperator>()
+            val opinions = transaction { TopicOpinions.select { (TopicOpinions.topicID eq data.topicID) and (TopicOpinions.liked eq false) }.map { TopicMapper.mapTopicOpinions(it) } }
+            if (opinions.isEmpty())
+                call.respond(Status(404, StatusMessages.NOT_FOUND))
+            else
+                call.respond(opinions)
+        }
     }
 }

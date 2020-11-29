@@ -17,7 +17,7 @@ import java.util.*
 object ChatFactory {
     fun createChat(data: ChatCreationData): Status {
         return try {
-            if(!transaction { User.select { User.id eq data.userID } }.empty() && !transaction { User.select { User.id eq data.receiverID } }.empty() &&
+            if(!transaction { User.select { User.id eq data.userID }.empty() } && !transaction { User.select { User.id eq data.receiverID } }.empty() &&
                     transaction { ChatOwner.select { (ChatOwner.userID eq  data.userID) and (ChatOwner.receiverID eq data.receiverID)} }.empty() &&
                     transaction { ChatOwner.select { (ChatOwner.userID eq  data.receiverID) and (ChatOwner.receiverID eq data.userID)} }.empty()){
                 val chatID = UUID.randomUUID().toString()
@@ -25,7 +25,7 @@ object ChatFactory {
                     Chat.insert {
                         it[id] = chatID
                         it[groupID] = null
-                        it[creationDate] = DateTime.parse(LocalDateTime.now().toString("dd-MM-yyyy"))
+                        it[creationDate] =  DateTime.now()
                     }
                     ChatOwner.insert {
                         it[this.chatID] = chatID

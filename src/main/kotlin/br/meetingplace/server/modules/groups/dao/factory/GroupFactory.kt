@@ -37,7 +37,7 @@ object GroupFactory {
                             Chat.insert {
                                 it[id] = UUID.randomUUID().toString()
                                 it[this.groupID] = groupID
-                                it[creationDate] = DateTime.parse(LocalDateTime.now().toString("dd-MM-yyyy"))
+                                it[creationDate] =  DateTime.now()
                             }
                         }
                     }
@@ -58,7 +58,7 @@ object GroupFactory {
                             Chat.insert {
                                 it[id] = UUID.randomUUID().toString()
                                 it[this.groupID] = groupID
-                                it[creationDate] = DateTime.parse(LocalDateTime.now().toString("dd-MM-yyyy"))
+                                it[creationDate] =  DateTime.now()
                             }
                         }
                     }

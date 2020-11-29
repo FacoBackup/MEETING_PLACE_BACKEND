@@ -27,7 +27,7 @@ object ReportFactory{
                             it[creatorID] = data.userID
                             it[topicID] = data.topicID
                             it[communityID] = data.communityID
-                            it[creationDate] = DateTime.parse(LocalDateTime.now().toString("dd-MM-yyyy"))
+                            it[creationDate] =  DateTime.now()
                             it[response] = null
                             it[status] = 0
                             it[reason] = data.reason

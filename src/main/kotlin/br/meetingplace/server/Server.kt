@@ -9,6 +9,8 @@ import br.meetingplace.server.modules.community.db.Community
 import br.meetingplace.server.modules.community.db.CommunityMember
 import br.meetingplace.server.modules.groups.db.Group
 import br.meetingplace.server.modules.groups.db.GroupMember
+import br.meetingplace.server.modules.topic.db.Topic
+import br.meetingplace.server.modules.topic.db.TopicOpinions
 import br.meetingplace.server.modules.user.db.Social
 import br.meetingplace.server.modules.user.db.User
 import br.meetingplace.server.routers.chat.chatRouter
@@ -31,7 +33,13 @@ fun main() {
     val db = dbSettings(host = "localhost", dbName = "apidb", user = "api", password = "12345" )
     try {
         transaction {
-            SchemaUtils.create(User, Social, Group, GroupMember, Chat,ChatOwner, Message, MessageOpinions, Community, CommunityMember)
+            SchemaUtils.create(
+                    User, Social,
+                    Group, GroupMember,
+                    Chat,ChatOwner,
+                    Message, MessageOpinions,
+                    Community, CommunityMember,
+                    Topic, TopicOpinions)
         }
     }catch (e: Exception){
         println(e.message)

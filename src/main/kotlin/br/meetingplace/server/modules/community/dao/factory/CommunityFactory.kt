@@ -16,13 +16,13 @@ object CommunityFactory {
 
     fun create(data: CreationData): Status {
         return try {
-            if(transaction { User.select { User.id eq data.userID } }.firstOrNull() != null){
+            if(transaction { !User.select { User.id eq data.userID }.empty() }){
                 transaction {
                     Community.insert {
                         it[name] = data.name
                         it[id] = UUID.randomUUID().toString()
                         it[imageURL] = data.imageURL
-                        it[creationDate] = DateTime.parse(LocalDateTime.now().toString("dd-MM-yyyy"))
+                        it[creationDate] =  DateTime.now()
                         it[about] = data.about
                     }
                 }
