@@ -1,10 +1,5 @@
 package br.meetingplace.server.routers.search
 
-import br.meetingplace.server.requests.generic.operators.SimpleOperator
-import br.meetingplace.server.routers.search.paths.SearchPaths
-import io.ktor.application.*
-import io.ktor.request.*
-import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Route.searchRouter() {

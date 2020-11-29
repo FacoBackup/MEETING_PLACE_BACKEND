@@ -5,8 +5,7 @@ import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.groups.db.Group
 import br.meetingplace.server.modules.groups.db.GroupMember
-import br.meetingplace.server.modules.user.db.User
-import br.meetingplace.server.requests.generic.operators.SimpleOperator
+import br.meetingplace.server.requests.generic.SimpleOperator
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select

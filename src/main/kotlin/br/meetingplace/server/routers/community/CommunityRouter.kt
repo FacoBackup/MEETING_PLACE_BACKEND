@@ -6,11 +6,10 @@ import br.meetingplace.server.modules.community.dao.factory.CommunityFactory
 import br.meetingplace.server.modules.community.dao.moderators.Moderator
 import br.meetingplace.server.modules.community.db.Community
 import br.meetingplace.server.requests.community.Approval
-import br.meetingplace.server.requests.generic.data.CreationData
-import br.meetingplace.server.requests.generic.operators.SimpleOperator
+import br.meetingplace.server.requests.generic.RequestCreationData
+import br.meetingplace.server.requests.generic.SimpleOperator
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
-import br.meetingplace.server.routers.community.paths.CommunityPaths
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -37,7 +36,7 @@ fun Route.communityRouter() {
                 call.respond(communities)
         }
         post(CommunityPaths.COMMUNITY) {
-            val data = call.receive<CreationData>()
+            val data = call.receive<RequestCreationData>()
             call.respond(CommunityFactory.create(data))
         }
         patch(CommunityPaths.GROUP) {

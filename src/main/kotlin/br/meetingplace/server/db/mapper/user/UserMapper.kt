@@ -7,7 +7,11 @@ import org.jetbrains.exposed.sql.ResultRow
 
 object UserMapper: UserMapperInterface {
     override fun mapUser(it: ResultRow): UserDTO {
-        return UserDTO(id = it[User.id], name = it[User.userName], email = it[User.email], gender = it[User.gender], birthDate =  it[User.birth].toString(), imageURL = it[User.imageURL], about = it[User.about], cityOfBirth = it[User.cityOfBirth], phoneNumber = it[User.phoneNumber])
+        return UserDTO(id = it[User.id], name = it[User.userName],
+                email = it[User.email], gender = it[User.gender],
+                birthDate =  it[User.birth].toString(), imageURL = it[User.imageURL],
+                about = it[User.about], cityOfBirth = it[User.cityOfBirth],
+                phoneNumber = it[User.phoneNumber], nationality = it[User.nationality])
     }
 
     override fun mapSocial(it: ResultRow): br.meetingplace.server.modules.user.dto.SocialDTO {

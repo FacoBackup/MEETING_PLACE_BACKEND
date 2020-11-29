@@ -1,10 +1,8 @@
 package br.meetingplace.server
 
 import br.meetingplace.server.db.settings.dbSettings
-import br.meetingplace.server.modules.chat.db.Chat
-import br.meetingplace.server.modules.chat.db.ChatOwner
-import br.meetingplace.server.modules.chat.db.Message
-import br.meetingplace.server.modules.chat.db.MessageOpinions
+import br.meetingplace.server.modules.message.db.Message
+import br.meetingplace.server.modules.message.db.MessageOpinions
 import br.meetingplace.server.modules.community.db.Community
 import br.meetingplace.server.modules.community.db.CommunityMember
 import br.meetingplace.server.modules.groups.db.Group
@@ -13,7 +11,7 @@ import br.meetingplace.server.modules.topic.db.Topic
 import br.meetingplace.server.modules.topic.db.TopicOpinions
 import br.meetingplace.server.modules.user.db.Social
 import br.meetingplace.server.modules.user.db.User
-import br.meetingplace.server.routers.chat.chatRouter
+import br.meetingplace.server.routers.chat.messageRouter
 import br.meetingplace.server.routers.community.communityRouter
 import br.meetingplace.server.routers.groups.groupRouter
 import br.meetingplace.server.routers.search.searchRouter
@@ -36,7 +34,6 @@ fun main() {
             SchemaUtils.create(
                     User, Social,
                     Group, GroupMember,
-                    Chat,ChatOwner,
                     Message, MessageOpinions,
                     Community, CommunityMember,
                     Topic, TopicOpinions)
@@ -58,7 +55,7 @@ fun main() {
                 userRouter()
                 communityRouter()
                 groupRouter()
-                chatRouter()
+                messageRouter()
             }
         }.start(wait = true)
     }

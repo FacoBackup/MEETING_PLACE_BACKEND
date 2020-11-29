@@ -1,63 +1,76 @@
 package br.meetingplace.server.routers.chat
 
-import br.meetingplace.server.db.mapper.chat.ChatMapper
-import br.meetingplace.server.modules.chat.dao.delete.DeleteMessage
-import br.meetingplace.server.modules.chat.dao.dislike.DislikeMessage
-import br.meetingplace.server.modules.chat.dao.like.LikeMessage
-import br.meetingplace.server.modules.chat.dao.quote.QuoteMessage
-import br.meetingplace.server.modules.chat.dao.send.SendMessage
-import br.meetingplace.server.modules.chat.dao.share.ShareMessage
-import br.meetingplace.server.modules.chat.db.Chat
-import br.meetingplace.server.requests.chat.data.MessageData
-import br.meetingplace.server.requests.chat.operators.ChatComplexOperator
-import br.meetingplace.server.requests.chat.operators.ChatSimpleOperator
+import br.meetingplace.server.db.mapper.message.MessageMapper
+import br.meetingplace.server.modules.message.dao.delete.DeleteMessageDAO
+import br.meetingplace.server.modules.message.dao.opinion.MessageOpinionDAO
+import br.meetingplace.server.modules.message.dao.quote.QuoteMessageDAO
+import br.meetingplace.server.modules.message.dao.factory.MessageFactoryDAO
+import br.meetingplace.server.modules.message.dao.share.ShareMessageDAO
+import br.meetingplace.server.modules.message.db.Message
+import br.meetingplace.server.requests.message.RequestMessageCreation
+import br.meetingplace.server.requests.message.RequestComplexChat
+import br.meetingplace.server.requests.message.RequestChatMessage
+import br.meetingplace.server.requests.message.RequestSimpleChat
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
-import br.meetingplace.server.routers.chat.paths.ChatPaths
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-fun Route.chatRouter() {
+fun Route.messageRouter() {
 
     route("/api") {
 
-        get(ChatPaths.CHAT) {
-            val data = call.receive<ChatSimpleOperator>()
-            val chat = transaction { Chat.select { Chat.id eq data.chatID }.map { ChatMapper.mapChat(it) } }.firstOrNull()
-            if (chat == null) {
+        get(MessagePaths.MESSAGE) {
+            val data = call.receive<RequestSimpleChat>()
+
+            val chat = when(data.isGroup){
+                true->{
+                    transaction { Message.select { (Message.creatorID eq data.userID) and (Message.groupReceiverID eq data.receiverID) }.map { MessageMapper.mapMessage(it) } }
+                }
+                false->{
+                    transaction {
+                        Message.select {
+                            (Message.creatorID eq data.userID) and (Message.userReceiverID eq data.receiverID) or
+                            (Message.creatorID eq data.receiverID) and (Message.userReceiverID eq data.userID)
+                            }.map { MessageMapper.mapMessage(it) }
+                    }
+                }
+            }
+
+            if (chat.isEmpty()) {
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
             } else
                 call.respond(chat)
         }
-        post(ChatPaths.CHAT) {
-            val data = call.receive<MessageData>()
-            call.respond(SendMessage.sendMessage(data, chatMapper = ChatMapper))
+        post(MessagePaths.MESSAGE) {
+            val data = call.receive<RequestMessageCreation>()
+            call.respond(MessageFactoryDAO.createMessage(data))
         }
-        delete(ChatPaths.CHAT) {
-            val data = call.receive<ChatSimpleOperator>()
-            call.respond(DeleteMessage.deleteMessage(data))
+        delete(MessagePaths.MESSAGE) {
+            val data = call.receive<RequestChatMessage>()
+            call.respond(DeleteMessageDAO.deleteMessage(data))
         }
-
-        post(ChatPaths.QUOTE) {
-            val data = call.receive<ChatComplexOperator>()
-            call.respond(QuoteMessage.quoteMessage(data))
+        put(MessagePaths.LIKE) {
+            val data = call.receive<RequestChatMessage>()
+            call.respond(MessageOpinionDAO.likeMessage(data))
         }
-
-        patch(ChatPaths.LIKE) {
-            val data = call.receive<ChatSimpleOperator>()
-            call.respond(LikeMessage.favoriteMessage(data))
+        put(MessagePaths.DISLIKE) {
+            val data = call.receive<RequestChatMessage>()
+            call.respond(MessageOpinionDAO.dislikeMessage(data))
         }
-        patch(ChatPaths.DISLIKE) {
-            val data = call.receive<ChatSimpleOperator>()
-            call.respond(DislikeMessage.dislikeMessage(data))
+        post(MessagePaths.QUOTE) {
+            val data = call.receive<RequestComplexChat>()
+            call.respond(QuoteMessageDAO.quoteMessage(data))
         }
-        patch(ChatPaths.SHARE) {
-            val data = call.receive<ChatComplexOperator>()
-            call.respond(ShareMessage.shareMessage(data))
+        patch(MessagePaths.SHARE) {
+            val data = call.receive<RequestComplexChat>()
+            call.respond(ShareMessageDAO.shareMessage(data))
         }
     }
 }

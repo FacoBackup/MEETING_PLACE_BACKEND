@@ -4,7 +4,7 @@ import br.meetingplace.server.modules.community.db.CommunityMember
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.user.db.Social
-import br.meetingplace.server.requests.generic.operators.SimpleOperator
+import br.meetingplace.server.requests.generic.SimpleOperator
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 

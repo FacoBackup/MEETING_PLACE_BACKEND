@@ -5,17 +5,15 @@ import br.meetingplace.server.db.mapper.community.CommunityMapper
 import br.meetingplace.server.db.mapper.topic.TopicMapper
 import br.meetingplace.server.db.mapper.user.UserMapper
 import br.meetingplace.server.modules.topic.dao.delete.TopicDeleteDAO
-import br.meetingplace.server.modules.topic.dao.dislike.TopicDislikeDAO
+import br.meetingplace.server.modules.topic.dao.opinion.TopicOpinionDAO
 import br.meetingplace.server.modules.topic.dao.factory.TopicFactoryDAO
-import br.meetingplace.server.modules.topic.dao.like.TopicLikeDAO
 import br.meetingplace.server.modules.topic.db.Topic
 import br.meetingplace.server.modules.topic.db.TopicOpinions
-import br.meetingplace.server.requests.generic.data.Simple
+import br.meetingplace.server.requests.generic.RequestSimple
 import br.meetingplace.server.requests.topics.data.TopicCreationData
 import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
-import br.meetingplace.server.routers.topics.paths.TopicPaths
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -23,7 +21,6 @@ import io.ktor.routing.*
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import javax.annotation.processing.SupportedAnnotationTypes
 
 fun Route.topicRouter() {
     route("/api") {
@@ -47,7 +44,7 @@ fun Route.topicRouter() {
             call.respond(TopicDeleteDAO.deleteTopic(topic))
         }
         get(TopicPaths.TOPIC) {
-            val data = call.receive<Simple>()
+            val data = call.receive<RequestSimple>()
             val topics = transaction { Topic.select { Topic.creatorID eq data.userID }.map { TopicMapper.mapTopic(it) } }
             if (topics.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
@@ -71,19 +68,19 @@ fun Route.topicRouter() {
 
         put(TopicPaths.LIKE) {
             val post = call.receive<TopicSimpleOperator>()
-            call.respond(TopicLikeDAO.like(post, topicMapper = TopicMapper))
+            call.respond(TopicOpinionDAO.like(post, topicMapper = TopicMapper))
         }
         get(TopicPaths.LIKE) {
             val data = call.receive<TopicSimpleOperator>()
-            val opinions = transaction { TopicOpinions.select { (TopicOpinions.topicID eq data.topicID) and (br.meetingplace.server.modules.topic.db.TopicOpinions.liked eq true) }.map { br.meetingplace.server.db.mapper.topic.TopicMapper.mapTopicOpinions(it) } }
+            val opinions = transaction { TopicOpinions.select { (TopicOpinions.topicID eq data.topicID) and (TopicOpinions.liked eq true) }.map { TopicMapper.mapTopicOpinions(it) } }
             if (opinions.isEmpty())
-                call.respond(br.meetingplace.server.responses.status.Status(404, br.meetingplace.server.responses.status.StatusMessages.NOT_FOUND))
+                call.respond(Status(404,StatusMessages.NOT_FOUND))
             else
                 call.respond(opinions)
         }
         put(TopicPaths.DISLIKE) {
             val post = call.receive<TopicSimpleOperator>()
-            call.respond(TopicDislikeDAO.dislike(post, topicMapper = TopicMapper))
+            call.respond(TopicOpinionDAO.dislike(post, topicMapper = TopicMapper))
         }
         get(TopicPaths.DISLIKE) {
             val data = call.receive<TopicSimpleOperator>()

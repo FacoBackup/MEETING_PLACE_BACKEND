@@ -6,13 +6,12 @@ import br.meetingplace.server.modules.user.dao.factory.UserFactoryDAO
 import br.meetingplace.server.modules.user.dao.profile.ProfileDAO
 import br.meetingplace.server.modules.user.dao.social.SocialDAO
 import br.meetingplace.server.modules.user.db.User
-import br.meetingplace.server.requests.generic.data.Simple
-import br.meetingplace.server.requests.generic.operators.SimpleOperator
+import br.meetingplace.server.requests.generic.RequestSimple
+import br.meetingplace.server.requests.generic.SimpleOperator
 import br.meetingplace.server.requests.users.data.ProfileData
 import br.meetingplace.server.requests.users.data.UserCreationData
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
-import br.meetingplace.server.routers.user.paths.UserPaths
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -27,7 +26,7 @@ fun Route.userRouter() {
     route("/api") {
         get(UserPaths.USER) {
 
-            val data = call.receive<Simple>()
+            val data = call.receive<RequestSimple>()
             val user = try {
                 transaction { User.select { User.userName eq data.userID }.map { UserMapper.mapUser(it) }  }.firstOrNull()
             }catch(sql: SQLException){
@@ -46,7 +45,7 @@ fun Route.userRouter() {
             call.respond(UserFactoryDAO.create(user))
         }
         delete(UserPaths.USER) {
-            val data = call.receive<Simple>()
+            val data = call.receive<RequestSimple>()
             call.respond(UserDeleteDAO.delete(data))
         }
         patch(UserPaths.PROFILE) {
