@@ -19,13 +19,13 @@ object MessageFactoryDAO {
 
     fun createMessage(data: RequestMessageCreation): Status {
         return try {
-            if(!transaction { User.select { User.id eq data.userID } }.empty())
+            if(transaction { !User.select { User.id eq data.userID }.empty() })
                 transaction {
                     Message.insert {
                         it[content] = data.message
                         it[imageURL] = data.imageURL
                         it[id] = UUID.randomUUID().toString()
-                        it[creationDate] = DateTime.parse(LocalDateTime.now().toString("dd-MM-yyyy"))
+                        it[creationDate] = DateTime.now()
                         it[type] = 0
                         it[creatorID] = data.userID
                         if(data.isGroup && transaction { !Group.select { Group.id eq data.receiverID }.empty() })

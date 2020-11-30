@@ -21,6 +21,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.postgresql.util.PSQLException
 
 fun Route.messageRouter() {
 
@@ -28,26 +29,31 @@ fun Route.messageRouter() {
 
         get(MessagePaths.MESSAGE) {
             val data = call.receive<RequestSimpleChat>()
+            try {
+                val chat = when(data.isGroup){
+                    true-> transaction {
+                        Message.select { (Message.creatorID eq data.userID) and (Message.groupReceiverID eq data.receiverID) }
+                                .map { MessageMapper.mapMessage(it) }
+                    }
 
-            val chat = when(data.isGroup){
-                true->{
-                    transaction { Message.select { (Message.creatorID eq data.userID) and (Message.groupReceiverID eq data.receiverID) }.map { MessageMapper.mapMessage(it) } }
-                }
-                false->{
-                    transaction {
+                    false-> transaction {
                         Message.select {
-                            (Message.creatorID eq data.userID) and (Message.userReceiverID eq data.receiverID) or
-                            (Message.creatorID eq data.receiverID) and (Message.userReceiverID eq data.userID)
-                            }.map { MessageMapper.mapMessage(it) }
+                            ((Message.creatorID eq data.userID) and (Message.userReceiverID eq data.receiverID)) or
+                            ((Message.creatorID eq data.receiverID) and (Message.userReceiverID eq data.userID))
+                        }.map { MessageMapper.mapMessage(it) }
                     }
                 }
+                if (chat.isEmpty()) {
+                    call.respond(Status(404, StatusMessages.NOT_FOUND))
+                } else
+                    call.respond(chat)
+            }catch (normal: Exception){
+                call.respond(Status(500, StatusMessages.INTERNAL_SERVER_ERROR))
+            }catch (PSQL: PSQLException){
+                call.respond(Status(500, StatusMessages.INTERNAL_SERVER_ERROR))
             }
-
-            if (chat.isEmpty()) {
-                call.respond(Status(404, StatusMessages.NOT_FOUND))
-            } else
-                call.respond(chat)
         }
+
         post(MessagePaths.MESSAGE) {
             val data = call.receive<RequestMessageCreation>()
             call.respond(MessageFactoryDAO.createMessage(data))

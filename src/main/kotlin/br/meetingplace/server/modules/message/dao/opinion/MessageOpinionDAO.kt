@@ -15,7 +15,7 @@ object MessageOpinionDAO {
             if(transaction { !Message.select { Message.id eq data.messageID }.empty()  }&&
                transaction { !User.select { User.id eq data.userID }.empty() }){
 
-                when(transaction { MessageOpinions.select { (MessageOpinions.messageID eq data.messageID) and (MessageOpinions.userID eq data.userID) }.empty() }){
+                when(transaction { MessageOpinions.select { MessageOpinions.messageID eq data.messageID }.empty() }){
                     true-> transaction {
                         MessageOpinions.insert {
                             it[userID] = data.userID
@@ -25,7 +25,7 @@ object MessageOpinionDAO {
                     }
 
                     false-> transaction {
-                            MessageOpinions.update ({ (MessageOpinions.messageID eq data.messageID) and (MessageOpinions.userID eq data.userID)}){
+                            MessageOpinions.update ({ MessageOpinions.messageID eq data.messageID }){
                                 it[liked] = false
                             }
                         }
@@ -42,7 +42,7 @@ object MessageOpinionDAO {
             if(transaction { !Message.select { Message.id eq data.messageID }.empty()  }&&
                transaction { !User.select { User.id eq data.userID }.empty() }){
 
-                when(transaction { MessageOpinions.select { (MessageOpinions.messageID eq data.messageID) and (MessageOpinions.userID eq data.userID) }.empty() }){
+                when(transaction { MessageOpinions.select { MessageOpinions.messageID eq data.messageID }.empty() }){
                     true-> transaction {
                             MessageOpinions.insert {
                                 it[userID] = data.userID
@@ -52,7 +52,7 @@ object MessageOpinionDAO {
                         }
 
                     false-> transaction {
-                            MessageOpinions.update ({ (MessageOpinions.messageID eq data.messageID) and (MessageOpinions.userID eq data.userID)}){
+                            MessageOpinions.update ({ MessageOpinions.messageID eq data.messageID }){
                                 it[liked] = true
                             }
                           }
