@@ -8,7 +8,7 @@ import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.topic.db.Topic
 import br.meetingplace.server.modules.user.db.User
-import br.meetingplace.server.requests.topics.data.TopicCreationData
+import br.meetingplace.server.requests.topics.RequestTopicCreation
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -18,7 +18,7 @@ import java.util.*
 
 object TopicFactoryDAO {
 
-    fun create(data: TopicCreationData, userMapper: UserMapperInterface, communityMapper: CommunityMapperInterface): Status {
+    fun create(data: RequestTopicCreation, userMapper: UserMapperInterface, communityMapper: CommunityMapperInterface): Status {
         return try {
             val user = transaction { User.select { User.id eq data.userID }.map { userMapper.mapUser(it) }.firstOrNull() }
             when (data.communityID.isNullOrBlank()) {
@@ -68,7 +68,7 @@ object TopicFactoryDAO {
             Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
     }
-    fun createComment(data: TopicCreationData, userMapper: UserMapperInterface, communityMapper: CommunityMapperInterface): Status {
+    fun createComment(data: RequestTopicCreation, userMapper: UserMapperInterface, communityMapper: CommunityMapperInterface): Status {
         return try {
             val user = transaction { User.select { User.id eq data.userID }.map { userMapper.mapUser(it) }.firstOrNull() }
             when (data.communityID.isNullOrBlank()) {

@@ -8,10 +8,14 @@ import org.jetbrains.exposed.sql.ResultRow
 
 object CommunityMapper: CommunityMapperInterface {
     override fun mapCommunityDTO(it: ResultRow): CommunityDTO {
-        return CommunityDTO(name = it[Community.name], id = it[Community.id],about = it[Community.imageURL], imageURL =  it[Community.imageURL], creationDate = it[Community.creationDate].toString("dd-MM-yyyy"))
+        return CommunityDTO(name = it[Community.name], id = it[Community.id],
+                about = it[Community.imageURL], imageURL =  it[Community.imageURL],
+                creationDate = it[Community.creationDate].toString(), location = it[Community.location],
+                parentCommunityID = it[Community.parentCommunityID])
     }
 
     override fun mapCommunityMembersDTO(it: ResultRow): CommunityMembersDTO {
-        return CommunityMembersDTO(communityID = it[CommunityMember.communityID], admin = it[CommunityMember.admin], userID = it[CommunityMember.userID])
+        return CommunityMembersDTO(communityID = it[CommunityMember.communityID], admin = it[CommunityMember.admin],
+                userID = it[CommunityMember.userID])
     }
 }

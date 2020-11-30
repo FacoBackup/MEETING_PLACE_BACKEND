@@ -6,6 +6,7 @@ import br.meetingplace.server.modules.user.db.User
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.date
+import org.jetbrains.exposed.sql.jodatime.datetime
 
 object Topic: Table("topic") {
 
@@ -16,7 +17,7 @@ object Topic: Table("topic") {
     val footer= varchar("footer", 128)
     val creatorID = varchar("creator_id",36).references(User.id)
     val mainTopicID = varchar("main_topic_id",36).references(id, onDelete = ReferenceOption.CASCADE).nullable()
-    val creationDate = date("date_of_creation")
+    val creationDate = datetime("date_of_creation")
     val communityID = varchar("community_id", 36).references(Community.id).nullable()
     val imageURL = varchar("image_url", 256).nullable()
     override val primaryKey = PrimaryKey(id)

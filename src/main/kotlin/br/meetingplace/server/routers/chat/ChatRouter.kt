@@ -9,7 +9,7 @@ import br.meetingplace.server.modules.message.dao.share.ShareMessageDAO
 import br.meetingplace.server.modules.message.db.Message
 import br.meetingplace.server.requests.message.RequestMessageCreation
 import br.meetingplace.server.requests.message.RequestComplexChat
-import br.meetingplace.server.requests.message.RequestChatMessage
+import br.meetingplace.server.requests.message.RequestMessageSimple
 import br.meetingplace.server.requests.message.RequestSimpleChat
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
@@ -53,15 +53,15 @@ fun Route.messageRouter() {
             call.respond(MessageFactoryDAO.createMessage(data))
         }
         delete(MessagePaths.MESSAGE) {
-            val data = call.receive<RequestChatMessage>()
+            val data = call.receive<RequestMessageSimple>()
             call.respond(DeleteMessageDAO.deleteMessage(data))
         }
         put(MessagePaths.LIKE) {
-            val data = call.receive<RequestChatMessage>()
+            val data = call.receive<RequestMessageSimple>()
             call.respond(MessageOpinionDAO.likeMessage(data))
         }
         put(MessagePaths.DISLIKE) {
-            val data = call.receive<RequestChatMessage>()
+            val data = call.receive<RequestMessageSimple>()
             call.respond(MessageOpinionDAO.dislikeMessage(data))
         }
         post(MessagePaths.QUOTE) {

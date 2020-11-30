@@ -6,14 +6,14 @@ import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.topic.db.Topic
 import br.meetingplace.server.modules.topic.db.TopicOpinions
 import br.meetingplace.server.modules.user.db.User
-import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
+import br.meetingplace.server.requests.topics.RequestTopicSimple
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object TopicOpinionDAO{
 
-    fun dislike(data: TopicSimpleOperator, topicMapper: TopicMapperInterface): Status {
+    fun dislike(data: RequestTopicSimple, topicMapper: TopicMapperInterface): Status {
         return try {
             return if (transaction { !User.select { User.id eq data.userID }.empty() } &&
                     transaction { !Topic.select { Topic.id eq data.topicID }.empty() })
@@ -52,7 +52,7 @@ object TopicOpinionDAO{
         }
     }
 
-    fun like(data: TopicSimpleOperator, topicMapper: TopicMapperInterface): Status {
+    fun like(data: RequestTopicSimple, topicMapper: TopicMapperInterface): Status {
         return try {
             if (transaction { !User.select { User.id eq data.userID }.empty() } && transaction { !Topic.select { Topic.id eq data.topicID }.empty() })
                 when (checkLikeDislike(data.topicID, userID = data.userID, topicMapper = topicMapper)) {

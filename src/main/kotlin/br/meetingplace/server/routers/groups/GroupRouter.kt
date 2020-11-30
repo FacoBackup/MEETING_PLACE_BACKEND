@@ -3,10 +3,13 @@ package br.meetingplace.server.routers.groups
 
 import br.meetingplace.server.db.mapper.community.CommunityMapper
 import br.meetingplace.server.db.mapper.group.GroupMapper
-import br.meetingplace.server.modules.groups.dao.delete.GroupDelete
-import br.meetingplace.server.modules.groups.dao.factory.GroupFactory
-import br.meetingplace.server.requests.generic.RequestCreationData
+import br.meetingplace.server.modules.group.dao.delete.GroupDeleteDAO
+import br.meetingplace.server.modules.group.dao.factory.GroupFactoryDAO
+import br.meetingplace.server.modules.group.dao.member.MemberDAO
+import br.meetingplace.server.requests.community.RequestCommunityCreation
+import br.meetingplace.server.requests.generic.MemberOperator
 import br.meetingplace.server.requests.generic.SimpleOperator
+import br.meetingplace.server.requests.group.RequestGroupCreation
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -16,22 +19,20 @@ fun Route.groupRouter() {
     route("/api") {
 
         post(GroupPaths.GROUP) {
-            val group = call.receive<RequestCreationData>()
-            call.respond(GroupFactory.create(group, communityMapper = CommunityMapper))
+            val data = call.receive<RequestGroupCreation>()
+            call.respond(GroupFactoryDAO.create(data, communityMapper = CommunityMapper))
         }
         delete(GroupPaths.GROUP) {
-            val group = call.receive<SimpleOperator>()
-            call.respond(GroupDelete.delete(group, groupMapper = GroupMapper))
+            val data = call.receive<SimpleOperator>()
+            call.respond(GroupDeleteDAO.delete(data, groupMapper = GroupMapper))
         }
         patch(GroupPaths.MEMBER) {
-            TODO("NOT YET IMPLEMENTED")
-//            val member = call.receive<MemberOperator>()
-//            call.respond(GroupMembers.addMember(member, userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass()))
+            val data = call.receive<MemberOperator>()
+            call.respond(MemberDAO.addMember(data))
         }
         delete(GroupPaths.MEMBER) {
-            TODO("NOT YET IMPLEMENTED")
-//            val member = call.receive<MemberOperator>()
-//            call.respond(GroupMembers.removeMember(member, userDB = UserRW.getClass(), groupDB = GroupRW.getClass(), communityDB = CommunityRW.getClass()))
+            val data = call.receive<MemberOperator>()
+            call.respond(MemberDAO.removeMember(data))
         }
     }
 }

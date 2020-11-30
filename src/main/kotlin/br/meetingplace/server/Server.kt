@@ -5,8 +5,8 @@ import br.meetingplace.server.modules.message.db.Message
 import br.meetingplace.server.modules.message.db.MessageOpinions
 import br.meetingplace.server.modules.community.db.Community
 import br.meetingplace.server.modules.community.db.CommunityMember
-import br.meetingplace.server.modules.groups.db.Group
-import br.meetingplace.server.modules.groups.db.GroupMember
+import br.meetingplace.server.modules.group.db.Group
+import br.meetingplace.server.modules.group.db.GroupMember
 import br.meetingplace.server.modules.topic.db.Topic
 import br.meetingplace.server.modules.topic.db.TopicOpinions
 import br.meetingplace.server.modules.user.db.Social
@@ -14,7 +14,6 @@ import br.meetingplace.server.modules.user.db.User
 import br.meetingplace.server.routers.chat.messageRouter
 import br.meetingplace.server.routers.community.communityRouter
 import br.meetingplace.server.routers.groups.groupRouter
-import br.meetingplace.server.routers.search.searchRouter
 import br.meetingplace.server.routers.topics.topicRouter
 import br.meetingplace.server.routers.user.userRouter
 import io.ktor.application.*
@@ -51,7 +50,6 @@ fun main() {
                     }
                 }
                 topicRouter()
-                searchRouter()
                 userRouter()
                 communityRouter()
                 groupRouter()

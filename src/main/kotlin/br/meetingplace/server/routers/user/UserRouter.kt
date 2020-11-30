@@ -8,8 +8,8 @@ import br.meetingplace.server.modules.user.dao.social.SocialDAO
 import br.meetingplace.server.modules.user.db.User
 import br.meetingplace.server.requests.generic.RequestSimple
 import br.meetingplace.server.requests.generic.SimpleOperator
-import br.meetingplace.server.requests.users.data.ProfileData
-import br.meetingplace.server.requests.users.data.UserCreationData
+import br.meetingplace.server.requests.users.RequestProfileUpdate
+import br.meetingplace.server.requests.users.RequestUserCreation
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
 import io.ktor.application.*
@@ -41,7 +41,7 @@ fun Route.userRouter() {
                 call.respond(user)
         }
         post(UserPaths.USER) {
-            val user = call.receive<UserCreationData>()
+            val user = call.receive<RequestUserCreation>()
             call.respond(UserFactoryDAO.create(user))
         }
         delete(UserPaths.USER) {
@@ -49,7 +49,7 @@ fun Route.userRouter() {
             call.respond(UserDeleteDAO.delete(data))
         }
         patch(UserPaths.PROFILE) {
-            val user = call.receive<ProfileData>()
+            val user = call.receive<RequestProfileUpdate>()
             call.respond(ProfileDAO.updateProfile(user))
         }
         patch(UserPaths.FOLLOW) {

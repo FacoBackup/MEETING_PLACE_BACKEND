@@ -1,8 +1,7 @@
 package br.meetingplace.server.modules.message.dao.factory
 
-import br.meetingplace.server.db.mapper.message.MessageMapperInterface
 import br.meetingplace.server.modules.message.db.Message
-import br.meetingplace.server.modules.groups.db.Group
+import br.meetingplace.server.modules.group.db.Group
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.user.db.User

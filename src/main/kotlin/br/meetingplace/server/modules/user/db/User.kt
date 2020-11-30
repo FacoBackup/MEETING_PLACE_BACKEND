@@ -2,11 +2,12 @@ package br.meetingplace.server.modules.user.db
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.date
+import org.jetbrains.exposed.sql.jodatime.datetime
 
 object User: Table("user"){
     val id = varchar("user_id", 36)
     var userName = varchar("user_name", 64)
-    var birth = date("date_of_birth")
+    var birth = datetime("date_of_birth")
     var email = varchar("user_email", 64)
     var gender = varchar("user_gender", 64)
     var nationality = varchar("user_nationality", 64)

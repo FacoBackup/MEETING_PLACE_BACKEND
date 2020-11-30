@@ -3,21 +3,18 @@ package br.meetingplace.server.modules.user.dao.factory
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.user.db.User
-import br.meetingplace.server.requests.users.data.UserCreationData
+import br.meetingplace.server.requests.users.RequestUserCreation
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
-import org.joda.time.format.DateTimeFormat.forPattern
 import org.postgresql.util.PSQLException
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
 object UserFactoryDAO{
 
-    fun create(data: UserCreationData): Status {
+    fun create(data: RequestUserCreation): Status {
         return try{
             if(transaction { User.select { User.userName eq data.userName }.empty() }){
                 transaction {

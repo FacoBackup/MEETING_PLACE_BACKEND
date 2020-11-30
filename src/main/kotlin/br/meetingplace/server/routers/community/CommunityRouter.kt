@@ -2,11 +2,11 @@ package br.meetingplace.server.routers.community
 
 import br.meetingplace.server.db.mapper.community.CommunityMapper
 import br.meetingplace.server.db.mapper.group.GroupMapper
-import br.meetingplace.server.modules.community.dao.factory.CommunityFactory
-import br.meetingplace.server.modules.community.dao.moderators.Moderator
+import br.meetingplace.server.modules.community.dao.factory.CommunityFactoryDAO
+import br.meetingplace.server.modules.community.dao.moderators.ModeratorDAO
 import br.meetingplace.server.modules.community.db.Community
 import br.meetingplace.server.requests.community.Approval
-import br.meetingplace.server.requests.generic.RequestCreationData
+import br.meetingplace.server.requests.community.RequestCommunityCreation
 import br.meetingplace.server.requests.generic.SimpleOperator
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
@@ -36,12 +36,12 @@ fun Route.communityRouter() {
                 call.respond(communities)
         }
         post(CommunityPaths.COMMUNITY) {
-            val data = call.receive<RequestCreationData>()
-            call.respond(CommunityFactory.create(data))
+            val data = call.receive<RequestCommunityCreation>()
+            call.respond(CommunityFactoryDAO.create(data))
         }
         patch(CommunityPaths.GROUP) {
             val data = call.receive<Approval>()
-            call.respond(Moderator.approveGroup(data, groupMapper = GroupMapper))
+            call.respond(ModeratorDAO.approveGroup(data, groupMapper = GroupMapper))
         }
     }
 }

@@ -10,8 +10,8 @@ import br.meetingplace.server.modules.topic.dao.factory.TopicFactoryDAO
 import br.meetingplace.server.modules.topic.db.Topic
 import br.meetingplace.server.modules.topic.db.TopicOpinions
 import br.meetingplace.server.requests.generic.RequestSimple
-import br.meetingplace.server.requests.topics.data.TopicCreationData
-import br.meetingplace.server.requests.topics.operators.TopicSimpleOperator
+import br.meetingplace.server.requests.topics.RequestTopicCreation
+import br.meetingplace.server.requests.topics.RequestTopicSimple
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
 import io.ktor.application.*
@@ -36,11 +36,11 @@ fun Route.topicRouter() {
         }
 
         post(TopicPaths.TOPIC) {
-            val new = call.receive<TopicCreationData>()
+            val new = call.receive<RequestTopicCreation>()
             call.respond(TopicFactoryDAO.create(new, userMapper = UserMapper, communityMapper = CommunityMapper))
         }
         delete(TopicPaths.TOPIC) {
-            val topic = call.receive<TopicSimpleOperator>()
+            val topic = call.receive<RequestTopicSimple>()
             call.respond(TopicDeleteDAO.deleteTopic(topic))
         }
         get(TopicPaths.TOPIC) {
@@ -53,11 +53,11 @@ fun Route.topicRouter() {
         }
 
         post(TopicPaths.COMMENT) {
-            val new = call.receive<TopicCreationData>()
+            val new = call.receive<RequestTopicCreation>()
             call.respond(TopicFactoryDAO.createComment(new, userMapper = UserMapper, communityMapper = CommunityMapper))
         }
         get (TopicPaths.COMMENT){
-            val data = call.receive<TopicSimpleOperator>()
+            val data = call.receive<RequestTopicSimple>()
             val topics = transaction { Topic.select { Topic.mainTopicID eq data.topicID }.map { TopicMapper.mapTopic(it) } }
             if (topics.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
@@ -67,11 +67,11 @@ fun Route.topicRouter() {
 
 
         put(TopicPaths.LIKE) {
-            val post = call.receive<TopicSimpleOperator>()
+            val post = call.receive<RequestTopicSimple>()
             call.respond(TopicOpinionDAO.like(post, topicMapper = TopicMapper))
         }
         get(TopicPaths.LIKE) {
-            val data = call.receive<TopicSimpleOperator>()
+            val data = call.receive<RequestTopicSimple>()
             val opinions = transaction { TopicOpinions.select { (TopicOpinions.topicID eq data.topicID) and (TopicOpinions.liked eq true) }.map { TopicMapper.mapTopicOpinions(it) } }
             if (opinions.isEmpty())
                 call.respond(Status(404,StatusMessages.NOT_FOUND))
@@ -79,11 +79,11 @@ fun Route.topicRouter() {
                 call.respond(opinions)
         }
         put(TopicPaths.DISLIKE) {
-            val post = call.receive<TopicSimpleOperator>()
+            val post = call.receive<RequestTopicSimple>()
             call.respond(TopicOpinionDAO.dislike(post, topicMapper = TopicMapper))
         }
         get(TopicPaths.DISLIKE) {
-            val data = call.receive<TopicSimpleOperator>()
+            val data = call.receive<RequestTopicSimple>()
             val opinions = transaction { TopicOpinions.select { (TopicOpinions.topicID eq data.topicID) and (TopicOpinions.liked eq false) }.map { TopicMapper.mapTopicOpinions(it) } }
             if (opinions.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))

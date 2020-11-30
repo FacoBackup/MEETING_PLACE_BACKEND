@@ -1,16 +1,16 @@
 package br.meetingplace.server.modules.user.dao.profile
 
-import br.meetingplace.server.db.mapper.user.UserMapperInterface
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
 import br.meetingplace.server.modules.user.db.User
-import br.meetingplace.server.requests.users.data.ProfileData
+import br.meetingplace.server.requests.users.RequestProfileUpdate
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
+import org.postgresql.util.PSQLException
 
 object ProfileDAO {
 
-    fun updateProfile(data: ProfileData) : Status {
+    fun updateProfile(data: RequestProfileUpdate) : Status {
         return try {
             transaction {
                 User.update({ User.id eq data.userID}){
@@ -22,6 +22,8 @@ object ProfileDAO {
             }
             Status(statusCode = 200, StatusMessages.OK)
         }catch (e: Exception){
+            Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
+        }catch (psql: PSQLException){
             Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
     }

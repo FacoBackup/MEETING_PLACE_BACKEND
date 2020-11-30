@@ -3,14 +3,14 @@ package br.meetingplace.server.modules.message.dao.opinion
 import br.meetingplace.server.modules.message.db.Message
 import br.meetingplace.server.modules.message.db.MessageOpinions
 import br.meetingplace.server.modules.user.db.User
-import br.meetingplace.server.requests.message.RequestChatMessage
+import br.meetingplace.server.requests.message.RequestMessageSimple
 import br.meetingplace.server.responses.status.Status
 import br.meetingplace.server.responses.status.StatusMessages
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object MessageOpinionDAO {
-    fun dislikeMessage(data: RequestChatMessage): Status {
+    fun dislikeMessage(data: RequestMessageSimple): Status {
         return try {
             if(transaction { !Message.select { Message.id eq data.messageID }.empty()  }&&
                transaction { !User.select { User.id eq data.userID }.empty() }){
@@ -37,7 +37,7 @@ object MessageOpinionDAO {
         }
     }
 
-    fun likeMessage(data: RequestChatMessage): Status {
+    fun likeMessage(data: RequestMessageSimple): Status {
         return try {
             if(transaction { !Message.select { Message.id eq data.messageID }.empty()  }&&
                transaction { !User.select { User.id eq data.userID }.empty() }){
