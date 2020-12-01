@@ -1,0 +1,10 @@
+package br.meetingplace.server.modules.group.dao
+
+import br.meetingplace.server.modules.group.dto.GroupDTO
+import br.meetingplace.server.modules.group.dto.GroupMembersDTO
+import org.jetbrains.exposed.sql.ResultRow
+
+interface GroupMapperInterface {
+    fun mapGroupMembers(it: ResultRow): GroupMembersDTO
+    fun mapGroup(it: ResultRow): GroupDTO
+}

@@ -1,15 +1,14 @@
 package br.meetingplace.server.routers.groups
 
 
-import br.meetingplace.server.db.mapper.community.CommunityMapper
-import br.meetingplace.server.db.mapper.group.GroupMapper
-import br.meetingplace.server.modules.group.dao.delete.GroupDeleteDAO
-import br.meetingplace.server.modules.group.dao.factory.GroupFactoryDAO
-import br.meetingplace.server.modules.group.dao.member.MemberDAO
-import br.meetingplace.server.requests.community.RequestCommunityCreation
-import br.meetingplace.server.requests.generic.MemberOperator
-import br.meetingplace.server.requests.generic.SimpleOperator
-import br.meetingplace.server.requests.group.RequestGroupCreation
+import br.meetingplace.server.modules.community.dao.CommunityDAO
+import br.meetingplace.server.modules.group.dao.GroupMapper
+import br.meetingplace.server.modules.group.service.delete.GroupDeleteDAO
+import br.meetingplace.server.modules.group.service.factory.GroupFactoryDAO
+import br.meetingplace.server.modules.group.service.member.MemberDAO
+import br.meetingplace.server.request.dto.generic.MemberDTO
+import br.meetingplace.server.request.dto.generic.SubjectDTO
+import br.meetingplace.server.request.dto.group.GroupCreationDTO
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -19,19 +18,19 @@ fun Route.groupRouter() {
     route("/api") {
 
         post(GroupPaths.GROUP) {
-            val data = call.receive<RequestGroupCreation>()
-            call.respond(GroupFactoryDAO.create(data, communityMapper = CommunityMapper))
+            val data = call.receive<GroupCreationDTO>()
+            call.respond(GroupFactoryDAO.create(data, communityMapper = CommunityDAO))
         }
         delete(GroupPaths.GROUP) {
-            val data = call.receive<SimpleOperator>()
+            val data = call.receive<SubjectDTO>()
             call.respond(GroupDeleteDAO.delete(data, groupMapper = GroupMapper))
         }
         patch(GroupPaths.MEMBER) {
-            val data = call.receive<MemberOperator>()
+            val data = call.receive<MemberDTO>()
             call.respond(MemberDAO.addMember(data))
         }
         delete(GroupPaths.MEMBER) {
-            val data = call.receive<MemberOperator>()
+            val data = call.receive<MemberDTO>()
             call.respond(MemberDAO.removeMember(data))
         }
     }

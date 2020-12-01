@@ -1,16 +1,16 @@
 package br.meetingplace.server
 
 import br.meetingplace.server.db.settings.dbSettings
-import br.meetingplace.server.modules.message.db.Message
-import br.meetingplace.server.modules.message.db.MessageOpinions
-import br.meetingplace.server.modules.community.db.Community
-import br.meetingplace.server.modules.community.db.CommunityMember
-import br.meetingplace.server.modules.group.db.Group
-import br.meetingplace.server.modules.group.db.GroupMember
-import br.meetingplace.server.modules.topic.db.Topic
-import br.meetingplace.server.modules.topic.db.TopicOpinions
-import br.meetingplace.server.modules.user.db.Social
-import br.meetingplace.server.modules.user.db.User
+import br.meetingplace.server.modules.message.entitie.Message
+import br.meetingplace.server.modules.message.entitie.MessageOpinions
+import br.meetingplace.server.modules.community.entitie.Community
+import br.meetingplace.server.modules.community.entitie.CommunityMember
+import br.meetingplace.server.modules.group.entitie.Group
+import br.meetingplace.server.modules.group.entitie.GroupMember
+import br.meetingplace.server.modules.topic.entitie.Topic
+import br.meetingplace.server.modules.topic.entitie.TopicOpinions
+import br.meetingplace.server.modules.user.entitie.Social
+import br.meetingplace.server.modules.user.entitie.User
 import br.meetingplace.server.routers.chat.messageRouter
 import br.meetingplace.server.routers.community.communityRouter
 import br.meetingplace.server.routers.groups.groupRouter

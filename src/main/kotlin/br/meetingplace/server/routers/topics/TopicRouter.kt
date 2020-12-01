@@ -1,19 +1,19 @@
 package br.meetingplace.server.routers.topics
 
 
-import br.meetingplace.server.db.mapper.community.CommunityMapper
-import br.meetingplace.server.db.mapper.topic.TopicMapper
-import br.meetingplace.server.db.mapper.user.UserMapper
-import br.meetingplace.server.modules.topic.dao.delete.TopicDeleteDAO
-import br.meetingplace.server.modules.topic.dao.opinion.TopicOpinionDAO
-import br.meetingplace.server.modules.topic.dao.factory.TopicFactoryDAO
-import br.meetingplace.server.modules.topic.db.Topic
-import br.meetingplace.server.modules.topic.db.TopicOpinions
-import br.meetingplace.server.requests.generic.RequestSimple
-import br.meetingplace.server.requests.topics.RequestTopicCreation
-import br.meetingplace.server.requests.topics.RequestTopicSimple
-import br.meetingplace.server.responses.status.Status
-import br.meetingplace.server.responses.status.StatusMessages
+import br.meetingplace.server.modules.community.dao.CommunityDAO
+import br.meetingplace.server.modules.topic.dao.TopicMapper
+import br.meetingplace.server.modules.user.dao.UserMapper
+import br.meetingplace.server.modules.topic.service.delete.TopicDeleteDAO
+import br.meetingplace.server.modules.topic.service.opinion.TopicOpinionDAO
+import br.meetingplace.server.modules.topic.service.factory.TopicFactoryDAO
+import br.meetingplace.server.modules.topic.entitie.Topic
+import br.meetingplace.server.modules.topic.entitie.TopicOpinions
+import br.meetingplace.server.request.dto.generic.LogDTO
+import br.meetingplace.server.request.dto.topics.TopicCreationDTO
+import br.meetingplace.server.request.dto.topics.TopicDTO
+import br.meetingplace.server.response.status.Status
+import br.meetingplace.server.response.status.StatusMessages
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -36,15 +36,15 @@ fun Route.topicRouter() {
         }
 
         post(TopicPaths.TOPIC) {
-            val new = call.receive<RequestTopicCreation>()
-            call.respond(TopicFactoryDAO.create(new, userMapper = UserMapper, communityMapper = CommunityMapper))
+            val new = call.receive<TopicCreationDTO>()
+            call.respond(TopicFactoryDAO.create(new, userMapper = UserMapper, communityMapper = CommunityDAO))
         }
         delete(TopicPaths.TOPIC) {
-            val topic = call.receive<RequestTopicSimple>()
+            val topic = call.receive<TopicDTO>()
             call.respond(TopicDeleteDAO.deleteTopic(topic))
         }
         get(TopicPaths.TOPIC) {
-            val data = call.receive<RequestSimple>()
+            val data = call.receive<LogDTO>()
             val topics = transaction { Topic.select { Topic.creatorID eq data.userID }.map { TopicMapper.mapTopic(it) } }
             if (topics.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
@@ -53,11 +53,11 @@ fun Route.topicRouter() {
         }
 
         post(TopicPaths.COMMENT) {
-            val new = call.receive<RequestTopicCreation>()
-            call.respond(TopicFactoryDAO.createComment(new, userMapper = UserMapper, communityMapper = CommunityMapper))
+            val new = call.receive<TopicCreationDTO>()
+            call.respond(TopicFactoryDAO.createComment(new, userMapper = UserMapper, communityMapper = CommunityDAO))
         }
         get (TopicPaths.COMMENT){
-            val data = call.receive<RequestTopicSimple>()
+            val data = call.receive<TopicDTO>()
             val topics = transaction { Topic.select { Topic.mainTopicID eq data.topicID }.map { TopicMapper.mapTopic(it) } }
             if (topics.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
@@ -67,23 +67,23 @@ fun Route.topicRouter() {
 
 
         put(TopicPaths.LIKE) {
-            val post = call.receive<RequestTopicSimple>()
+            val post = call.receive<TopicDTO>()
             call.respond(TopicOpinionDAO.like(post, topicMapper = TopicMapper))
         }
         get(TopicPaths.LIKE) {
-            val data = call.receive<RequestTopicSimple>()
+            val data = call.receive<TopicDTO>()
             val opinions = transaction { TopicOpinions.select { (TopicOpinions.topicID eq data.topicID) and (TopicOpinions.liked eq true) }.map { TopicMapper.mapTopicOpinions(it) } }
             if (opinions.isEmpty())
-                call.respond(Status(404,StatusMessages.NOT_FOUND))
+                call.respond(Status(404, StatusMessages.NOT_FOUND))
             else
                 call.respond(opinions)
         }
         put(TopicPaths.DISLIKE) {
-            val post = call.receive<RequestTopicSimple>()
+            val post = call.receive<TopicDTO>()
             call.respond(TopicOpinionDAO.dislike(post, topicMapper = TopicMapper))
         }
         get(TopicPaths.DISLIKE) {
-            val data = call.receive<RequestTopicSimple>()
+            val data = call.receive<TopicDTO>()
             val opinions = transaction { TopicOpinions.select { (TopicOpinions.topicID eq data.topicID) and (TopicOpinions.liked eq false) }.map { TopicMapper.mapTopicOpinions(it) } }
             if (opinions.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))

@@ -1,17 +1,17 @@
 package br.meetingplace.server.routers.user
 
-import br.meetingplace.server.db.mapper.user.UserMapper
-import br.meetingplace.server.modules.user.dao.delete.UserDeleteDAO
-import br.meetingplace.server.modules.user.dao.factory.UserFactoryDAO
-import br.meetingplace.server.modules.user.dao.profile.ProfileDAO
-import br.meetingplace.server.modules.user.dao.social.SocialDAO
-import br.meetingplace.server.modules.user.db.User
-import br.meetingplace.server.requests.generic.RequestSimple
-import br.meetingplace.server.requests.generic.SimpleOperator
-import br.meetingplace.server.requests.users.RequestProfileUpdate
-import br.meetingplace.server.requests.users.RequestUserCreation
-import br.meetingplace.server.responses.status.Status
-import br.meetingplace.server.responses.status.StatusMessages
+import br.meetingplace.server.modules.user.dao.UserMapper
+import br.meetingplace.server.modules.user.service.delete.UserDeleteDAO
+import br.meetingplace.server.modules.user.service.factory.UserFactoryDAO
+import br.meetingplace.server.modules.user.service.profile.ProfileDAO
+import br.meetingplace.server.modules.user.service.social.SocialDAO
+import br.meetingplace.server.modules.user.entitie.User
+import br.meetingplace.server.request.dto.generic.LogDTO
+import br.meetingplace.server.request.dto.generic.SubjectDTO
+import br.meetingplace.server.request.dto.users.ProfileUpdateDTO
+import br.meetingplace.server.request.dto.users.UserCreationDTO
+import br.meetingplace.server.response.status.Status
+import br.meetingplace.server.response.status.StatusMessages
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -26,7 +26,7 @@ fun Route.userRouter() {
     route("/api") {
         get(UserPaths.USER) {
 
-            val data = call.receive<RequestSimple>()
+            val data = call.receive<LogDTO>()
             val user = try {
                 transaction { User.select { User.userName eq data.userID }.map { UserMapper.mapUser(it) }  }.firstOrNull()
             }catch(sql: SQLException){
@@ -41,23 +41,23 @@ fun Route.userRouter() {
                 call.respond(user)
         }
         post(UserPaths.USER) {
-            val user = call.receive<RequestUserCreation>()
+            val user = call.receive<UserCreationDTO>()
             call.respond(UserFactoryDAO.create(user))
         }
         delete(UserPaths.USER) {
-            val data = call.receive<RequestSimple>()
+            val data = call.receive<LogDTO>()
             call.respond(UserDeleteDAO.delete(data))
         }
         patch(UserPaths.PROFILE) {
-            val user = call.receive<RequestProfileUpdate>()
+            val user = call.receive<ProfileUpdateDTO>()
             call.respond(ProfileDAO.updateProfile(user))
         }
         patch(UserPaths.FOLLOW) {
-            val follow = call.receive<SimpleOperator>()
+            val follow = call.receive<SubjectDTO>()
             call.respond(SocialDAO.follow(follow))
         }
         patch(UserPaths.UNFOLLOW) {
-            val unfollow = call.receive<SimpleOperator>()
+            val unfollow = call.receive<SubjectDTO>()
             call.respond(SocialDAO.unfollow(unfollow))
         }
     }
