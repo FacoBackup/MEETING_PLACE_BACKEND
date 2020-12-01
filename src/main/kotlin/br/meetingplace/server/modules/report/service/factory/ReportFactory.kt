@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import java.util.*
 
-object ReportFactoryDAO{
+object ReportFactory{
 
     fun createReport(data: ReportCreationDTO): Status {
         return try {

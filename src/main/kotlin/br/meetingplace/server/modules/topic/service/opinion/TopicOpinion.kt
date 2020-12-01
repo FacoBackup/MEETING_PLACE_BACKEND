@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
-object TopicOpinionDAO{
+object TopicOpinion{
 
     fun dislike(data: TopicDTO, topicMapper: TopicMapperInterface): Status {
         return try {

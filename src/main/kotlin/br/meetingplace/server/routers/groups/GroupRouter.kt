@@ -2,10 +2,10 @@ package br.meetingplace.server.routers.groups
 
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
-import br.meetingplace.server.modules.group.dao.GroupMapper
-import br.meetingplace.server.modules.group.service.delete.GroupDeleteDAO
-import br.meetingplace.server.modules.group.service.factory.GroupFactoryDAO
-import br.meetingplace.server.modules.group.service.member.MemberDAO
+import br.meetingplace.server.modules.group.dao.GroupDAO
+import br.meetingplace.server.modules.group.service.delete.GroupDelete
+import br.meetingplace.server.modules.group.service.factory.GroupFactory
+import br.meetingplace.server.modules.group.service.member.GroupMember
 import br.meetingplace.server.request.dto.generic.MemberDTO
 import br.meetingplace.server.request.dto.generic.SubjectDTO
 import br.meetingplace.server.request.dto.group.GroupCreationDTO
@@ -19,19 +19,19 @@ fun Route.groupRouter() {
 
         post(GroupPaths.GROUP) {
             val data = call.receive<GroupCreationDTO>()
-            call.respond(GroupFactoryDAO.create(data, communityMapper = CommunityDAO))
+            call.respond(GroupFactory.create(data, communityMapper = CommunityDAO))
         }
         delete(GroupPaths.GROUP) {
             val data = call.receive<SubjectDTO>()
-            call.respond(GroupDeleteDAO.delete(data, groupMapper = GroupMapper))
+            call.respond(GroupDelete.delete(data, groupMapper = GroupDAO))
         }
         patch(GroupPaths.MEMBER) {
             val data = call.receive<MemberDTO>()
-            call.respond(MemberDAO.addMember(data))
+            call.respond(GroupMember.addMember(data))
         }
         delete(GroupPaths.MEMBER) {
             val data = call.receive<MemberDTO>()
-            call.respond(MemberDAO.removeMember(data))
+            call.respond(GroupMember.removeMember(data))
         }
     }
 }

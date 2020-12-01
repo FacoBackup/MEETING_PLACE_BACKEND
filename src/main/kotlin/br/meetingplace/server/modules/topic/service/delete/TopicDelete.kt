@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object TopicDeleteDAO{
+object TopicDelete{
 
     fun deleteTopic(data: TopicDTO): Status {
         return try {

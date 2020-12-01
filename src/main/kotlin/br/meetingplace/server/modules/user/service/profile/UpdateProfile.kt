@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.postgresql.util.PSQLException
 
-object ProfileDAO {
+object UpdateProfile {
 
     fun updateProfile(data: ProfileUpdateDTO) : Status {
         return try {

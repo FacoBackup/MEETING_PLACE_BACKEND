@@ -4,9 +4,9 @@ package br.meetingplace.server.routers.topics
 import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.topic.dao.TopicMapper
 import br.meetingplace.server.modules.user.dao.UserMapper
-import br.meetingplace.server.modules.topic.service.delete.TopicDeleteDAO
-import br.meetingplace.server.modules.topic.service.opinion.TopicOpinionDAO
-import br.meetingplace.server.modules.topic.service.factory.TopicFactoryDAO
+import br.meetingplace.server.modules.topic.service.delete.TopicDelete
+import br.meetingplace.server.modules.topic.service.opinion.TopicOpinion
+import br.meetingplace.server.modules.topic.service.factory.TopicFactory
 import br.meetingplace.server.modules.topic.entitie.Topic
 import br.meetingplace.server.modules.topic.entitie.TopicOpinions
 import br.meetingplace.server.request.dto.generic.LogDTO
@@ -37,11 +37,11 @@ fun Route.topicRouter() {
 
         post(TopicPaths.TOPIC) {
             val new = call.receive<TopicCreationDTO>()
-            call.respond(TopicFactoryDAO.create(new, userMapper = UserMapper, communityMapper = CommunityDAO))
+            call.respond(TopicFactory.create(new, userMapper = UserMapper, communityMapper = CommunityDAO))
         }
         delete(TopicPaths.TOPIC) {
             val topic = call.receive<TopicDTO>()
-            call.respond(TopicDeleteDAO.deleteTopic(topic))
+            call.respond(TopicDelete.deleteTopic(topic))
         }
         get(TopicPaths.TOPIC) {
             val data = call.receive<LogDTO>()
@@ -54,7 +54,7 @@ fun Route.topicRouter() {
 
         post(TopicPaths.COMMENT) {
             val new = call.receive<TopicCreationDTO>()
-            call.respond(TopicFactoryDAO.createComment(new, userMapper = UserMapper, communityMapper = CommunityDAO))
+            call.respond(TopicFactory.createComment(new, userMapper = UserMapper, communityMapper = CommunityDAO))
         }
         get (TopicPaths.COMMENT){
             val data = call.receive<TopicDTO>()
@@ -68,7 +68,7 @@ fun Route.topicRouter() {
 
         put(TopicPaths.LIKE) {
             val post = call.receive<TopicDTO>()
-            call.respond(TopicOpinionDAO.like(post, topicMapper = TopicMapper))
+            call.respond(TopicOpinion.like(post, topicMapper = TopicMapper))
         }
         get(TopicPaths.LIKE) {
             val data = call.receive<TopicDTO>()
@@ -80,7 +80,7 @@ fun Route.topicRouter() {
         }
         put(TopicPaths.DISLIKE) {
             val post = call.receive<TopicDTO>()
-            call.respond(TopicOpinionDAO.dislike(post, topicMapper = TopicMapper))
+            call.respond(TopicOpinion.dislike(post, topicMapper = TopicMapper))
         }
         get(TopicPaths.DISLIKE) {
             val data = call.receive<TopicDTO>()

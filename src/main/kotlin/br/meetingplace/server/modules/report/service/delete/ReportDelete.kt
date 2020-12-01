@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object ReportDeleteDAO {
+object ReportDelete {
     fun deleteReport(data: ReportSimpleDTO) : Status {
         return try {
             transaction {

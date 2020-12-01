@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.topic.service.factory
 
-import br.meetingplace.server.modules.community.dao.CommunityDAOInterface
+import br.meetingplace.server.modules.community.dao.CI
 import br.meetingplace.server.modules.user.dao.UserMapperInterface
 import br.meetingplace.server.modules.community.entitie.Community
 import br.meetingplace.server.modules.community.entitie.CommunityMember
@@ -16,9 +16,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import java.util.*
 
-object TopicFactoryDAO {
+object TopicFactory {
 
-    fun create(data: TopicCreationDTO, userMapper: UserMapperInterface, communityMapper: CommunityDAOInterface): Status {
+    fun create(data: TopicCreationDTO, userMapper: UserMapperInterface, communityMapper: CI): Status {
         return try {
             val user = transaction { User.select { User.id eq data.userID }.map { userMapper.mapUser(it) }.firstOrNull() }
             when (data.communityID.isNullOrBlank()) {
@@ -68,7 +68,7 @@ object TopicFactoryDAO {
             Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
     }
-    fun createComment(data: TopicCreationDTO, userMapper: UserMapperInterface, communityMapper: CommunityDAOInterface): Status {
+    fun createComment(data: TopicCreationDTO, userMapper: UserMapperInterface, communityMapper: CI): Status {
         return try {
             val user = transaction { User.select { User.id eq data.userID }.map { userMapper.mapUser(it) }.firstOrNull() }
             when (data.communityID.isNullOrBlank()) {

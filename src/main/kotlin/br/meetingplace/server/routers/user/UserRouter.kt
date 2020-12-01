@@ -1,10 +1,10 @@
 package br.meetingplace.server.routers.user
 
 import br.meetingplace.server.modules.user.dao.UserMapper
-import br.meetingplace.server.modules.user.service.delete.UserDeleteDAO
-import br.meetingplace.server.modules.user.service.factory.UserFactoryDAO
-import br.meetingplace.server.modules.user.service.profile.ProfileDAO
-import br.meetingplace.server.modules.user.service.social.SocialDAO
+import br.meetingplace.server.modules.user.service.delete.UserDelete
+import br.meetingplace.server.modules.user.service.factory.UserFactory
+import br.meetingplace.server.modules.user.service.profile.UpdateProfile
+import br.meetingplace.server.modules.user.service.social.Social
 import br.meetingplace.server.modules.user.entitie.User
 import br.meetingplace.server.request.dto.generic.LogDTO
 import br.meetingplace.server.request.dto.generic.SubjectDTO
@@ -42,23 +42,23 @@ fun Route.userRouter() {
         }
         post(UserPaths.USER) {
             val user = call.receive<UserCreationDTO>()
-            call.respond(UserFactoryDAO.create(user))
+            call.respond(UserFactory.create(user))
         }
         delete(UserPaths.USER) {
             val data = call.receive<LogDTO>()
-            call.respond(UserDeleteDAO.delete(data))
+            call.respond(UserDelete.delete(data))
         }
         patch(UserPaths.PROFILE) {
             val user = call.receive<ProfileUpdateDTO>()
-            call.respond(ProfileDAO.updateProfile(user))
+            call.respond(UpdateProfile.updateProfile(user))
         }
         patch(UserPaths.FOLLOW) {
             val follow = call.receive<SubjectDTO>()
-            call.respond(SocialDAO.follow(follow))
+            call.respond(Social.follow(follow))
         }
         patch(UserPaths.UNFOLLOW) {
             val unfollow = call.receive<SubjectDTO>()
-            call.respond(SocialDAO.unfollow(unfollow))
+            call.respond(Social.unfollow(unfollow))
         }
     }
 }

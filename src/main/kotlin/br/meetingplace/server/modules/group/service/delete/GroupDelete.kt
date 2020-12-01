@@ -1,6 +1,7 @@
 package br.meetingplace.server.modules.group.service.delete
 
-import br.meetingplace.server.modules.group.dao.GroupMapperInterface
+import br.meetingplace.server.modules.group.dao.GI
+import br.meetingplace.server.modules.group.dao.member.GMI
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.group.entitie.Group
@@ -12,15 +13,13 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
-object GroupDeleteDAO{
-    fun delete(data: SubjectDTO, groupMapper: GroupMapperInterface): Status {
+object GroupDelete{
+    fun delete(data: SubjectDTO, memberDAO: GMI, groupDAO: GI): Status {
         return try{
-            val member = transaction { GroupMember.select { (GroupMember.userID eq data.userID) and (GroupMember.groupID eq data.subjectID)}.firstOrNull() }
-            if(member!= null && groupMapper.mapGroupMembers(member).admin)
-                transaction {
-                    Group.deleteWhere { Group.id eq data.subjectID }
-                }
-            Status(200, StatusMessages.OK)
+            val member = memberDAO.read(userID = data.userID, groupID = data.subjectID)
+            if(member != null && member.admin)
+                groupDAO.delete(data.subjectID)
+            else Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }catch (normal: Exception){
             Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }catch (psql: PSQLException){

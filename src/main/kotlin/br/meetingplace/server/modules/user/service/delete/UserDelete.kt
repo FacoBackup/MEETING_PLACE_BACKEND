@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object UserDeleteDAO {
+object UserDelete {
 
     fun delete(data: LogDTO): Status {
         return try{

@@ -12,7 +12,7 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 
-object UserFactoryDAO{
+object UserFactory{
 
     fun create(data: UserCreationDTO): Status {
         return try{

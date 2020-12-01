@@ -1,6 +1,7 @@
 package br.meetingplace.server.modules.user.service.social
 
 import br.meetingplace.server.modules.community.entitie.CommunityMember
+import br.meetingplace.server.modules.community.type.MemberType
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.user.entitie.Social
@@ -8,7 +9,7 @@ import br.meetingplace.server.request.dto.generic.SubjectDTO
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object SocialDAO {
+object Social {
 
     fun follow(data: SubjectDTO): Status {
         return try {
@@ -17,7 +18,7 @@ object SocialDAO {
                     CommunityMember.insert {
                         it[communityID] = data.subjectID
                         it[userID] = data.userID
-                        it[admin] = false
+                        it[role] = MemberType.FOLLOWER.toString()
                     }
                 }
                 false-> transaction {

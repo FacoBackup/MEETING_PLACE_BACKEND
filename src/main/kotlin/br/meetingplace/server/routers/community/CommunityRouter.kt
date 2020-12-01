@@ -1,9 +1,9 @@
 package br.meetingplace.server.routers.community
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
-import br.meetingplace.server.modules.group.dao.GroupMapper
-import br.meetingplace.server.modules.community.service.factory.CommunityFactoryDAO
-import br.meetingplace.server.modules.community.service.moderators.ModeratorDAO
+import br.meetingplace.server.modules.group.dao.GroupDAO
+import br.meetingplace.server.modules.community.service.factory.CommunityFactory
+import br.meetingplace.server.modules.community.service.approval.GroupApproval
 import br.meetingplace.server.modules.community.entitie.Community
 import br.meetingplace.server.request.dto.community.ApprovalDTO
 import br.meetingplace.server.request.dto.community.CommunityCreationDTO
@@ -37,11 +37,11 @@ fun Route.communityRouter() {
         }
         post(CommunityPaths.COMMUNITY) {
             val data = call.receive<CommunityCreationDTO>()
-            call.respond(CommunityFactoryDAO.create(data))
+            call.respond(CommunityFactory.create(data))
         }
         patch(CommunityPaths.GROUP) {
             val data = call.receive<ApprovalDTO>()
-            call.respond(ModeratorDAO.approveGroup(data, groupMapper = GroupMapper))
+            call.respond(GroupApproval.approveGroup(data, groupMapper = GroupDAO))
         }
     }
 }
