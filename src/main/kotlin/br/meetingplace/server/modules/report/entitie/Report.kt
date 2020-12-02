@@ -14,7 +14,7 @@ object Report: Table("report"){
         val reason = varchar("reason", 32).nullable()
         val communityID = varchar("community_id", 36).references(Community.id,onDelete = ReferenceOption.CASCADE)
         val creationDate  = datetime("date_of_creation")
-        var status = short("status")
+        var done = bool("status")
         var response = varchar("response", 36).references(User.id).nullable()
         override val primaryKey = PrimaryKey(id)
 }

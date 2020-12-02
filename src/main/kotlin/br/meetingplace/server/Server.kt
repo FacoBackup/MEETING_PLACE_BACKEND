@@ -2,7 +2,7 @@ package br.meetingplace.server
 
 import br.meetingplace.server.db.settings.dbSettings
 import br.meetingplace.server.modules.message.entitie.Message
-import br.meetingplace.server.modules.message.entitie.MessageOpinions
+import br.meetingplace.server.modules.message.entitie.MessageOpinion
 import br.meetingplace.server.modules.community.entitie.Community
 import br.meetingplace.server.modules.community.entitie.CommunityMember
 import br.meetingplace.server.modules.group.entitie.Group
@@ -24,6 +24,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.postgresql.util.PSQLException
 
 fun main() {
 
@@ -33,12 +34,14 @@ fun main() {
             SchemaUtils.create(
                     User, Social,
                     Group, GroupMember,
-                    Message, MessageOpinions,
+                    Message, MessageOpinion,
                     Community, CommunityMember,
                     Topic, TopicOpinions)
         }
     }catch (e: Exception){
         println(e.message)
+    }catch (psql: PSQLException){
+        println(psql.message)
     }
     if(db != null){
         val port = System.getenv("PORT")?.toInt() ?: 8080

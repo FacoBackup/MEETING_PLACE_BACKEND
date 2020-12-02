@@ -1,9 +1,12 @@
 package br.meetingplace.server.modules.topic.service.factory
 
 import br.meetingplace.server.modules.community.dao.CI
-import br.meetingplace.server.modules.user.dao.UserMapperInterface
+import br.meetingplace.server.modules.community.dao.member.CMI
+import br.meetingplace.server.modules.user.dao.UI
 import br.meetingplace.server.modules.community.entitie.Community
 import br.meetingplace.server.modules.community.entitie.CommunityMember
+import br.meetingplace.server.modules.community.type.MemberType
+import br.meetingplace.server.modules.topic.dao.TI
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.topic.entitie.Topic
@@ -18,97 +21,46 @@ import java.util.*
 
 object TopicFactory {
 
-    fun create(data: TopicCreationDTO, userMapper: UserMapperInterface, communityMapper: CI): Status {
+    fun create(data: TopicCreationDTO, topicDAO: TI,userDAO: UI, communityMemberDAO: CMI): Status {
         return try {
-            val user = transaction { User.select { User.id eq data.userID }.map { userMapper.mapUser(it) }.firstOrNull() }
+            val user = userDAO.read(data.userID)
             when (data.communityID.isNullOrBlank()) {
                 true -> {
-                    return if (user != null) {
-                        transaction {
-                            Topic.insert {
-                                it[id] = UUID.randomUUID().toString()
-                                it[header] = data.header
-                                it[body] = data.body
-                                it[imageURL] = data.imageURL
-                                it[approved] = true
-                                it[footer] = user.email
-                                it[creatorID] = user.id
-                                it[mainTopicID] = null
-                                it[communityID] = null
-                                it[creationDate] = DateTime.now()
-                            }
-                        }
-                        Status(statusCode = 200, StatusMessages.OK)
+                    return if (user != null && data.mainTopicID.isNullOrBlank()) {
+                        topicDAO.create(data,true, user.name)
                     } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
                 }
                 false -> {
-                    val member = transaction { CommunityMember.select { CommunityMember.userID eq data.userID }.map { communityMapper.mapCommunityMembersDTO(it) }.firstOrNull() }
-                    return if (transaction { Community.select { Community.id eq data.communityID }.firstOrNull() }!= null
-                        && user != null && member != null) {
-                        transaction {
-                            Topic.insert {
-                                it[id] = UUID.randomUUID().toString()
-                                it[header] = data.header
-                                it[body] = data.body
-                                it[imageURL] = data.imageURL
-                                it[approved] = member.admin
-                                it[footer] = user.email
-                                it[creatorID] = user.id
-                                it[mainTopicID] = null
-                                it[communityID] = member.communityID
-                                it[creationDate] = DateTime.now()
-                            }
-                        }
-                        Status(statusCode = 200, StatusMessages.OK)
+                    val member = communityMemberDAO.read(data.communityID, userID = data.userID)
+                    return if (user != null && member != null && data.mainTopicID.isNullOrBlank()) {
+                        topicDAO.create(data,
+                            approved = member.role == MemberType.DIRECTOR.toString() || member.role == MemberType.LEADER.toString(),
+                            userName = user.name
+                        )
                     } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
                 }
             }
         } catch (e: Exception) {
-            println(e.message)
             Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
     }
-    fun createComment(data: TopicCreationDTO, userMapper: UserMapperInterface, communityMapper: CI): Status {
+    fun createComment(data: TopicCreationDTO, topicDAO: TI,userDAO: UI, communityMemberDAO: CMI): Status {
         return try {
-            val user = transaction { User.select { User.id eq data.userID }.map { userMapper.mapUser(it) }.firstOrNull() }
+            val user = userDAO.read(data.userID)
             when (data.communityID.isNullOrBlank()) {
                 true -> {
-                    return if (user != null && !data.mainTopicID.isNullOrBlank() && transaction { !Topic.select {(Topic.id eq data.mainTopicID) and (Topic.communityID eq null)}.empty() }) {
-                        transaction {
-                            Topic.insert {
-                                it[id] = UUID.randomUUID().toString()
-                                it[header] = data.header
-                                it[body] = data.body
-                                it[imageURL] = data.imageURL
-                                it[approved] = true
-                                it[footer] = user.email
-                                it[creatorID] = user.id
-                                it[mainTopicID] = data.mainTopicID
-                                it[communityID] = null
-                                it[creationDate] =  DateTime.now()
-                            }
-                        }
-                        Status(statusCode = 200, StatusMessages.OK)
+                    return if (user != null && !data.mainTopicID.isNullOrBlank() && topicDAO.read(data.mainTopicID)  != null) {
+                        topicDAO.create(data, approved = true, userName = user.name)
                     } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
                 }
                 false -> {
-                    val member = transaction { CommunityMember.select { CommunityMember.userID eq data.userID }.map { communityMapper.mapCommunityMembersDTO(it) }.firstOrNull() }
-                    return if (!data.mainTopicID.isNullOrBlank() && transaction { !Topic.select { (Topic.id eq data.mainTopicID) and (Topic.approved eq true)}.empty() } && user != null && member != null) {
-                        transaction {
-                            Topic.insert {
-                                it[id] = UUID.randomUUID().toString()
-                                it[header] = data.header
-                                it[body] = data.body
-                                it[imageURL] = data.imageURL
-                                it[approved] = true
-                                it[footer] = user.email
-                                it[creatorID] = user.id
-                                it[mainTopicID] = data.mainTopicID
-                                it[communityID] = member.communityID
-                                it[creationDate] =  DateTime.now()
-                            }
-                        }
-                        Status(statusCode = 200, StatusMessages.OK)
+                    val member = communityMemberDAO.read(data.communityID, userID = data.userID)
+                    val mainTopic = data.mainTopicID?.let { topicDAO.read(it) }
+                    return if (mainTopic  != null && mainTopic.approved  && user != null && member != null) {
+                        topicDAO.create(data,
+                            approved = member.role == MemberType.DIRECTOR.toString() || member.role == MemberType.LEADER.toString(),
+                            userName = user.name
+                        )
                     } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
                 }
             }

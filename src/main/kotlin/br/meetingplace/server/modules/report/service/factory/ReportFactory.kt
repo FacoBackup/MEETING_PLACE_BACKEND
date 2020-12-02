@@ -28,7 +28,7 @@ object ReportFactory{
                             it[communityID] = data.communityID
                             it[creationDate] =  DateTime.now()
                             it[response] = null
-                            it[status] = 0
+                            it[done] = false
                             it[reason] = data.reason
                         }
                 Status(statusCode = 200, StatusMessages.OK)

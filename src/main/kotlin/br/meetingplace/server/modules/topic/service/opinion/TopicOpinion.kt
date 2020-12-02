@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.topic.service.opinion
 
-import br.meetingplace.server.modules.topic.dao.TopicMapperInterface
+import br.meetingplace.server.modules.topic.dao.TI
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.topic.entitie.Topic
@@ -13,7 +13,7 @@ import org.postgresql.util.PSQLException
 
 object TopicOpinion{
 
-    fun dislike(data: TopicDTO, topicMapper: TopicMapperInterface): Status {
+    fun dislike(data: TopicDTO, topicMapper: TI): Status {
         return try {
             return if (transaction { !User.select { User.id eq data.userID }.empty() } &&
                     transaction { !Topic.select { Topic.id eq data.topicID }.empty() })
@@ -52,7 +52,7 @@ object TopicOpinion{
         }
     }
 
-    fun like(data: TopicDTO, topicMapper: TopicMapperInterface): Status {
+    fun like(data: TopicDTO, topicMapper: TI): Status {
         return try {
             if (transaction { !User.select { User.id eq data.userID }.empty() } && transaction { !Topic.select { Topic.id eq data.topicID }.empty() })
                 when (checkLikeDislike(data.topicID, userID = data.userID, topicMapper = topicMapper)) {
@@ -91,7 +91,7 @@ object TopicOpinion{
         }
     }
 
-    private fun checkLikeDislike(topicID: String, topicMapper: TopicMapperInterface, userID: String): Int {
+    private fun checkLikeDislike(topicID: String, topicMapper: TI, userID: String): Int {
         val opinions = transaction {
             TopicOpinions.select { (TopicOpinions.userID eq userID) and (TopicOpinions.topicID eq topicID)}.map { topicMapper.mapTopicOpinions(it)}.firstOrNull()
         }

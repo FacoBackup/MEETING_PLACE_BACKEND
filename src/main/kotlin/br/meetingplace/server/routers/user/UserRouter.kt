@@ -1,10 +1,10 @@
 package br.meetingplace.server.routers.user
 
-import br.meetingplace.server.modules.user.dao.UserMapper
+import br.meetingplace.server.modules.user.dao.UserDAO
 import br.meetingplace.server.modules.user.service.delete.UserDelete
 import br.meetingplace.server.modules.user.service.factory.UserFactory
 import br.meetingplace.server.modules.user.service.profile.UpdateProfile
-import br.meetingplace.server.modules.user.service.social.Social
+import br.meetingplace.server.modules.user.service.social.UserSocial
 import br.meetingplace.server.modules.user.entitie.User
 import br.meetingplace.server.request.dto.generic.LogDTO
 import br.meetingplace.server.request.dto.generic.SubjectDTO
@@ -28,7 +28,7 @@ fun Route.userRouter() {
 
             val data = call.receive<LogDTO>()
             val user = try {
-                transaction { User.select { User.userName eq data.userID }.map { UserMapper.mapUser(it) }  }.firstOrNull()
+                transaction { User.select { User.userName eq data.userID }.map { UserDAO.mapUser(it) }  }.firstOrNull()
             }catch(sql: SQLException){
                 null
             }catch (psql: PSQLException){
@@ -54,11 +54,11 @@ fun Route.userRouter() {
         }
         patch(UserPaths.FOLLOW) {
             val follow = call.receive<SubjectDTO>()
-            call.respond(Social.follow(follow))
+            call.respond(UserSocial.follow(follow))
         }
         patch(UserPaths.UNFOLLOW) {
             val unfollow = call.receive<SubjectDTO>()
-            call.respond(Social.unfollow(unfollow))
+            call.respond(UserSocial.unfollow(unfollow))
         }
     }
 }

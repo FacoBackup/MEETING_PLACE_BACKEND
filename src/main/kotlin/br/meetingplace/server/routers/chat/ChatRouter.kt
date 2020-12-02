@@ -1,11 +1,11 @@
 package br.meetingplace.server.routers.chat
 
-import br.meetingplace.server.modules.message.dao.MessageMapper
-import br.meetingplace.server.modules.message.service.delete.DeleteMessageDAO
-import br.meetingplace.server.modules.message.service.opinion.MessageOpinionDAO
-import br.meetingplace.server.modules.message.service.quote.QuoteMessageDAO
-import br.meetingplace.server.modules.message.service.factory.MessageFactoryDAO
-import br.meetingplace.server.modules.message.service.share.ShareMessageDAO
+import br.meetingplace.server.modules.message.dao.MessageDAO
+import br.meetingplace.server.modules.message.service.delete.DeleteMessage
+import br.meetingplace.server.modules.message.service.opinion.MessageOpinion
+import br.meetingplace.server.modules.message.service.quote.QuoteMessage
+import br.meetingplace.server.modules.message.service.factory.MessageFactory
+import br.meetingplace.server.modules.message.service.share.ShareMessage
 import br.meetingplace.server.modules.message.entitie.Message
 import br.meetingplace.server.request.dto.message.MessageCreationDTO
 import br.meetingplace.server.request.dto.message.ConversationMessageDTO
@@ -33,14 +33,14 @@ fun Route.messageRouter() {
                 val chat = when(data.isGroup){
                     true-> transaction {
                         Message.select { (Message.creatorID eq data.userID) and (Message.groupReceiverID eq data.receiverID) }
-                                .map { MessageMapper.mapMessage(it) }
+                                .map { MessageDAO.mapMessage(it) }
                     }
 
                     false-> transaction {
                         Message.select {
                             ((Message.creatorID eq data.userID) and (Message.userReceiverID eq data.receiverID)) or
                             ((Message.creatorID eq data.receiverID) and (Message.userReceiverID eq data.userID))
-                        }.map { MessageMapper.mapMessage(it) }
+                        }.map { MessageDAO.mapMessage(it) }
                     }
                 }
                 if (chat.isEmpty()) {
@@ -56,27 +56,27 @@ fun Route.messageRouter() {
 
         post(MessagePaths.MESSAGE) {
             val data = call.receive<MessageCreationDTO>()
-            call.respond(MessageFactoryDAO.createMessage(data))
+            call.respond(MessageFactory.createMessage(data))
         }
         delete(MessagePaths.MESSAGE) {
             val data = call.receive<MessageDTO>()
-            call.respond(DeleteMessageDAO.deleteMessage(data))
+            call.respond(DeleteMessage.deleteMessage(data))
         }
         put(MessagePaths.LIKE) {
             val data = call.receive<MessageDTO>()
-            call.respond(MessageOpinionDAO.likeMessage(data))
+            call.respond(MessageOpinion.likeMessage(data))
         }
         put(MessagePaths.DISLIKE) {
             val data = call.receive<MessageDTO>()
-            call.respond(MessageOpinionDAO.dislikeMessage(data))
+            call.respond(MessageOpinion.dislikeMessage(data))
         }
         post(MessagePaths.QUOTE) {
             val data = call.receive<ConversationMessageDTO>()
-            call.respond(QuoteMessageDAO.quoteMessage(data))
+            call.respond(QuoteMessage.quoteMessage(data))
         }
         patch(MessagePaths.SHARE) {
             val data = call.receive<ConversationMessageDTO>()
-            call.respond(ShareMessageDAO.shareMessage(data))
+            call.respond(ShareMessage.shareMessage(data))
         }
     }
 }

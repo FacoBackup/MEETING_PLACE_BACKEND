@@ -2,8 +2,8 @@ package br.meetingplace.server.routers.topics
 
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
-import br.meetingplace.server.modules.topic.dao.TopicMapper
-import br.meetingplace.server.modules.user.dao.UserMapper
+import br.meetingplace.server.modules.topic.dao.TopicDAO
+import br.meetingplace.server.modules.user.dao.UserDAO
 import br.meetingplace.server.modules.topic.service.delete.TopicDelete
 import br.meetingplace.server.modules.topic.service.opinion.TopicOpinion
 import br.meetingplace.server.modules.topic.service.factory.TopicFactory
@@ -37,7 +37,7 @@ fun Route.topicRouter() {
 
         post(TopicPaths.TOPIC) {
             val new = call.receive<TopicCreationDTO>()
-            call.respond(TopicFactory.create(new, userMapper = UserMapper, communityMapper = CommunityDAO))
+            call.respond(TopicFactory.create(new, userMapper = UserDAO, communityMapper = CommunityDAO))
         }
         delete(TopicPaths.TOPIC) {
             val topic = call.receive<TopicDTO>()
@@ -45,7 +45,7 @@ fun Route.topicRouter() {
         }
         get(TopicPaths.TOPIC) {
             val data = call.receive<LogDTO>()
-            val topics = transaction { Topic.select { Topic.creatorID eq data.userID }.map { TopicMapper.mapTopic(it) } }
+            val topics = transaction { Topic.select { Topic.creatorID eq data.userID }.map { TopicDAO.mapTopic(it) } }
             if (topics.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
             else
@@ -54,11 +54,11 @@ fun Route.topicRouter() {
 
         post(TopicPaths.COMMENT) {
             val new = call.receive<TopicCreationDTO>()
-            call.respond(TopicFactory.createComment(new, userMapper = UserMapper, communityMapper = CommunityDAO))
+            call.respond(TopicFactory.createComment(new, userMapper = UserDAO, communityMapper = CommunityDAO))
         }
         get (TopicPaths.COMMENT){
             val data = call.receive<TopicDTO>()
-            val topics = transaction { Topic.select { Topic.mainTopicID eq data.topicID }.map { TopicMapper.mapTopic(it) } }
+            val topics = transaction { Topic.select { Topic.mainTopicID eq data.topicID }.map { TopicDAO.mapTopic(it) } }
             if (topics.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
             else
@@ -68,11 +68,11 @@ fun Route.topicRouter() {
 
         put(TopicPaths.LIKE) {
             val post = call.receive<TopicDTO>()
-            call.respond(TopicOpinion.like(post, topicMapper = TopicMapper))
+            call.respond(TopicOpinion.like(post, topicMapper = TopicDAO))
         }
         get(TopicPaths.LIKE) {
             val data = call.receive<TopicDTO>()
-            val opinions = transaction { TopicOpinions.select { (TopicOpinions.topicID eq data.topicID) and (TopicOpinions.liked eq true) }.map { TopicMapper.mapTopicOpinions(it) } }
+            val opinions = transaction { TopicOpinions.select { (TopicOpinions.topicID eq data.topicID) and (TopicOpinions.liked eq true) }.map { TopicDAO.mapTopicOpinions(it) } }
             if (opinions.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
             else
@@ -80,11 +80,11 @@ fun Route.topicRouter() {
         }
         put(TopicPaths.DISLIKE) {
             val post = call.receive<TopicDTO>()
-            call.respond(TopicOpinion.dislike(post, topicMapper = TopicMapper))
+            call.respond(TopicOpinion.dislike(post, topicMapper = TopicDAO))
         }
         get(TopicPaths.DISLIKE) {
             val data = call.receive<TopicDTO>()
-            val opinions = transaction { TopicOpinions.select { (TopicOpinions.topicID eq data.topicID) and (TopicOpinions.liked eq false) }.map { TopicMapper.mapTopicOpinions(it) } }
+            val opinions = transaction { TopicOpinions.select { (TopicOpinions.topicID eq data.topicID) and (TopicOpinions.liked eq false) }.map { TopicDAO.mapTopicOpinions(it) } }
             if (opinions.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
             else
