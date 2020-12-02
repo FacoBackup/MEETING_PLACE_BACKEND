@@ -1,0 +1,12 @@
+package br.meetingplace.server.modules.groupTODO.dao
+
+import br.meetingplace.server.modules.groupTODO.dto.GroupDTO
+import br.meetingplace.server.request.dto.group.GroupCreationDTO
+import br.meetingplace.server.response.status.Status
+
+interface GI {
+    fun create(data: GroupCreationDTO, approved: Boolean): Status
+    fun read(groupID: String): GroupDTO?
+    fun update(groupID: String, name: String?, about: String?, approved: Boolean): Status
+    fun delete(groupID: String): Status
+}

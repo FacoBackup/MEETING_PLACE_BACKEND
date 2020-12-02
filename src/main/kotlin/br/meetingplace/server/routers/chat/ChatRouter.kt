@@ -1,12 +1,12 @@
 package br.meetingplace.server.routers.chat
 
-import br.meetingplace.server.modules.message.dao.MessageDAO
-import br.meetingplace.server.modules.message.service.delete.DeleteMessage
-import br.meetingplace.server.modules.message.service.opinion.MessageOpinion
-import br.meetingplace.server.modules.message.service.quote.QuoteMessage
-import br.meetingplace.server.modules.message.service.factory.MessageFactory
-import br.meetingplace.server.modules.message.service.share.ShareMessage
-import br.meetingplace.server.modules.message.entitie.Message
+import br.meetingplace.server.modules.messageTODO.dao.MessageDAO
+import br.meetingplace.server.modules.messageTODO.service.delete.MessageDeleteService
+import br.meetingplace.server.modules.messageTODO.service.opinion.MessageOpinionService
+import br.meetingplace.server.modules.messageTODO.service.quote.MessageQuoteService
+import br.meetingplace.server.modules.messageTODO.service.factory.MessageFactoryService
+import br.meetingplace.server.modules.messageTODO.service.share.MessageShareService
+import br.meetingplace.server.modules.messageTODO.entitie.Message
 import br.meetingplace.server.request.dto.message.MessageCreationDTO
 import br.meetingplace.server.request.dto.message.ConversationMessageDTO
 import br.meetingplace.server.request.dto.message.MessageDTO
@@ -56,27 +56,27 @@ fun Route.messageRouter() {
 
         post(MessagePaths.MESSAGE) {
             val data = call.receive<MessageCreationDTO>()
-            call.respond(MessageFactory.createMessage(data))
+            call.respond(MessageFactoryService.createMessage(data))
         }
         delete(MessagePaths.MESSAGE) {
             val data = call.receive<MessageDTO>()
-            call.respond(DeleteMessage.deleteMessage(data))
+            call.respond(MessageDeleteService.deleteMessage(data))
         }
         put(MessagePaths.LIKE) {
             val data = call.receive<MessageDTO>()
-            call.respond(MessageOpinion.likeMessage(data))
+            call.respond(MessageOpinionService.likeMessage(data))
         }
         put(MessagePaths.DISLIKE) {
             val data = call.receive<MessageDTO>()
-            call.respond(MessageOpinion.dislikeMessage(data))
+            call.respond(MessageOpinionService.dislikeMessage(data))
         }
         post(MessagePaths.QUOTE) {
             val data = call.receive<ConversationMessageDTO>()
-            call.respond(QuoteMessage.quoteMessage(data))
+            call.respond(MessageQuoteService.quoteMessage(data))
         }
         patch(MessagePaths.SHARE) {
             val data = call.receive<ConversationMessageDTO>()
-            call.respond(ShareMessage.shareMessage(data))
+            call.respond(MessageShareService.shareMessage(data))
         }
     }
 }

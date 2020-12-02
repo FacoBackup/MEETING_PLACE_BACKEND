@@ -1,11 +1,8 @@
 package br.meetingplace.server.modules.report.dao
 
-import br.meetingplace.server.modules.group.dto.GroupDTO
 import br.meetingplace.server.modules.report.dto.ReportDTO
-import br.meetingplace.server.request.dto.group.GroupCreationDTO
 import br.meetingplace.server.request.dto.report.ReportCreationDTO
 import br.meetingplace.server.response.status.Status
-import org.jetbrains.exposed.sql.ResultRow
 
 interface RI {
     fun create(data: ReportCreationDTO): Status

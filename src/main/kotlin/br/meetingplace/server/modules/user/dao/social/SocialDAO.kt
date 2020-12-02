@@ -1,13 +1,11 @@
 package br.meetingplace.server.modules.user.dao.social
 
-import br.meetingplace.server.modules.group.entitie.Group
 import br.meetingplace.server.modules.user.dto.SocialDTO
 import br.meetingplace.server.modules.user.entitie.Social
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
 import org.postgresql.util.PSQLException
 import java.util.*
 

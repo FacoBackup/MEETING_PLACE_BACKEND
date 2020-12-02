@@ -1,6 +1,5 @@
 package br.meetingplace.server.modules.topic.dao
 
-import br.meetingplace.server.modules.group.entitie.Group
 import br.meetingplace.server.modules.topic.entitie.Topic
 import br.meetingplace.server.modules.topic.dto.TopicDTO
 import br.meetingplace.server.request.dto.topics.TopicCreationDTO

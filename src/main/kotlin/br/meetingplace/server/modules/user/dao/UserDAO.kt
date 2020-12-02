@@ -1,21 +1,14 @@
 package br.meetingplace.server.modules.user.dao
 
-import br.meetingplace.server.modules.group.entitie.Group
 import br.meetingplace.server.modules.user.dto.UserDTO
-import br.meetingplace.server.modules.user.entitie.Social
 import br.meetingplace.server.modules.user.entitie.User
-import br.meetingplace.server.request.dto.group.GroupCreationDTO
 import br.meetingplace.server.request.dto.users.UserCreationDTO
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
-import kotlinx.coroutines.selects.select
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.postgresql.util.PSQLException
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 object UserDAO: UI {
@@ -78,37 +71,39 @@ object UserDAO: UI {
         city: String?
     ): List<UserDTO> {
         return try {
-            if(!name.isNullOrBlank()) transaction {
+            val users  = mutableListOf<UserDTO>()
+            if(!name.isNullOrBlank()) users.addAll(transaction {
                 User.select {
                     User.userName eq name
                 }.map { mapUser(it) }
-            }
-            if(!birthDate.isNullOrBlank()) transaction {
-                    User.select {
-                        User.birth eq DateTimeFormat.forPattern("dd-MM-yyyy").parseDateTime(birthDate)
-                    }.map { mapUser(it) }
-                }
-            if(!phoneNumber.isNullOrBlank()) transaction {
+            })
+            if(!birthDate.isNullOrBlank()) users.addAll(transaction {
+                User.select {
+                    User.birth eq DateTimeFormat.forPattern("dd-MM-yyyy").parseDateTime(birthDate)
+                }.map { mapUser(it) }
+            })
+            if(!phoneNumber.isNullOrBlank()) users.addAll(transaction {
                 User.select {
                     User.phoneNumber eq phoneNumber
                 }.map { mapUser(it) }
-            }
-            if(!nationality.isNullOrBlank()) transaction {
+            })
+            if(!nationality.isNullOrBlank()) users.addAll(transaction {
                 User.select {
                     User.nationality eq nationality
                 }.map { mapUser(it) }
-            }
-            if(!name.isNullOrBlank()) transaction {
+            })
+            if(!name.isNullOrBlank()) users.addAll(transaction {
                 User.select {
                     User.userName eq name
                 }.map { mapUser(it) }
-            }
-            if(!city.isNullOrBlank()) transaction {
+            })
+            if(!city.isNullOrBlank()) users.addAll(transaction {
                 User.select {
                     User.cityOfBirth eq city
                 }.map { mapUser(it) }
-            }
-            else listOf()
+            })
+
+            users
         }catch (normal: Exception){
             listOf()
         }catch (psql: PSQLException){
@@ -119,6 +114,7 @@ object UserDAO: UI {
     override fun update(
         userID: String,
         name: String?,
+        imageURL: String?,
         about: String?,
         nationality: String?,
         phoneNumber: String?,
@@ -137,6 +133,8 @@ object UserDAO: UI {
                         it[this.phoneNumber] = phoneNumber
                     if(!city.isNullOrBlank())
                         it[this.cityOfBirth] = city
+                    if(!imageURL.isNullOrBlank())
+                        it[this.imageURL] = imageURL
                 }
             }
             Status(200, StatusMessages.OK)

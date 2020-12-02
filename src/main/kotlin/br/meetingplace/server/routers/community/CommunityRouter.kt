@@ -1,10 +1,10 @@
 package br.meetingplace.server.routers.community
 
-import br.meetingplace.server.modules.community.dao.CommunityDAO
-import br.meetingplace.server.modules.group.dao.GroupDAO
-import br.meetingplace.server.modules.community.service.factory.CommunityFactory
-import br.meetingplace.server.modules.community.service.approval.GroupApproval
-import br.meetingplace.server.modules.community.entitie.Community
+import br.meetingplace.server.modules.communityTODO.dao.CommunityDAO
+import br.meetingplace.server.modules.groupTODO.dao.GroupDAO
+import br.meetingplace.server.modules.communityTODO.service.factory.CommunityFactoryService
+import br.meetingplace.server.modules.communityTODO.service.approval.CommunityApprovalService
+import br.meetingplace.server.modules.communityTODO.entitie.Community
 import br.meetingplace.server.request.dto.community.ApprovalDTO
 import br.meetingplace.server.request.dto.community.CommunityCreationDTO
 import br.meetingplace.server.request.dto.generic.SubjectDTO
@@ -37,11 +37,11 @@ fun Route.communityRouter() {
         }
         post(CommunityPaths.COMMUNITY) {
             val data = call.receive<CommunityCreationDTO>()
-            call.respond(CommunityFactory.create(data))
+            call.respond(CommunityFactoryService.create(data))
         }
         patch(CommunityPaths.GROUP) {
             val data = call.receive<ApprovalDTO>()
-            call.respond(GroupApproval.approveGroup(data, groupMapper = GroupDAO))
+            call.respond(CommunityApprovalService.approveGroup(data, groupMapper = GroupDAO))
         }
     }
 }

@@ -1,23 +1,19 @@
 package br.meetingplace.server.modules.topic.dao.opinion
 
 import br.meetingplace.server.modules.topic.dto.TopicOpinionDTO
-import br.meetingplace.server.modules.topic.entitie.Topic
-import br.meetingplace.server.modules.topic.entitie.TopicOpinions
-import br.meetingplace.server.modules.topic.service.opinion.TopicOpinion
+import br.meetingplace.server.modules.topic.entitie.TopicOpinion
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
 import org.postgresql.util.PSQLException
-import java.util.*
 
 object TopicOpinionDAO:TOI {
 
     override fun create(topicID: String, userID: String, liked: Boolean): Status {
         return try {
             transaction {
-                TopicOpinions.insert {
+                TopicOpinion.insert {
                     it[this.topicID]  = topicID
                     it[this.userID] = userID
                     it[this.liked] = liked
@@ -34,9 +30,9 @@ object TopicOpinionDAO:TOI {
     override fun delete(topicID: String, userID: String): Status {
         return try {
             transaction {
-                TopicOpinions.deleteWhere {
-                    (TopicOpinions.topicID eq topicID) and
-                    (TopicOpinions.userID eq userID)
+                TopicOpinion.deleteWhere {
+                    (TopicOpinion.topicID eq topicID) and
+                    (TopicOpinion.userID eq userID)
                 }
             }
             Status(200, StatusMessages.OK)
@@ -47,11 +43,25 @@ object TopicOpinionDAO:TOI {
         }
     }
 
+    override fun read(topicID: String, userID: String): TopicOpinionDTO? {
+        return try {
+            transaction {
+                TopicOpinion.select {
+                    (TopicOpinion.topicID eq topicID) and
+                    (TopicOpinion.userID eq userID)
+                }.map { mapTopicOpinions(it) }.firstOrNull()
+            }
+        }catch (normal: Exception){
+            null
+        }catch (psql: PSQLException){
+            null
+        }
+    }
     override fun readAll(topicID: String): List<TopicOpinionDTO> {
         return try {
             transaction {
-                TopicOpinions.select {
-                    TopicOpinions.topicID eq topicID
+                TopicOpinion.select {
+                    TopicOpinion.topicID eq topicID
                 }.map { mapTopicOpinions(it) }
             }
         }catch (normal: Exception){
@@ -64,9 +74,9 @@ object TopicOpinionDAO:TOI {
     override fun update(topicID: String, userID: String, liked: Boolean): Status {
         return try {
             transaction {
-                TopicOpinions.update({
-                    (TopicOpinions.topicID eq topicID) and
-                 (TopicOpinions.userID eq userID)
+                TopicOpinion.update({
+                    (TopicOpinion.topicID eq topicID) and
+                 (TopicOpinion.userID eq userID)
                 }){
                     it[this.liked] = liked
                 }
@@ -79,6 +89,6 @@ object TopicOpinionDAO:TOI {
         }
     }
     private fun mapTopicOpinions(it: ResultRow): TopicOpinionDTO {
-        return TopicOpinionDTO(liked =  it[TopicOpinions.liked], userID =  it[TopicOpinions.userID], topicID = it[TopicOpinions.topicID])
+        return TopicOpinionDTO(liked =  it[TopicOpinion.liked], userID =  it[TopicOpinion.userID], topicID = it[TopicOpinion.topicID])
     }
 }
