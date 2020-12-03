@@ -11,7 +11,7 @@ object UserFactoryService{
 
     fun create(data: RequestUserCreation, userDAO: UI): Status {
         return try{
-            if(userDAO.readAll(name = data.userName, null,
+            if(userDAO.readAllByAttribute(name = data.userName, null,
                phoneNumber = data.phoneNumber,null,null).isEmpty())
                 userDAO.create(data)
             else

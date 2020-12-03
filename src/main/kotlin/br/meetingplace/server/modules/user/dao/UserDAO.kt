@@ -62,8 +62,18 @@ object UserDAO: UI {
             null
         }
     }
-
-    override fun readAll(
+    override fun readAll(): List<UserDTO>{
+        return try {
+            transaction {
+                User.selectAll().map { mapUser(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
+    override fun readAllByAttribute(
         name: String?,
         birthDate: String?,
         phoneNumber: String?,
@@ -72,10 +82,10 @@ object UserDAO: UI {
     ): List<UserDTO> {
         return try {
             val users  = mutableListOf<UserDTO>()
-            if(!name.isNullOrBlank()) users.addAll(transaction {
+            if(!name.isNullOrBlank()) users.add(transaction {
                 User.select {
                     User.userName eq name
-                }.map { mapUser(it) }
+                }.map { mapUser(it) }.first()
             })
             if(!birthDate.isNullOrBlank()) users.addAll(transaction {
                 User.select {
@@ -92,11 +102,7 @@ object UserDAO: UI {
                     User.nationality eq nationality
                 }.map { mapUser(it) }
             })
-            if(!name.isNullOrBlank()) users.addAll(transaction {
-                User.select {
-                    User.userName eq name
-                }.map { mapUser(it) }
-            })
+
             if(!city.isNullOrBlank()) users.addAll(transaction {
                 User.select {
                     User.cityOfBirth eq city

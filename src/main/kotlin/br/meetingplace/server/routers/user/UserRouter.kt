@@ -7,9 +7,7 @@ import br.meetingplace.server.modules.user.services.delete.UserDeleteService
 import br.meetingplace.server.modules.user.services.factory.UserFactoryService
 import br.meetingplace.server.modules.user.services.profile.UserUpdateService
 import br.meetingplace.server.modules.user.services.social.UserSocialService
-import br.meetingplace.server.modules.user.entities.User
 import br.meetingplace.server.modules.user.dto.requests.RequestUser
-import br.meetingplace.server.modules.group.dto.requests.RequestGroup
 import br.meetingplace.server.modules.user.dao.social.UserSocialDAO
 import br.meetingplace.server.modules.user.dto.requests.RequestProfileUpdate
 import br.meetingplace.server.modules.user.dto.requests.RequestSocial
@@ -20,19 +18,29 @@ import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.postgresql.util.PSQLException
-import java.sql.SQLException
 
 fun Route.userRouter() {
 
     route("/api") {
+        get(UserPaths.USER+"/all") {
+            val user = UserDAO.readAll()
+            if (user.isEmpty())
+                call.respond(Status(404, StatusMessages.NOT_FOUND))
+            else
+                call.respond(user)
+        }
         get(UserPaths.USER) {
-
             val data = call.receive<RequestUser>()
             val user = UserDAO.read(data.userID)
             if (user == null)
+                call.respond(Status(404, StatusMessages.NOT_FOUND))
+            else
+                call.respond(user)
+        }
+        get(UserPaths.USER+"/name") {
+            val data = call.receive<RequestUser>()
+            val user = UserDAO.readAllByAttribute(name = data.userID, null,null,null,null)
+            if (user.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
             else
                 call.respond(user)
