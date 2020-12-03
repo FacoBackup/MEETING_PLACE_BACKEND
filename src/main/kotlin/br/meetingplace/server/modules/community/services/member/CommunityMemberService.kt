@@ -9,7 +9,7 @@ import br.meetingplace.server.response.status.StatusMessages
 
 object CommunityMemberService {
 
-    fun promoteMember(data: RequestCommunityMember, communityMemberDAO: CMI, userDAO: UI): Status{
+    fun promoteMember(data: RequestCommunityMember, communityMemberDAO: CMI): Status{
         return try {
             val userMember = communityMemberDAO.read(communityID = data.communityID, userID = data.userID)
             val member = communityMemberDAO.read(communityID = data.communityID, userID = data.memberID)
@@ -39,7 +39,7 @@ object CommunityMemberService {
         }
     }
 
-    fun lowerMember(data: RequestCommunityMember, communityMemberDAO: CMI, userDAO: UI): Status{
+    fun lowerMember(data: RequestCommunityMember, communityMemberDAO: CMI): Status{
         return try {
             val userMember = communityMemberDAO.read(communityID = data.communityID, userID = data.userID)
             val member = communityMemberDAO.read(communityID = data.communityID, userID = data.memberID)

@@ -1,5 +1,7 @@
 package br.meetingplace.server.routers.user
 
+import br.meetingplace.server.modules.community.dao.CommunityDAO
+import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
 import br.meetingplace.server.modules.user.dao.UserDAO
 import br.meetingplace.server.modules.user.services.delete.UserDeleteService
 import br.meetingplace.server.modules.user.services.factory.UserFactoryService
@@ -8,7 +10,9 @@ import br.meetingplace.server.modules.user.services.social.UserSocialService
 import br.meetingplace.server.modules.user.entities.User
 import br.meetingplace.server.modules.user.dto.requests.RequestUser
 import br.meetingplace.server.modules.group.dto.requests.RequestGroup
+import br.meetingplace.server.modules.user.dao.social.UserSocialDAO
 import br.meetingplace.server.modules.user.dto.requests.RequestProfileUpdate
+import br.meetingplace.server.modules.user.dto.requests.RequestSocial
 import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
@@ -27,38 +31,31 @@ fun Route.userRouter() {
         get(UserPaths.USER) {
 
             val data = call.receive<RequestUser>()
-            val user = try {
-                transaction { User.select { User.userName eq data.userID }.map { UserDAO.mapUser(it) }  }.firstOrNull()
-            }catch(sql: SQLException){
-                null
-            }catch (psql: PSQLException){
-                null
-            }
-
+            val user = UserDAO.read(data.userID)
             if (user == null)
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
             else
                 call.respond(user)
         }
         post(UserPaths.USER) {
-            val user = call.receive<RequestUserCreation>()
-            call.respond(UserFactoryService.create(user))
+            val data = call.receive<RequestUserCreation>()
+            call.respond(UserFactoryService.create(data, UserDAO))
         }
         delete(UserPaths.USER) {
             val data = call.receive<RequestUser>()
-            call.respond(UserDeleteService.delete(data))
+            call.respond(UserDeleteService.delete(data, UserDAO))
         }
         patch(UserPaths.PROFILE) {
-            val user = call.receive<RequestProfileUpdate>()
-            call.respond(UserUpdateService.updateProfile(user))
+            val data = call.receive<RequestProfileUpdate>()
+            call.respond(UserUpdateService.updateProfile(data, UserDAO))
         }
-        patch(UserPaths.FOLLOW) {
-            val follow = call.receive<RequestGroup>()
-            call.respond(UserSocialService.follow(follow))
+        post(UserPaths.FOLLOW) {
+            val data = call.receive<RequestSocial>()
+            call.respond(UserSocialService.follow(data, UserSocialDAO, CommunityMemberDAO, CommunityDAO, UserDAO))
         }
-        patch(UserPaths.UNFOLLOW) {
-            val unfollow = call.receive<RequestGroup>()
-            call.respond(UserSocialService.unfollow(unfollow))
+        delete(UserPaths.UNFOLLOW) {
+            val data = call.receive<RequestSocial>()
+            call.respond(UserSocialService.unfollow(data, UserSocialDAO, CommunityMemberDAO))
         }
     }
 }

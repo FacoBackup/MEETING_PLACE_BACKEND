@@ -8,7 +8,7 @@ import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.community.dto.requests.RequestApproval
 
 object CommunityApprovalService {
-    fun approve(data: RequestApproval, memberDAO: CMI, groupDAO: GI): Status {
+    fun approveGroup(data: RequestApproval, memberDAO: CMI, groupDAO: GI): Status {
         return try{
             val group = groupDAO.read(groupID = data.serviceID)
             val memberData = memberDAO.read(data.communityID, userID = data.userID)
@@ -24,7 +24,7 @@ object CommunityApprovalService {
             Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
     }
-    fun disapprove(data: RequestApproval, memberDAO: CMI, groupDAO: GI): Status{
+    fun disapproveGroup(data: RequestApproval, memberDAO: CMI, groupDAO: GI): Status{
         return try{
             val group = groupDAO.read(groupID = data.serviceID)
             val memberData = memberDAO.read(data.communityID, userID = data.userID)

@@ -1,8 +1,8 @@
 package br.meetingplace.server
 
 import br.meetingplace.server.db.settings.dbSettings
-import br.meetingplace.server.modules.messageTODO.entities.Message
-import br.meetingplace.server.modules.messageTODO.entities.MessageOpinion
+import br.meetingplace.server.modules.message.entities.Message
+import br.meetingplace.server.modules.message.entities.MessageOpinion
 import br.meetingplace.server.modules.community.entities.Community
 import br.meetingplace.server.modules.community.entities.CommunityMember
 import br.meetingplace.server.modules.group.entities.Group

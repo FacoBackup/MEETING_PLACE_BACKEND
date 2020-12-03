@@ -5,10 +5,7 @@ import br.meetingplace.server.modules.topic.dto.response.TopicDTO
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import org.postgresql.util.PSQLException
@@ -68,7 +65,34 @@ object TopicDAO: TI {
             null
         }
     }
-
+    override fun readByUser(userID: String): List<TopicDTO> {
+        return try {
+            transaction {
+                Topic.select {
+                    (Topic.creatorID eq userID) and
+                    (Topic.approved eq true) and
+                    (Topic.mainTopicID eq null)
+                }.map { mapTopic(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
+    override fun readAllComments(topicID: String): List<TopicDTO> {
+        return try {
+            transaction {
+                Topic.select {
+                    Topic.mainTopicID eq topicID
+                }.map { mapTopic(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
     override fun update(
         topicID: String,
         approved: Boolean?,

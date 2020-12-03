@@ -8,15 +8,13 @@ import br.meetingplace.server.modules.group.dto.requests.RequestGroup
 import org.postgresql.util.PSQLException
 
 object GroupDeleteService{
-    fun delete(data: RequestGroup, memberDAO: GMI, groupDAO: GI): Status {
+    fun delete(data: RequestGroup, groupMemberDAO: GMI, groupDAO: GI): Status {
         return try{
-            val member = memberDAO.read(userID = data.userID, groupID = data.subjectID)
+            val member = groupMemberDAO.read(userID = data.userID, groupID = data.groupID)
             if(member != null && member.admin)
-                groupDAO.delete(data.subjectID)
+                groupDAO.delete(data.groupID)
             else Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
-        }catch (psql: PSQLException){
             Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }
     }

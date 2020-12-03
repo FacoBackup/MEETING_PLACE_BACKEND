@@ -8,12 +8,12 @@ import br.meetingplace.server.modules.group.dto.requests.RequestGroupMember
 import org.postgresql.util.PSQLException
 
 object GroupMemberService {
-    fun addMember(data: RequestGroupMember, memberDAO: GMI, groupDAO: GI): Status {
+    fun addMember(data: RequestGroupMember, groupMemberDAO: GMI): Status {
         return try{
-            if(memberDAO.read(userID = data.userID, groupID = data.groupID) != null &&
-               memberDAO.read(userID = data.memberID, groupID = data.groupID) == null)
+            if(groupMemberDAO.read(userID = data.userID, groupID = data.groupID) != null &&
+               groupMemberDAO.read(userID = data.memberID, groupID = data.groupID) == null)
 
-               memberDAO.create(data.memberID, groupID = data.groupID, false)
+               groupMemberDAO.create(data.memberID, groupID = data.groupID, false)
             else Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }catch (normal: Exception){
             Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
@@ -22,11 +22,11 @@ object GroupMemberService {
         }
     }
 
-    fun removeMember(data: RequestGroupMember, memberDAO: GMI): Status {
+    fun removeMember(data: RequestGroupMember, groupMemberDAO: GMI): Status {
         return try {
-            val member = memberDAO.read(data.userID, groupID = data.groupID)
+            val member = groupMemberDAO.read(data.userID, groupID = data.groupID)
             if(member != null && member.admin)
-                memberDAO.delete(data.memberID, groupID = data.groupID)
+                groupMemberDAO.delete(data.memberID, groupID = data.groupID)
             else Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
         }catch (normal: Exception){
             Status(500, StatusMessages.INTERNAL_SERVER_ERROR)

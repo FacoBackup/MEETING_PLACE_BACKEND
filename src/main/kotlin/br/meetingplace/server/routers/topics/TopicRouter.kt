@@ -2,7 +2,9 @@ package br.meetingplace.server.routers.topics
 
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
+import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
 import br.meetingplace.server.modules.topic.dao.TopicDAO
+import br.meetingplace.server.modules.topic.dao.opinion.TopicOpinionDAO
 import br.meetingplace.server.modules.user.dao.UserDAO
 import br.meetingplace.server.modules.topic.services.delete.TopicDeleteService
 import br.meetingplace.server.modules.topic.services.opinion.TopicOpinionService
@@ -37,15 +39,15 @@ fun Route.topicRouter() {
 
         post(TopicPaths.TOPIC) {
             val new = call.receive<RequestTopicCreation>()
-            call.respond(TopicFactoryService.create(new, userMapper = UserDAO, communityMapper = CommunityDAO))
+            call.respond(TopicFactoryService.create(new, TopicDAO, UserDAO, CommunityMemberDAO))
         }
         delete(TopicPaths.TOPIC) {
             val topic = call.receive<RequestTopic>()
-            call.respond(TopicDeleteService.deleteTopic(topic))
+            call.respond(TopicDeleteService.deleteTopic(topic, TopicDAO))
         }
-        get(TopicPaths.TOPIC) {
+        get(TopicPaths.USER_TOPICS) {
             val data = call.receive<RequestUser>()
-            val topics = transaction { Topic.select { Topic.creatorID eq data.userID }.map { TopicDAO.mapTopic(it) } }
+            val topics = TopicDAO.readByUser(data.userID)
             if (topics.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
             else
@@ -53,38 +55,29 @@ fun Route.topicRouter() {
         }
 
         post(TopicPaths.COMMENT) {
-            val new = call.receive<RequestTopicCreation>()
-            call.respond(TopicFactoryService.createComment(new, userMapper = UserDAO, communityMapper = CommunityDAO))
+            val data = call.receive<RequestTopicCreation>()
+            call.respond(TopicFactoryService.createComment(data,TopicDAO, UserDAO, CommunityMemberDAO))
         }
         get (TopicPaths.COMMENT){
             val data = call.receive<RequestTopic>()
-            val topics = transaction { Topic.select { Topic.mainTopicID eq data.topicID }.map { TopicDAO.mapTopic(it) } }
+            val topics = TopicDAO.readAllComments(data.topicID)
             if (topics.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
             else
                 call.respond(topics)
         }
 
-
         put(TopicPaths.LIKE) {
-            val post = call.receive<RequestTopic>()
-            call.respond(TopicOpinionService.like(post, topicMapper = TopicDAO))
-        }
-        get(TopicPaths.LIKE) {
             val data = call.receive<RequestTopic>()
-            val opinions = transaction { TopicOpinion.select { (TopicOpinion.topicID eq data.topicID) and (TopicOpinion.liked eq true) }.map { TopicDAO.mapTopicOpinions(it) } }
-            if (opinions.isEmpty())
-                call.respond(Status(404, StatusMessages.NOT_FOUND))
-            else
-                call.respond(opinions)
+            call.respond(TopicOpinionService.like(data,UserDAO, TopicDAO, TopicOpinionDAO))
         }
         put(TopicPaths.DISLIKE) {
-            val post = call.receive<RequestTopic>()
-            call.respond(TopicOpinionService.dislike(post, topicMapper = TopicDAO))
-        }
-        get(TopicPaths.DISLIKE) {
             val data = call.receive<RequestTopic>()
-            val opinions = transaction { TopicOpinion.select { (TopicOpinion.topicID eq data.topicID) and (TopicOpinion.liked eq false) }.map { TopicDAO.mapTopicOpinions(it) } }
+            call.respond(TopicOpinionService.dislike(data, UserDAO, TopicDAO, TopicOpinionDAO))
+        }
+        get(TopicPaths.OPINIONS) {
+            val data = call.receive<RequestTopic>()
+            val opinions = TopicOpinionDAO.readAll(data.topicID)
             if (opinions.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
             else
