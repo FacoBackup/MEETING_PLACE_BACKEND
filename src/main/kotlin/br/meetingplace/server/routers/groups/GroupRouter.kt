@@ -1,11 +1,11 @@
 package br.meetingplace.server.routers.groups
 
 
-import br.meetingplace.server.modules.communityTODO.dao.CommunityDAO
-import br.meetingplace.server.modules.groupTODO.dao.GroupDAO
-import br.meetingplace.server.modules.groupTODO.service.delete.GroupDeleteService
-import br.meetingplace.server.modules.groupTODO.service.factory.GroupFactoryService
-import br.meetingplace.server.modules.groupTODO.service.member.GroupMemberService
+import br.meetingplace.server.modules.community.dao.CommunityDAO
+import br.meetingplace.server.modules.group.dao.GroupDAO
+import br.meetingplace.server.modules.group.service.delete.GroupDeleteService
+import br.meetingplace.server.modules.group.service.factory.GroupFactoryService
+import br.meetingplace.server.modules.group.service.member.GroupMemberService
 import br.meetingplace.server.request.dto.generic.MemberDTO
 import br.meetingplace.server.request.dto.generic.SubjectDTO
 import br.meetingplace.server.request.dto.group.GroupCreationDTO

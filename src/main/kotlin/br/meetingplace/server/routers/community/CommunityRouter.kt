@@ -1,10 +1,10 @@
 package br.meetingplace.server.routers.community
 
-import br.meetingplace.server.modules.communityTODO.dao.CommunityDAO
-import br.meetingplace.server.modules.groupTODO.dao.GroupDAO
-import br.meetingplace.server.modules.communityTODO.service.factory.CommunityFactoryService
-import br.meetingplace.server.modules.communityTODO.service.approval.CommunityApprovalService
-import br.meetingplace.server.modules.communityTODO.entitie.Community
+import br.meetingplace.server.modules.community.dao.CommunityDAO
+import br.meetingplace.server.modules.group.dao.GroupDAO
+import br.meetingplace.server.modules.community.service.factory.CommunityFactoryService
+import br.meetingplace.server.modules.community.service.approval.CommunityApprovalService
+import br.meetingplace.server.modules.community.entitie.Community
 import br.meetingplace.server.request.dto.community.ApprovalDTO
 import br.meetingplace.server.request.dto.community.CommunityCreationDTO
 import br.meetingplace.server.request.dto.generic.SubjectDTO

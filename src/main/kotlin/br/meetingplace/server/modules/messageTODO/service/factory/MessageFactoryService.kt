@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.messageTODO.service.factory
 
 import br.meetingplace.server.modules.messageTODO.entitie.Message
-import br.meetingplace.server.modules.groupTODO.entitie.Group
+import br.meetingplace.server.modules.group.entitie.Group
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.user.entitie.User

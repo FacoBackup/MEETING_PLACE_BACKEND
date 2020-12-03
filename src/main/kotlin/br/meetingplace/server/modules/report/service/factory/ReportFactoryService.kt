@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.report.service.factory
 
-import br.meetingplace.server.modules.communityTODO.dao.member.CMI
+import br.meetingplace.server.modules.community.dao.member.CMI
 import br.meetingplace.server.modules.report.dao.RI
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages

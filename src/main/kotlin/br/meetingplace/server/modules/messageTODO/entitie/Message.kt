@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.messageTODO.entitie
 
-import br.meetingplace.server.modules.groupTODO.entitie.Group
+import br.meetingplace.server.modules.group.entitie.Group
 import br.meetingplace.server.modules.user.entitie.User
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table

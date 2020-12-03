@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.topic.entitie
 
 
-import br.meetingplace.server.modules.communityTODO.entitie.Community
+import br.meetingplace.server.modules.community.entitie.Community
 import br.meetingplace.server.modules.user.entitie.User
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table

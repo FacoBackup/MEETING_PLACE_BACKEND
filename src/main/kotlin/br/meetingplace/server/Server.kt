@@ -3,10 +3,10 @@ package br.meetingplace.server
 import br.meetingplace.server.db.settings.dbSettings
 import br.meetingplace.server.modules.messageTODO.entitie.Message
 import br.meetingplace.server.modules.messageTODO.entitie.MessageOpinion
-import br.meetingplace.server.modules.communityTODO.entitie.Community
-import br.meetingplace.server.modules.communityTODO.entitie.CommunityMember
-import br.meetingplace.server.modules.groupTODO.entitie.Group
-import br.meetingplace.server.modules.groupTODO.entitie.GroupMember
+import br.meetingplace.server.modules.community.entitie.Community
+import br.meetingplace.server.modules.community.entitie.CommunityMember
+import br.meetingplace.server.modules.group.entitie.Group
+import br.meetingplace.server.modules.group.entitie.GroupMember
 import br.meetingplace.server.modules.topic.entitie.Topic
 import br.meetingplace.server.modules.topic.entitie.TopicOpinion
 import br.meetingplace.server.modules.user.entitie.Social

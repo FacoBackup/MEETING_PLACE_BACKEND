@@ -1,7 +1,7 @@
 package br.meetingplace.server.routers.topics
 
 
-import br.meetingplace.server.modules.communityTODO.dao.CommunityDAO
+import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.topic.dao.TopicDAO
 import br.meetingplace.server.modules.user.dao.UserDAO
 import br.meetingplace.server.modules.topic.service.delete.TopicDeleteService
