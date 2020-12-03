@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.datetime
 
 
-object Group: Table("group"){
+object Group: Table("groups"){
     val communityID = varchar("community_id", 36).references(Community.id,onDelete = ReferenceOption.CASCADE).nullable()
     val id= varchar("group_id", 36)
     var name= varchar("group_name", 64)

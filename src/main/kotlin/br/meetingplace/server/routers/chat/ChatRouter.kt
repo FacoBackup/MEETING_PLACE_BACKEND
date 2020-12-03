@@ -13,7 +13,7 @@ import br.meetingplace.server.modules.message.dto.requests.RequestMessageCreatio
 import br.meetingplace.server.modules.message.dto.requests.RequestConversationMessage
 import br.meetingplace.server.modules.message.dto.requests.RequestMessage
 import br.meetingplace.server.modules.message.dto.requests.RequestConversation
-import br.meetingplace.server.modules.user.dao.UserDAO
+import br.meetingplace.server.modules.user.dao.user.UserDAO
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*

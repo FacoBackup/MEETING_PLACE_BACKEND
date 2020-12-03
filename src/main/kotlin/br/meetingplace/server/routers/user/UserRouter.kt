@@ -2,7 +2,7 @@ package br.meetingplace.server.routers.user
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
-import br.meetingplace.server.modules.user.dao.UserDAO
+import br.meetingplace.server.modules.user.dao.user.UserDAO
 import br.meetingplace.server.modules.user.services.delete.UserDeleteService
 import br.meetingplace.server.modules.user.services.factory.UserFactoryService
 import br.meetingplace.server.modules.user.services.profile.UserUpdateService

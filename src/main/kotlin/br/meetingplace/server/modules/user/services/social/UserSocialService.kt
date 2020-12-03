@@ -3,7 +3,7 @@ package br.meetingplace.server.modules.user.services.social
 import br.meetingplace.server.modules.community.dao.CI
 import br.meetingplace.server.modules.community.dao.member.CMI
 import br.meetingplace.server.modules.community.dto.MemberType
-import br.meetingplace.server.modules.user.dao.UI
+import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.modules.user.dao.social.SI
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages

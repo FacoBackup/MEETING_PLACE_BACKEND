@@ -1,16 +1,13 @@
 package br.meetingplace.server.routers.topics
 
 
-import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
 import br.meetingplace.server.modules.topic.dao.TopicDAO
 import br.meetingplace.server.modules.topic.dao.opinion.TopicOpinionDAO
-import br.meetingplace.server.modules.user.dao.UserDAO
+import br.meetingplace.server.modules.user.dao.user.UserDAO
 import br.meetingplace.server.modules.topic.services.delete.TopicDeleteService
 import br.meetingplace.server.modules.topic.services.opinion.TopicOpinionService
 import br.meetingplace.server.modules.topic.services.factory.TopicFactoryService
-import br.meetingplace.server.modules.topic.entities.Topic
-import br.meetingplace.server.modules.topic.entities.TopicOpinion
 import br.meetingplace.server.modules.user.dto.requests.RequestUser
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopic
@@ -20,9 +17,6 @@ import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Route.topicRouter() {
     route("/api") {
@@ -69,7 +63,7 @@ fun Route.topicRouter() {
 
         put(TopicPaths.LIKE) {
             val data = call.receive<RequestTopic>()
-            call.respond(TopicOpinionService.like(data,UserDAO, TopicDAO, TopicOpinionDAO))
+            call.respond(TopicOpinionService.like(data, UserDAO, TopicDAO, TopicOpinionDAO))
         }
         put(TopicPaths.DISLIKE) {
             val data = call.receive<RequestTopic>()

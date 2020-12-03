@@ -7,14 +7,14 @@ import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.datetime
 
-object Topic: Table("topic") {
+object Topic: Table("topics") {
 
     var id = varchar("topic_id", 36)
     var header = varchar("header", 1024)
     var body= varchar("body", 1024)
     var approved = bool("approved")
     val footer= varchar("footer", 128)
-    val creatorID = varchar("creator_id",36).references(User.id)
+    val creatorID = varchar("creator_id",36).references(User.email)
     val mainTopicID = varchar("main_topic_id",36).references(id, onDelete = ReferenceOption.CASCADE).nullable()
     val creationDate = datetime("date_of_creation")
     val communityID = varchar("community_id", 36).references(Community.id).nullable()

@@ -5,7 +5,7 @@ import br.meetingplace.server.modules.report.dao.RI
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.topic.dao.TI
-import br.meetingplace.server.modules.user.dao.UI
+import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.modules.report.dto.requests.RequestReportCreation
 
 object ReportFactoryService{

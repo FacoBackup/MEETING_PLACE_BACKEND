@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.community.services.factory
 
 import br.meetingplace.server.modules.community.dao.CI
-import br.meetingplace.server.modules.user.dao.UI
+import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation

@@ -3,12 +3,12 @@ package br.meetingplace.server.modules.message.services.opinion
 import br.meetingplace.server.modules.message.dao.MessageDAO
 import br.meetingplace.server.modules.message.dao.opinions.MessageOpinionDAO
 import br.meetingplace.server.modules.message.dto.requests.RequestMessage
-import br.meetingplace.server.modules.user.dao.UserDAO
+import br.meetingplace.server.modules.user.dao.user.UserDAO
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 
 object MessageOpinionService {
-    fun dislikeMessage(data: RequestMessage, userDAO: UserDAO,messageDAO: MessageDAO, messageOpinionsDAO: MessageOpinionDAO): Status {
+    fun dislikeMessage(data: RequestMessage, userDAO: UserDAO, messageDAO: MessageDAO, messageOpinionsDAO: MessageOpinionDAO): Status {
         return try {
             if(messageDAO.read(data.messageID) != null && userDAO.read(data.userID) != null){
                 when(messageOpinionsDAO.read(data.messageID, userID = data.userID) == null){
@@ -26,7 +26,7 @@ object MessageOpinionService {
         }
     }
 
-    fun likeMessage(data: RequestMessage, userDAO: UserDAO,messageDAO: MessageDAO, messageOpinionsDAO: MessageOpinionDAO): Status {
+    fun likeMessage(data: RequestMessage, userDAO: UserDAO, messageDAO: MessageDAO, messageOpinionsDAO: MessageOpinionDAO): Status {
         return try {
             if(messageDAO.read(data.messageID) != null && userDAO.read(data.userID) != null){
                 when(messageOpinionsDAO.read(data.messageID, userID = data.userID) == null){

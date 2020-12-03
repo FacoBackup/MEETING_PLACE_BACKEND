@@ -6,12 +6,12 @@ import br.meetingplace.server.modules.message.dao.MI
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.message.dto.requests.RequestMessageCreation
-import br.meetingplace.server.modules.user.dao.UI
+import br.meetingplace.server.modules.user.dao.user.UI
 
 
 object MessageFactoryService {
 
-    fun createMessage(data: RequestMessageCreation, groupMemberDAO: GMI,userDAO: UI, groupDAO: GI, messageDAO: MI): Status {
+    fun createMessage(data: RequestMessageCreation, groupMemberDAO: GMI, userDAO: UI, groupDAO: GI, messageDAO: MI): Status {
         return try {
             if(userDAO.read(data.userID) != null){
                 when(data.isGroup){

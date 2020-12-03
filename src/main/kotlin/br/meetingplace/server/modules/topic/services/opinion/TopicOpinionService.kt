@@ -5,7 +5,7 @@ import br.meetingplace.server.modules.topic.dao.opinion.TOI
 import br.meetingplace.server.modules.topic.dto.response.TopicOpinionDTO
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
-import br.meetingplace.server.modules.user.dao.UI
+import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopic
 
 object TopicOpinionService{

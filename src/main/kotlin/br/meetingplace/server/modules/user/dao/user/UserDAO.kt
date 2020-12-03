@@ -1,4 +1,4 @@
-package br.meetingplace.server.modules.user.dao
+package br.meetingplace.server.modules.user.dao.user
 
 import br.meetingplace.server.modules.user.dto.response.UserDTO
 import br.meetingplace.server.modules.user.entities.User
@@ -9,16 +9,14 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.format.DateTimeFormat
 import org.postgresql.util.PSQLException
-import java.util.*
 
 object UserDAO: UI {
     override fun create(data: RequestUserCreation): Status {
         return try {
             transaction {
                 User.insert {
-                    it[id] = UUID.randomUUID().toString()
-                    it[userName] = data.userName
                     it[email] = data.email
+                    it[userName] = data.userName
                     it[gender] = data.gender
                     it[nationality] = data.nationality
                     it[birth] = DateTimeFormat.forPattern("dd-MM-yyyy").parseDateTime(data.birthDate)
@@ -39,7 +37,7 @@ object UserDAO: UI {
     override fun delete(userID: String): Status {
         return try {
             transaction {
-                User.deleteWhere { User.id eq userID }
+                User.deleteWhere { User.email eq userID }
             }
             Status(200, StatusMessages.OK)
         }catch (normal: Exception){
@@ -53,7 +51,7 @@ object UserDAO: UI {
         return try {
             transaction {
                 User.select {
-                    User.id eq userID
+                    User.email eq userID
                 }.map { mapUser(it) }.firstOrNull()
             }
         }catch (normal: Exception){
@@ -128,7 +126,7 @@ object UserDAO: UI {
     ): Status {
         return try {
             transaction {
-                User.update({User.id eq userID}){
+                User.update({User.email eq userID}){
                     if(!name.isNullOrBlank())
                         it[this.userName] = name
                     if(!about.isNullOrBlank())
@@ -151,8 +149,8 @@ object UserDAO: UI {
         }
     }
     private fun mapUser(it: ResultRow): UserDTO {
-        return UserDTO(id = it[User.id], name = it[User.userName],
-            email = it[User.email], gender = it[User.gender],
+        return UserDTO(email = it[User.email], name = it[User.userName],
+            gender = it[User.gender], password = it[User.password],
             birthDate =  it[User.birth].toString(), imageURL = it[User.imageURL],
             about = it[User.about], cityOfBirth = it[User.cityOfBirth],
             phoneNumber = it[User.phoneNumber], nationality = it[User.nationality])

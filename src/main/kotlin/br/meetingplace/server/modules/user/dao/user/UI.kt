@@ -1,4 +1,4 @@
-package br.meetingplace.server.modules.user.dao
+package br.meetingplace.server.modules.user.dao.user
 
 import br.meetingplace.server.modules.user.dto.response.UserDTO
 import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation

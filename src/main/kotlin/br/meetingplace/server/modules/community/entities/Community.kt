@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.datetime
 
 
-object Community: Table("community"){
+object Community: Table("communities"){
     val id = varchar("community_id", 36)
     var name = varchar("community_name", 64)
     var about = varchar("community_about", 256).nullable()

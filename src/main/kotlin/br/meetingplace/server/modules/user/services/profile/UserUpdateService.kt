@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.user.services.profile
 
-import br.meetingplace.server.modules.user.dao.UI
+import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.user.dto.requests.RequestProfileUpdate

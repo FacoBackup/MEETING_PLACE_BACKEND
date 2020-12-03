@@ -1,7 +1,6 @@
 package br.meetingplace.server.routers.groups
 
 
-import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
 import br.meetingplace.server.modules.group.dao.GroupDAO
 import br.meetingplace.server.modules.group.dao.member.GroupMemberDAO
@@ -11,7 +10,7 @@ import br.meetingplace.server.modules.group.services.member.GroupMemberService
 import br.meetingplace.server.modules.group.dto.requests.RequestGroupMember
 import br.meetingplace.server.modules.group.dto.requests.RequestGroup
 import br.meetingplace.server.modules.group.dto.requests.RequestGroupCreation
-import br.meetingplace.server.modules.user.dao.UserDAO
+import br.meetingplace.server.modules.user.dao.user.UserDAO
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
