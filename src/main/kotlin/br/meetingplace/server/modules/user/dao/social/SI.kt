@@ -1,8 +1,6 @@
 package br.meetingplace.server.modules.user.dao.social
 
-import br.meetingplace.server.modules.user.dto.SocialDTO
-import br.meetingplace.server.modules.user.dto.UserDTO
-import br.meetingplace.server.request.dto.users.UserCreationDTO
+import br.meetingplace.server.modules.user.dto.response.SocialDTO
 import br.meetingplace.server.response.status.Status
 
 interface SI {

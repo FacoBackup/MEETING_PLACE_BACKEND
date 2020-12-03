@@ -2,12 +2,12 @@ package br.meetingplace.server.routers.community
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.group.dao.GroupDAO
-import br.meetingplace.server.modules.community.service.factory.CommunityFactoryService
-import br.meetingplace.server.modules.community.service.approval.CommunityApprovalService
-import br.meetingplace.server.modules.community.entitie.Community
-import br.meetingplace.server.request.dto.community.ApprovalDTO
-import br.meetingplace.server.request.dto.community.CommunityCreationDTO
-import br.meetingplace.server.request.dto.generic.SubjectDTO
+import br.meetingplace.server.modules.community.services.factory.CommunityFactoryService
+import br.meetingplace.server.modules.community.services.approval.CommunityApprovalService
+import br.meetingplace.server.modules.community.entities.Community
+import br.meetingplace.server.modules.community.dto.requests.RequestApproval
+import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
+import br.meetingplace.server.modules.group.dto.requests.RequestGroup
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import io.ktor.application.*
@@ -28,7 +28,7 @@ fun Route.communityRouter() {
 //                call.respond(communities)
 //        }
         get(CommunityPaths.COMMUNITY) {
-            val data= call.receive<SubjectDTO>()
+            val data= call.receive<RequestGroup>()
             val communities = transaction { Community.select { Community.name eq data.subjectID }.map { CommunityDAO.mapCommunityDTO(it) } }
             if(communities.isEmpty())
                 call.respond(Status(404, StatusMessages.NOT_FOUND))
@@ -36,11 +36,11 @@ fun Route.communityRouter() {
                 call.respond(communities)
         }
         post(CommunityPaths.COMMUNITY) {
-            val data = call.receive<CommunityCreationDTO>()
+            val data = call.receive<RequestCommunityCreation>()
             call.respond(CommunityFactoryService.create(data))
         }
         patch(CommunityPaths.GROUP) {
-            val data = call.receive<ApprovalDTO>()
+            val data = call.receive<RequestApproval>()
             call.respond(CommunityApprovalService.approveGroup(data, groupMapper = GroupDAO))
         }
     }

@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.user.dao
 
-import br.meetingplace.server.modules.user.dto.UserDTO
-import br.meetingplace.server.modules.user.entitie.User
-import br.meetingplace.server.request.dto.users.UserCreationDTO
+import br.meetingplace.server.modules.user.dto.response.UserDTO
+import br.meetingplace.server.modules.user.entities.User
+import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*
@@ -12,7 +12,7 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 object UserDAO: UI {
-    override fun create(data: UserCreationDTO): Status {
+    override fun create(data: RequestUserCreation): Status {
         return try {
             transaction {
                 User.insert {

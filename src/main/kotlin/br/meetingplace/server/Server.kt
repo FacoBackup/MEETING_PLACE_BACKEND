@@ -1,16 +1,16 @@
 package br.meetingplace.server
 
 import br.meetingplace.server.db.settings.dbSettings
-import br.meetingplace.server.modules.messageTODO.entitie.Message
-import br.meetingplace.server.modules.messageTODO.entitie.MessageOpinion
-import br.meetingplace.server.modules.community.entitie.Community
-import br.meetingplace.server.modules.community.entitie.CommunityMember
-import br.meetingplace.server.modules.group.entitie.Group
-import br.meetingplace.server.modules.group.entitie.GroupMember
-import br.meetingplace.server.modules.topic.entitie.Topic
-import br.meetingplace.server.modules.topic.entitie.TopicOpinion
-import br.meetingplace.server.modules.user.entitie.Social
-import br.meetingplace.server.modules.user.entitie.User
+import br.meetingplace.server.modules.messageTODO.entities.Message
+import br.meetingplace.server.modules.messageTODO.entities.MessageOpinion
+import br.meetingplace.server.modules.community.entities.Community
+import br.meetingplace.server.modules.community.entities.CommunityMember
+import br.meetingplace.server.modules.group.entities.Group
+import br.meetingplace.server.modules.group.entities.GroupMember
+import br.meetingplace.server.modules.topic.entities.Topic
+import br.meetingplace.server.modules.topic.entities.TopicOpinion
+import br.meetingplace.server.modules.user.entities.Social
+import br.meetingplace.server.modules.user.entities.User
 import br.meetingplace.server.routers.chat.messageRouter
 import br.meetingplace.server.routers.community.communityRouter
 import br.meetingplace.server.routers.groups.groupRouter

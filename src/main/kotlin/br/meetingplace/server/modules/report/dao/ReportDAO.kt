@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.report.dao
 
-import br.meetingplace.server.modules.report.entitie.Report
-import br.meetingplace.server.modules.report.dto.ReportDTO
-import br.meetingplace.server.request.dto.report.ReportCreationDTO
+import br.meetingplace.server.modules.report.entities.Report
+import br.meetingplace.server.modules.report.dto.response.ReportDTO
+import br.meetingplace.server.modules.report.dto.requests.RequestReportCreation
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*
@@ -12,7 +12,7 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 object ReportDAO: RI {
-    override fun create(data: ReportCreationDTO): Status {
+    override fun create(data: RequestReportCreation): Status {
         return try {
             transaction {
                 Report.insert {

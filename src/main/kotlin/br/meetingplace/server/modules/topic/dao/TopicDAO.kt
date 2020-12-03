@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.topic.dao
 
-import br.meetingplace.server.modules.topic.entitie.Topic
-import br.meetingplace.server.modules.topic.dto.TopicDTO
-import br.meetingplace.server.request.dto.topics.TopicCreationDTO
+import br.meetingplace.server.modules.topic.entities.Topic
+import br.meetingplace.server.modules.topic.dto.response.TopicDTO
+import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.ResultRow
@@ -16,7 +16,7 @@ import java.util.*
 
 object TopicDAO: TI {
 
-    override fun create(data: TopicCreationDTO, approved:Boolean, userName: String): Status {
+    override fun create(data: RequestTopicCreation, approved:Boolean, userName: String): Status {
         return try {
             transaction {
                 Topic.insert {

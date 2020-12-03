@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.messageTODO.dao
 
-import br.meetingplace.server.modules.messageTODO.entitie.Message
-import br.meetingplace.server.modules.messageTODO.dto.MessageDTO
-import br.meetingplace.server.request.dto.message.MessageCreationDTO
+import br.meetingplace.server.modules.messageTODO.entities.Message
+import br.meetingplace.server.modules.messageTODO.dto.response.MessageDTO
+import br.meetingplace.server.modules.messageTODO.dto.requests.RequestMessageCreation
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*
@@ -12,7 +12,7 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 object MessageDAO: MI{
-    override fun create(data: MessageCreationDTO, isGroup: Boolean): Status {
+    override fun create(data: RequestMessageCreation, isGroup: Boolean): Status {
         return try {
             transaction {
                 Message.insert {

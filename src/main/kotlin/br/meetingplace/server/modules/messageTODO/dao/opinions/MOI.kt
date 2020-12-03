@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.messageTODO.dao.opinions
 
-import br.meetingplace.server.modules.messageTODO.dto.MessageOpinionsDTO
+import br.meetingplace.server.modules.messageTODO.dto.response.MessageOpinionsDTO
 import br.meetingplace.server.response.status.Status
 
 interface MOI {

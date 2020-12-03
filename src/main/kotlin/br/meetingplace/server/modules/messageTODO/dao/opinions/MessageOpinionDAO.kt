@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.messageTODO.dao.opinions
 
-import br.meetingplace.server.modules.messageTODO.dto.MessageOpinionsDTO
-import br.meetingplace.server.modules.messageTODO.entitie.MessageOpinion
+import br.meetingplace.server.modules.messageTODO.dto.response.MessageOpinionsDTO
+import br.meetingplace.server.modules.messageTODO.entities.MessageOpinion
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*

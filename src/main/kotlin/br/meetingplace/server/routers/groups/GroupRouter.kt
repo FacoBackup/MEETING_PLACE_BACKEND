@@ -3,12 +3,12 @@ package br.meetingplace.server.routers.groups
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.group.dao.GroupDAO
-import br.meetingplace.server.modules.group.service.delete.GroupDeleteService
-import br.meetingplace.server.modules.group.service.factory.GroupFactoryService
-import br.meetingplace.server.modules.group.service.member.GroupMemberService
-import br.meetingplace.server.request.dto.generic.MemberDTO
-import br.meetingplace.server.request.dto.generic.SubjectDTO
-import br.meetingplace.server.request.dto.group.GroupCreationDTO
+import br.meetingplace.server.modules.group.services.delete.GroupDeleteService
+import br.meetingplace.server.modules.group.services.factory.GroupFactoryService
+import br.meetingplace.server.modules.group.services.member.GroupMemberService
+import br.meetingplace.server.modules.group.dto.requests.RequestGroupMember
+import br.meetingplace.server.modules.group.dto.requests.RequestGroup
+import br.meetingplace.server.modules.group.dto.requests.RequestGroupCreation
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -18,19 +18,19 @@ fun Route.groupRouter() {
     route("/api") {
 
         post(GroupPaths.GROUP) {
-            val data = call.receive<GroupCreationDTO>()
+            val data = call.receive<RequestGroupCreation>()
             call.respond(GroupFactoryService.create(data, communityMapper = CommunityDAO))
         }
         delete(GroupPaths.GROUP) {
-            val data = call.receive<SubjectDTO>()
+            val data = call.receive<RequestGroup>()
             call.respond(GroupDeleteService.delete(data, groupMapper = GroupDAO))
         }
         patch(GroupPaths.MEMBER) {
-            val data = call.receive<MemberDTO>()
+            val data = call.receive<RequestGroupMember>()
             call.respond(GroupMemberService.addMember(data))
         }
         delete(GroupPaths.MEMBER) {
-            val data = call.receive<MemberDTO>()
+            val data = call.receive<RequestGroupMember>()
             call.respond(GroupMemberService.removeMember(data))
         }
     }

@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.community.dao
 
-import br.meetingplace.server.modules.community.entitie.Community
-import br.meetingplace.server.modules.community.dto.CommunityDTO
-import br.meetingplace.server.request.dto.community.CommunityCreationDTO
+import br.meetingplace.server.modules.community.entities.Community
+import br.meetingplace.server.modules.community.dto.response.CommunityDTO
+import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*
@@ -13,7 +13,7 @@ import java.util.*
 
 object CommunityDAO: CI {
 
-    override fun create(data: CommunityCreationDTO):Status  {
+    override fun create(data: RequestCommunityCreation):Status  {
         return try{
             transaction {
                 Community.insert {

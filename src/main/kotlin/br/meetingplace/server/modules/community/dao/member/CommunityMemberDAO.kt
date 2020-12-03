@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.community.dao.member
 
-import br.meetingplace.server.modules.community.dto.CommunityMemberDTO
-import br.meetingplace.server.modules.community.entitie.CommunityMember
+import br.meetingplace.server.modules.community.dto.response.CommunityMemberDTO
+import br.meetingplace.server.modules.community.entities.CommunityMember
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*

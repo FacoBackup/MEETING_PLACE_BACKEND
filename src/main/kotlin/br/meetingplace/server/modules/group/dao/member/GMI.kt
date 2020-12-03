@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.group.dao.member
 
-import br.meetingplace.server.modules.group.dto.GroupMemberDTO
+import br.meetingplace.server.modules.group.dto.response.GroupMemberDTO
 import br.meetingplace.server.response.status.Status
 
 interface GMI {

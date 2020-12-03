@@ -1,16 +1,16 @@
 package br.meetingplace.server.routers.chat
 
 import br.meetingplace.server.modules.messageTODO.dao.MessageDAO
-import br.meetingplace.server.modules.messageTODO.service.delete.MessageDeleteService
-import br.meetingplace.server.modules.messageTODO.service.opinion.MessageOpinionService
-import br.meetingplace.server.modules.messageTODO.service.quote.MessageQuoteService
-import br.meetingplace.server.modules.messageTODO.service.factory.MessageFactoryService
-import br.meetingplace.server.modules.messageTODO.service.share.MessageShareService
-import br.meetingplace.server.modules.messageTODO.entitie.Message
-import br.meetingplace.server.request.dto.message.MessageCreationDTO
-import br.meetingplace.server.request.dto.message.ConversationMessageDTO
-import br.meetingplace.server.request.dto.message.MessageDTO
-import br.meetingplace.server.request.dto.message.ConversationDTO
+import br.meetingplace.server.modules.messageTODO.services.delete.MessageDeleteService
+import br.meetingplace.server.modules.messageTODO.services.opinion.MessageOpinionService
+import br.meetingplace.server.modules.messageTODO.services.quote.MessageQuoteService
+import br.meetingplace.server.modules.messageTODO.services.factory.MessageFactoryService
+import br.meetingplace.server.modules.messageTODO.services.share.MessageShareService
+import br.meetingplace.server.modules.messageTODO.entities.Message
+import br.meetingplace.server.modules.messageTODO.dto.requests.RequestMessageCreation
+import br.meetingplace.server.modules.messageTODO.dto.requests.RequestConversationMessage
+import br.meetingplace.server.modules.messageTODO.dto.requests.RequestMessage
+import br.meetingplace.server.modules.messageTODO.dto.requests.RequestConversation
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import io.ktor.application.*
@@ -28,7 +28,7 @@ fun Route.messageRouter() {
     route("/api") {
 
         get(MessagePaths.MESSAGE) {
-            val data = call.receive<ConversationDTO>()
+            val data = call.receive<RequestConversation>()
             try {
                 val chat = when(data.isGroup){
                     true-> transaction {
@@ -55,27 +55,27 @@ fun Route.messageRouter() {
         }
 
         post(MessagePaths.MESSAGE) {
-            val data = call.receive<MessageCreationDTO>()
+            val data = call.receive<RequestMessageCreation>()
             call.respond(MessageFactoryService.createMessage(data))
         }
         delete(MessagePaths.MESSAGE) {
-            val data = call.receive<MessageDTO>()
+            val data = call.receive<RequestMessage>()
             call.respond(MessageDeleteService.deleteMessage(data))
         }
         put(MessagePaths.LIKE) {
-            val data = call.receive<MessageDTO>()
+            val data = call.receive<RequestMessage>()
             call.respond(MessageOpinionService.likeMessage(data))
         }
         put(MessagePaths.DISLIKE) {
-            val data = call.receive<MessageDTO>()
+            val data = call.receive<RequestMessage>()
             call.respond(MessageOpinionService.dislikeMessage(data))
         }
         post(MessagePaths.QUOTE) {
-            val data = call.receive<ConversationMessageDTO>()
+            val data = call.receive<RequestConversationMessage>()
             call.respond(MessageQuoteService.quoteMessage(data))
         }
         patch(MessagePaths.SHARE) {
-            val data = call.receive<ConversationMessageDTO>()
+            val data = call.receive<RequestConversationMessage>()
             call.respond(MessageShareService.shareMessage(data))
         }
     }

@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.group.dao
 
-import br.meetingplace.server.modules.group.entitie.Group
-import br.meetingplace.server.modules.group.dto.GroupDTO
-import br.meetingplace.server.request.dto.group.GroupCreationDTO
+import br.meetingplace.server.modules.group.entities.Group
+import br.meetingplace.server.modules.group.dto.response.GroupDTO
+import br.meetingplace.server.modules.group.dto.requests.RequestGroupCreation
 import br.meetingplace.server.response.status.Status
 import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*
@@ -13,7 +13,7 @@ import java.util.*
 
 object GroupDAO: GI {
 
-    override fun create(data: GroupCreationDTO, approved: Boolean): Status {
+    override fun create(data: RequestGroupCreation, approved: Boolean): Status {
         return try {
             transaction {
                 Group.insert {
