@@ -2,7 +2,6 @@ package br.meetingplace.server.modules.message.dao
 
 import br.meetingplace.server.modules.message.dto.response.MessageDTO
 import br.meetingplace.server.modules.message.dto.requests.RequestMessageCreation
-import br.meetingplace.server.response.status.Status
 
 interface MI {
     fun create(data: RequestMessageCreation): Status

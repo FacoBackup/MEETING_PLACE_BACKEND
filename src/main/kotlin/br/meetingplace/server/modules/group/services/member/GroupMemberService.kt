@@ -1,9 +1,6 @@
 package br.meetingplace.server.modules.group.services.member
 
-import br.meetingplace.server.modules.group.dao.GI
 import br.meetingplace.server.modules.group.dao.member.GMI
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.group.dto.requests.RequestGroupMember
 import org.postgresql.util.PSQLException
 

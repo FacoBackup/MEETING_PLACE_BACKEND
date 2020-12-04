@@ -1,9 +1,7 @@
 package br.meetingplace.server.modules.user.dao.authentication
 
-import br.meetingplace.server.modules.user.dto.response.AuthenticationDTO
+import br.meetingplace.server.modules.user.dto.response.AccessLogDTO
 import br.meetingplace.server.modules.user.entities.Log
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -11,11 +9,11 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 object AuthenticationDAO:AI {
-    override fun create(userID: String): Status {
+    override fun create(userID: String, ip: String): Status {
         return try {
             transaction {
                 Log.insert {
-                    it[loginToken] = UUID.randomUUID().toString()
+                    it[this.ip] = ip
                     it[this.userID] = userID
                     it[timeOfLogin] = DateTime.now()
                 }
@@ -43,7 +41,7 @@ object AuthenticationDAO:AI {
         }
     }
 
-    override fun read(userID: String): AuthenticationDTO? {
+    override fun read(userID: String): AccessLogDTO? {
         return try {
             transaction {
                 Log.select {
@@ -56,7 +54,7 @@ object AuthenticationDAO:AI {
             null
         }
     }
-    private fun mapLog(it: ResultRow): AuthenticationDTO{
-        return AuthenticationDTO(userID = it[Log.userID], token = it[Log.loginToken])
+    private fun mapLog(it: ResultRow): AccessLogDTO {
+        return AccessLogDTO(userID = it[Log.userID], ipAddress = it[Log.ip], timeOfLogin = it[Log.timeOfLogin].toString())
     }
 }

@@ -2,7 +2,6 @@ package br.meetingplace.server.modules.user.dao.user
 
 import br.meetingplace.server.modules.user.dto.response.UserDTO
 import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
-import br.meetingplace.server.response.status.Status
 
 interface UI {
     fun create(data: RequestUserCreation): Status

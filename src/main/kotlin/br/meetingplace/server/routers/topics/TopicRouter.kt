@@ -11,8 +11,6 @@ import br.meetingplace.server.modules.topic.services.factory.TopicFactoryService
 import br.meetingplace.server.modules.user.dto.requests.RequestUser
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopic
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*

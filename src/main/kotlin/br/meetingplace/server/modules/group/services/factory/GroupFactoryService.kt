@@ -4,8 +4,6 @@ import br.meetingplace.server.modules.community.dao.member.CMI
 import br.meetingplace.server.modules.community.dto.MemberType
 import br.meetingplace.server.modules.group.dao.GI
 import br.meetingplace.server.modules.user.dao.user.UI
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.group.dto.requests.RequestGroupCreation
 
 object GroupFactoryService {

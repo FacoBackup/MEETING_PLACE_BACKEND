@@ -3,12 +3,12 @@ package br.meetingplace.server.modules.user.dao.user
 import br.meetingplace.server.modules.user.dto.response.UserDTO
 import br.meetingplace.server.modules.user.entities.User
 import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.format.DateTimeFormat
 import org.postgresql.util.PSQLException
+import java.security.MessageDigest
+import kotlin.text.Charsets.UTF_8
 
 object UserDAO: UI {
     override fun create(data: RequestUserCreation): Status {
@@ -16,6 +16,7 @@ object UserDAO: UI {
             transaction {
                 User.insert {
                     it[email] = data.email
+                    it[password] = MessageDigest.getInstance("MD5").digest(data.password.toByteArray(UTF_8)).toString()
                     it[userName] = data.userName
                     it[gender] = data.gender
                     it[nationality] = data.nationality

@@ -2,8 +2,6 @@ package br.meetingplace.server.modules.message.dao.opinions
 
 import br.meetingplace.server.modules.message.dto.response.MessageOpinionsDTO
 import br.meetingplace.server.modules.message.entities.MessageOpinion
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException

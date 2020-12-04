@@ -12,8 +12,6 @@ import br.meetingplace.server.modules.user.dao.social.UserSocialDAO
 import br.meetingplace.server.modules.user.dto.requests.RequestProfileUpdate
 import br.meetingplace.server.modules.user.dto.requests.RequestSocial
 import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*

@@ -9,8 +9,6 @@ import br.meetingplace.server.modules.community.dto.requests.RequestCommunity
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
 import br.meetingplace.server.modules.group.dao.GroupDAO
 import br.meetingplace.server.modules.user.dao.user.UserDAO
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.response.*

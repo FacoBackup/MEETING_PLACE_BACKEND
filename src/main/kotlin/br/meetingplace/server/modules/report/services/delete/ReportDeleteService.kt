@@ -1,8 +1,6 @@
 package br.meetingplace.server.modules.report.services.delete
 
 import br.meetingplace.server.modules.report.dao.RI
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.report.dto.requests.RequestReportSimple
 
 object ReportDeleteService {

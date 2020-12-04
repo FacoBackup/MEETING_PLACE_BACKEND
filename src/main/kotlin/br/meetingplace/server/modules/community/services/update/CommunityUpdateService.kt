@@ -4,8 +4,6 @@ import br.meetingplace.server.modules.community.dao.CI
 import br.meetingplace.server.modules.community.dao.member.CMI
 import br.meetingplace.server.modules.community.dto.MemberType
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityUpdate
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import org.postgresql.util.PSQLException
 
 object CommunityUpdateService {

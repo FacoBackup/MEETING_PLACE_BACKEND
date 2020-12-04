@@ -3,8 +3,6 @@ package br.meetingplace.server.modules.group.dao
 import br.meetingplace.server.modules.group.entities.Group
 import br.meetingplace.server.modules.group.dto.response.GroupDTO
 import br.meetingplace.server.modules.group.dto.requests.RequestGroupCreation
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime

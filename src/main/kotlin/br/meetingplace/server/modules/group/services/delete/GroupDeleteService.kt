@@ -2,10 +2,7 @@ package br.meetingplace.server.modules.group.services.delete
 
 import br.meetingplace.server.modules.group.dao.GI
 import br.meetingplace.server.modules.group.dao.member.GMI
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.group.dto.requests.RequestGroup
-import org.postgresql.util.PSQLException
 
 object GroupDeleteService{
     fun delete(data: RequestGroup, groupMemberDAO: GMI, groupDAO: GI): Status {

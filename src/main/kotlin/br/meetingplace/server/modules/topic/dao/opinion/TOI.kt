@@ -1,7 +1,6 @@
 package br.meetingplace.server.modules.topic.dao.opinion
 
 import br.meetingplace.server.modules.topic.dto.response.TopicOpinionDTO
-import br.meetingplace.server.response.status.Status
 
 interface TOI {
     fun create(topicID: String, userID: String, liked: Boolean): Status

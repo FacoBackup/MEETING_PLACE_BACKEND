@@ -2,8 +2,6 @@ package br.meetingplace.server.modules.user.dao.social
 
 import br.meetingplace.server.modules.user.dto.response.SocialDTO
 import br.meetingplace.server.modules.user.entities.Social
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException

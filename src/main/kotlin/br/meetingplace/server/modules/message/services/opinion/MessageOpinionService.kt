@@ -4,8 +4,6 @@ import br.meetingplace.server.modules.message.dao.MessageDAO
 import br.meetingplace.server.modules.message.dao.opinions.MessageOpinionDAO
 import br.meetingplace.server.modules.message.dto.requests.RequestMessage
 import br.meetingplace.server.modules.user.dao.user.UserDAO
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 
 object MessageOpinionService {
     fun dislikeMessage(data: RequestMessage, userDAO: UserDAO, messageDAO: MessageDAO, messageOpinionsDAO: MessageOpinionDAO): Status {

@@ -2,13 +2,6 @@ package br.meetingplace.server.modules.topic.dao
 
 import br.meetingplace.server.modules.topic.dto.response.TopicDTO
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
-import br.meetingplace.server.modules.topic.entities.Topic
-import br.meetingplace.server.response.status.Status
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.postgresql.util.PSQLException
 
 interface TI {
     fun create(data: RequestTopicCreation, approved:Boolean, userName: String): Status

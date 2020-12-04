@@ -2,19 +2,18 @@ package br.meetingplace.server.modules.community.services.factory
 
 import br.meetingplace.server.modules.community.dao.CI
 import br.meetingplace.server.modules.user.dao.user.UI
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
+import io.ktor.http.*
 
 object CommunityFactoryService {
 
-    fun create(data: RequestCommunityCreation, communityDAO: CI, userDAO: UI): Status {
+    fun create(data: RequestCommunityCreation, communityDAO: CI, userDAO: UI): HttpStatusCode {
         return try {
             if(userDAO.read(data.userID) != null)
                 communityDAO.create(data)
-            else Status(404, StatusMessages.NOT_FOUND)
+            else HttpStatusCode.NoContent
         }catch (e: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 }

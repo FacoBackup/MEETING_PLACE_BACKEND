@@ -1,8 +1,6 @@
 package br.meetingplace.server.modules.message.services.delete
 
 import br.meetingplace.server.modules.message.dao.MI
-import br.meetingplace.server.response.status.Status
-import br.meetingplace.server.response.status.StatusMessages
 import br.meetingplace.server.modules.message.dto.requests.RequestMessage
 
 object MessageDeleteService {
