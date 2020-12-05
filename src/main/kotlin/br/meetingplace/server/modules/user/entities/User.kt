@@ -15,6 +15,6 @@ object User: Table("users"){
     val imageURL = varchar("user_image_url", 256).nullable()
     val phoneNumber = varchar("user_number", 32).nullable()
     val cityOfBirth = varchar("city_of_birth", 32)
-
+    val admin = bool("is_admin")
     override val primaryKey = PrimaryKey(email)
 }

@@ -30,8 +30,8 @@ object AuthenticationService {
 
     fun logoff(data: RequestLog, userDAO: UserDAO, authenticationDAO: AI): HttpStatusCode{
         return try {
-            val user = userDAO.read(data.userID)
-            if(user != null && authenticationDAO.read(data.userID) != null && user.password == data.password){
+            val user = userDAO.readAuthUser(data.userID)
+            if(user != null && authenticationDAO.read(data.userID) != null && user.password == MessageDigest.getInstance("SHA-1").digest(data.password.toByteArray(Charsets.UTF_8)).toString()){
                 authenticationDAO.update(userID = data.userID, ip = data.ip)
             }else HttpStatusCode.InternalServerError
         }catch (e: Exception){

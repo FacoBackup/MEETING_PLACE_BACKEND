@@ -3,6 +3,7 @@ package br.meetingplace.server.modules.user.dao.user
 import br.meetingplace.server.modules.user.dto.response.UserDTO
 import br.meetingplace.server.modules.user.entities.User
 import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
+import br.meetingplace.server.modules.user.dto.response.UserAuthDTO
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -55,6 +56,19 @@ object UserDAO: UI {
                 User.select {
                     User.email eq userID
                 }.map { mapUser(it) }.firstOrNull()
+            }
+        }catch (normal: Exception){
+            null
+        }catch (psql: PSQLException){
+            null
+        }
+    }
+    override fun readAuthUser(userID: String): UserAuthDTO? {
+        return try {
+            transaction {
+                User.select {
+                    User.email eq userID
+                }.map { mapUserAuth(it) }.firstOrNull()
             }
         }catch (normal: Exception){
             null
@@ -164,10 +178,13 @@ object UserDAO: UI {
             HttpStatusCode.InternalServerError
         }
     }
+    private fun mapUserAuth (it: ResultRow): UserAuthDTO{
+        return UserAuthDTO(userID = it[User.email], password = it[User.password])
+    }
     private fun mapUser(it: ResultRow): UserDTO {
         return UserDTO(email = it[User.email], name = it[User.userName],
-            gender = it[User.gender], password = it[User.password],
-            birthDate =  it[User.birth].toString(), imageURL = it[User.imageURL],
+            gender = it[User.gender], admin = it[User.admin],
+            birthDate = it[User.birth].toString(), imageURL = it[User.imageURL],
             about = it[User.about], cityOfBirth = it[User.cityOfBirth],
             phoneNumber = it[User.phoneNumber], nationality = it[User.nationality])
     }
