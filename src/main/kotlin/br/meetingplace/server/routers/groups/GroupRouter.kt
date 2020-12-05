@@ -19,9 +19,8 @@ import io.ktor.routing.*
 fun Route.groupRouter() {
     route("/api") {
 
-        post(GroupPaths.GROUP) {
-            val data = call.receive<RequestGroupCreation>()
-            call.respond(GroupFactoryService.create(data, CommunityMemberDAO, GroupDAO, UserDAO))
+        post<RequestGroupCreation>(GroupPaths.GROUP) {
+            call.respond(GroupFactoryService.create(it, CommunityMemberDAO, GroupDAO, UserDAO))
         }
         delete(GroupPaths.GROUP) {
             val data = call.receive<RequestGroup>()

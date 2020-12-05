@@ -33,9 +33,8 @@ fun Route.communityRouter() {
             else
                 call.respond(community)
         }
-        post(CommunityPaths.COMMUNITY) {
-            val data = call.receive<RequestCommunityCreation>()
-            call.respond(CommunityFactoryService.create(data, CommunityDAO, UserDAO))
+        post<RequestCommunityCreation>(CommunityPaths.COMMUNITY) {
+            call.respond(CommunityFactoryService.create(it, CommunityDAO, UserDAO))
         }
         patch(CommunityPaths.GROUP) {
             val data = call.receive<RequestApproval>()

@@ -44,9 +44,8 @@ fun Route.userRouter() {
             else
                 call.respond(user)
         }
-        post(UserPaths.USER) {
-            val data = call.receive<RequestUserCreation>()
-            call.respond(UserFactoryService.create(data, UserDAO))
+        post<RequestUserCreation>(UserPaths.USER) {
+            call.respond(UserFactoryService.create(it, UserDAO))
         }
         delete(UserPaths.USER) {
             val data = call.receive<RequestUser>()
@@ -56,9 +55,8 @@ fun Route.userRouter() {
             val data = call.receive<RequestProfileUpdate>()
             call.respond(UserUpdateService.updateProfile(data, UserDAO))
         }
-        post(UserPaths.FOLLOW) {
-            val data = call.receive<RequestSocial>()
-            call.respond(UserSocialService.follow(data, UserSocialDAO, CommunityMemberDAO, CommunityDAO, UserDAO))
+        post<RequestSocial>(UserPaths.FOLLOW) {
+            call.respond(UserSocialService.follow(it, UserSocialDAO, CommunityMemberDAO, CommunityDAO, UserDAO))
         }
         delete(UserPaths.UNFOLLOW) {
             val data = call.receive<RequestSocial>()

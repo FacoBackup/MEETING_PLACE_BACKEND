@@ -30,9 +30,8 @@ fun Route.topicRouter() {
 //                call.respond(topics)
         }
 
-        post(TopicPaths.TOPIC) {
-            val new = call.receive<RequestTopicCreation>()
-            call.respond(TopicFactoryService.create(new, TopicDAO, UserDAO, CommunityMemberDAO))
+        post<RequestTopicCreation>(TopicPaths.TOPIC) {
+            call.respond(TopicFactoryService.create(it, TopicDAO, UserDAO, CommunityMemberDAO))
         }
         delete(TopicPaths.TOPIC) {
             val topic = call.receive<RequestTopic>()
@@ -47,9 +46,8 @@ fun Route.topicRouter() {
                 call.respond(topics)
         }
 
-        post(TopicPaths.COMMENT) {
-            val data = call.receive<RequestTopicCreation>()
-            call.respond(TopicFactoryService.createComment(data,TopicDAO, UserDAO, CommunityMemberDAO))
+        post<RequestTopicCreation>(TopicPaths.COMMENT) {
+            call.respond(TopicFactoryService.createComment(it,TopicDAO, UserDAO, CommunityMemberDAO))
         }
         get (TopicPaths.COMMENT){
             val data = call.receive<RequestTopic>()

@@ -28,9 +28,8 @@ fun Route.messageRouter() {
             call.respond(MessageDAO.readAllConversation(userID = data.userID, receiverID = data.receiverID, isGroup = data.isGroup))
         }
 
-        post(MessagePaths.MESSAGE) {
-            val data = call.receive<RequestMessageCreation>()
-            call.respond(MessageFactoryService.createMessage(data, GroupMemberDAO, UserDAO, GroupDAO, MessageDAO))
+        post<RequestMessageCreation>(MessagePaths.MESSAGE) {
+            call.respond(MessageFactoryService.createMessage(it, GroupMemberDAO, UserDAO, GroupDAO, MessageDAO))
         }
         delete(MessagePaths.MESSAGE) {
             val data = call.receive<RequestMessage>()
@@ -44,9 +43,8 @@ fun Route.messageRouter() {
             val data = call.receive<RequestMessage>()
             call.respond(MessageOpinionService.dislikeMessage(data, UserDAO, MessageDAO, MessageOpinionDAO))
         }
-        post(MessagePaths.QUOTE) {
-            val data = call.receive<RequestConversationMessage>()
-            call.respond(MessageQuoteService.quoteMessage(data))
+        post<RequestConversationMessage>(MessagePaths.QUOTE) {
+            call.respond(MessageQuoteService.quoteMessage(it))
         }
         patch(MessagePaths.SHARE) {
             val data = call.receive<RequestConversationMessage>()

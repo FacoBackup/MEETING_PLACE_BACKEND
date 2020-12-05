@@ -1,16 +1,7 @@
 package br.meetingplace.server
 
-import br.meetingplace.server.db.settings.dbSettings
-import br.meetingplace.server.modules.message.entities.Message
-import br.meetingplace.server.modules.message.entities.MessageOpinion
-import br.meetingplace.server.modules.community.entities.Community
-import br.meetingplace.server.modules.community.entities.CommunityMember
-import br.meetingplace.server.modules.group.entities.Group
-import br.meetingplace.server.modules.group.entities.GroupMember
-import br.meetingplace.server.modules.topic.entities.Topic
-import br.meetingplace.server.modules.topic.entities.TopicOpinion
-import br.meetingplace.server.modules.user.entities.Social
-import br.meetingplace.server.modules.user.entities.User
+import br.meetingplace.server.db.settings.Settings
+import br.meetingplace.server.routers.authentication.authentication
 import br.meetingplace.server.routers.chat.messageRouter
 import br.meetingplace.server.routers.community.communityRouter
 import br.meetingplace.server.routers.groups.groupRouter
@@ -22,27 +13,13 @@ import io.ktor.gson.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.postgresql.util.PSQLException
+
 
 fun main() {
 
-    val db = dbSettings(host = "localhost", dbName = "apidb", user = "api", password = "12345" )
-    try {
-        transaction {
-            SchemaUtils.create(
-                    User, Social,
-                    Group, GroupMember,
-                    Message, MessageOpinion,
-                    Community, CommunityMember,
-                    Topic, TopicOpinion)
-        }
-    }catch (e: Exception){
-        println(e.message)
-    }catch (psql: PSQLException){
-        println(psql.message)
-    }
+    val db = Settings.dbSettings(host = "localhost", dbName = "api_database", user = "api", password = "12345" )
+    Settings.setUpTables()
+
     if(db != null){
         val port = System.getenv("PORT")?.toInt() ?: 8080
         embeddedServer(Netty, port) {
@@ -52,11 +29,28 @@ fun main() {
                         setPrettyPrinting()
                     }
                 }
-                topicRouter()
+//                install(Authentication){
+//                    jwt {
+//                        verifier(AuthenticationService.jwtVerifier)
+//                        realm = "Intranet API"
+//                        validate {
+//                            val userID = it.payload.getClaim("userID").asString()
+//                            val password = it.payload.getClaim("password").asString()
+//                            if(userID != null && password != null){
+//                                AuthenticationDAO.read(userID)
+//                            }
+//                            else
+//                                false
+//                        }
+//                    }
+//                }
                 userRouter()
+                authentication()
+                topicRouter()
                 communityRouter()
                 groupRouter()
                 messageRouter()
+
             }
         }.start(wait = true)
     }

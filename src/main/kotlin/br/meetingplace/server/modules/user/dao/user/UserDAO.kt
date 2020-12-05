@@ -1,5 +1,6 @@
 package br.meetingplace.server.modules.user.dao.user
 
+import br.meetingplace.server.methods.hashString
 import br.meetingplace.server.modules.user.dto.response.UserDTO
 import br.meetingplace.server.modules.user.entities.User
 import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
@@ -16,23 +17,28 @@ object UserDAO: UI {
     override fun create(data: RequestUserCreation): HttpStatusCode {
         return try {
             transaction {
-                User.insert {
-                    it[email] = data.email
-                    it[password] = MessageDigest.getInstance("SHA-1").digest(data.password.toByteArray(UTF_8)).toString()
-                    it[userName] = data.userName
-                    it[gender] = data.gender
-                    it[nationality] = data.nationality
-                    it[birth] = DateTimeFormat.forPattern("dd-MM-yyyy").parseDateTime(data.birthDate)
-                    it[imageURL] = null
-                    it[about] = null
-                    it[cityOfBirth] = data.cityOfBirth
-                    it[phoneNumber] = data.phoneNumber
-                }
+               User.insert {
+                   it[email] = data.email
+                   it[password] = hashString(encryption = "SHA-1",data.password)
+                   it[userName] = data.userName
+                   it[gender] = data.gender
+                   it[nationality] = data.nationality
+                   it[birth] = DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime(data.birthDate)
+                   it[imageURL] = null
+                   it[about] = null
+                   it[admin] = data.admin
+                   it[cityOfBirth] = data.cityOfBirth
+                   it[phoneNumber] = data.phoneNumber
+               }
             }
             HttpStatusCode.Created
         }catch (normal: Exception){
+            println("NORMAL")
+            println(normal.message)
             HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
+            println("PSQL")
+            println(psql.message)
             HttpStatusCode.InternalServerError
         }
     }
@@ -44,8 +50,10 @@ object UserDAO: UI {
             }
             HttpStatusCode.OK
         }catch (normal: Exception){
+            println(normal.message)
             HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
+            println(psql.message)
             HttpStatusCode.InternalServerError
         }
     }

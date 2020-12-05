@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import org.postgresql.util.PSQLException
-import java.util.*
+
 
 object AuthenticationDAO: AI {
     override fun create(userID: String, ip: String): HttpStatusCode {

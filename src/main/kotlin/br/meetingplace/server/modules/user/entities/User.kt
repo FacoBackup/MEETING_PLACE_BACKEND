@@ -8,7 +8,7 @@ object User: Table("users"){
     val email = varchar("user_id", 128)
     val userName = varchar("user_name", 64)
     val birth = date("date_of_birth")
-    val password = varchar("password", 256)
+    val password = varchar("password", 512)
     val gender = varchar("user_gender", 64)
     val nationality = varchar("user_nationality", 64)
     val about = varchar("user_about", 64).nullable()

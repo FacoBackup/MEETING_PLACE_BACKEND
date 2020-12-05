@@ -8,11 +8,11 @@ object UserDeleteService {
 
     fun delete(data: RequestUser, userDAO: UI): HttpStatusCode {
         return try{
-            val requester = userDAO.read(data.userID)
+            val requester = userDAO.read(data.requester)
             if( requester != null && requester.admin)
-                userDAO.delete(data.toBeDeleted)
+                userDAO.delete(data.userID)
             else
-                HttpStatusCode.InternalServerError
+                HttpStatusCode.FailedDependency
         }catch (e: Exception){
             HttpStatusCode.InternalServerError
         }

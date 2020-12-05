@@ -10,4 +10,5 @@ object Log: Table("logs") {
     val ip = varchar("ip_address", 64)
     val active = bool("is_active")
     val timeOfLogin = datetime("date_of_login")
+    override val primaryKey = PrimaryKey(ip)
 }
