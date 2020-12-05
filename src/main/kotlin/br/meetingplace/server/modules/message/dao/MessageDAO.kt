@@ -3,6 +3,7 @@ package br.meetingplace.server.modules.message.dao
 import br.meetingplace.server.modules.message.entities.Message
 import br.meetingplace.server.modules.message.dto.response.MessageDTO
 import br.meetingplace.server.modules.message.dto.requests.RequestMessageCreation
+import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -10,7 +11,7 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 object MessageDAO: MI{
-    override fun create(data: RequestMessageCreation): Status {
+    override fun create(data: RequestMessageCreation): HttpStatusCode {
         return try {
             transaction {
                 Message.insert {
@@ -26,26 +27,26 @@ object MessageDAO: MI{
                     }
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.Created
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
-    override fun delete(messageID: String): Status {
+    override fun delete(messageID: String): HttpStatusCode {
         return try {
             transaction {
                 Message.deleteWhere {
                     Message.id eq messageID
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.OK
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
@@ -64,6 +65,21 @@ object MessageDAO: MI{
             listOf()
         }catch (psql: PSQLException){
             listOf()
+        }
+    }
+
+    override fun check(messageID: String): HttpStatusCode {
+        return try {
+            if(transaction {
+                Message.select {
+                    Message.id eq messageID
+                }.empty()
+            }) HttpStatusCode.NotFound
+            else HttpStatusCode.Found
+        }catch (normal: Exception){
+            HttpStatusCode.InternalServerError
+        }catch (psql: PSQLException){
+            HttpStatusCode.InternalServerError
         }
     }
     override fun read(messageID: String): MessageDTO? {
@@ -101,8 +117,14 @@ object MessageDAO: MI{
         }
     }
     private fun mapMessage(it: ResultRow): MessageDTO {
-        return MessageDTO(content = it[Message.content], imageURL = it[Message.imageURL],
-                id = it[Message.id], creationDate = it[Message.creationDate].toString("dd-MM-yyyy"),
-                creatorID = it[Message.creatorID], type =  it[Message.type],receiverID = it[Message.userReceiverID], groupID = it[Message.groupReceiverID])
+        return MessageDTO(
+                content = it[Message.content],
+                imageURL = it[Message.imageURL],
+                id = it[Message.id],
+                creationDate = it[Message.creationDate].toString("dd-MM-yyyy"),
+                creatorID = it[Message.creatorID],
+                type =  it[Message.type],
+                receiverID = it[Message.userReceiverID],
+                groupID = it[Message.groupReceiverID])
     }
 }

@@ -2,12 +2,13 @@ package br.meetingplace.server.modules.community.dao.member
 
 import br.meetingplace.server.modules.community.dto.response.CommunityMemberDTO
 import br.meetingplace.server.modules.community.entities.CommunityMember
+import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object CommunityMemberDAO: CMI {
-    override fun create(userID: String, communityID: String, role: String): Status{
+    override fun create(userID: String, communityID: String, role: String): HttpStatusCode {
         return try{
             transaction {
                 CommunityMember.insert {
@@ -16,36 +17,46 @@ object CommunityMemberDAO: CMI {
                     it[this.role] = role
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.Created
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
-    override fun delete(communityID: String, userID: String): Status {
-
+    override fun delete(communityID: String, userID: String): HttpStatusCode {
         return try{
-            if(transaction { !CommunityMember.select { (CommunityMember.communityID eq communityID) and (CommunityMember.userID eq userID) }.empty() }){
+            transaction {
+                CommunityMember.deleteWhere { (CommunityMember.communityID eq communityID) and (CommunityMember.userID eq userID) }
+            }
 
-                transaction {
-                    CommunityMember.deleteWhere { (CommunityMember.communityID eq communityID) and (CommunityMember.userID eq userID) }
-                }
-
-                Status(200, StatusMessages.OK)
-            }else Status(404, StatusMessages.NOT_FOUND)
+            HttpStatusCode.OK
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
+    override fun check(communityID: String, userID: String): HttpStatusCode {
+        return try{
+            if(transaction {
+                CommunityMember.select { (CommunityMember.communityID eq communityID) and (CommunityMember.userID eq userID) }.empty()
+            }) HttpStatusCode.NotFound
+            else HttpStatusCode.Found
+        }catch (normal: Exception){
+            HttpStatusCode.InternalServerError
+        }catch (psql: PSQLException){
+            HttpStatusCode.InternalServerError
+        }
+    }
     override fun read(communityID: String, userID: String): CommunityMemberDTO? {
         return try{
             return transaction {
-                CommunityMember.select { (CommunityMember.communityID eq communityID) and (CommunityMember.userID eq userID) }.map { mapCommunityMemberDTO(it) }.firstOrNull()
+                CommunityMember.select { (CommunityMember.communityID eq communityID) and
+                        (CommunityMember.userID eq userID) }
+                    .map { mapCommunityMemberDTO(it) }.firstOrNull()
             }
         }catch (normal: Exception){
             null
@@ -54,22 +65,18 @@ object CommunityMemberDAO: CMI {
         }
     }
 
-    override fun update(communityID: String, userID: String, role: String): Status {
+    override fun update(communityID: String, userID: String, role: String): HttpStatusCode {
         return try{
-            if(transaction { !CommunityMember.select {  (CommunityMember.communityID eq communityID) and (CommunityMember.userID eq userID) }.empty() }){
-
-                transaction {
-                    CommunityMember.update( {  (CommunityMember.communityID eq communityID) and (CommunityMember.userID eq userID) } ){
-                        it[this.role] = role
-                    }
+            transaction {
+                CommunityMember.update( {  (CommunityMember.communityID eq communityID) and (CommunityMember.userID eq userID) } ){
+                    it[this.role] = role
                 }
-
-                Status(200, StatusMessages.OK)
-            }else Status(404, StatusMessages.NOT_FOUND)
+            }
+            HttpStatusCode.OK
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
     private fun mapCommunityMemberDTO(it: ResultRow): CommunityMemberDTO {

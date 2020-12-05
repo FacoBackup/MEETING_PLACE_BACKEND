@@ -3,6 +3,7 @@ package br.meetingplace.server.modules.topic.dao
 import br.meetingplace.server.modules.topic.entities.Topic
 import br.meetingplace.server.modules.topic.dto.response.TopicDTO
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
+import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -10,8 +11,20 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 object TopicDAO: TI {
-
-    override fun create(data: RequestTopicCreation, approved:Boolean, userName: String): Status {
+    override fun read(topicID: String): TopicDTO? {
+        return try {
+            transaction {
+                Topic.select {
+                    Topic.id eq topicID
+                }.map { mapTopic(it) }.firstOrNull()
+            }
+        }catch (normal: Exception){
+            null
+        }catch (psql: PSQLException){
+            null
+        }
+    }
+    override fun create(data: RequestTopicCreation, approved:Boolean, userName: String): HttpStatusCode {
         return try {
             transaction {
                 Topic.insert {
@@ -27,40 +40,40 @@ object TopicDAO: TI {
                     it[creationDate] = DateTime.now()
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.Created
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
-    override fun delete(topicID: String): Status {
+    override fun delete(topicID: String):HttpStatusCode{
         return try {
             transaction {
                 Topic.deleteWhere {
                     Topic.id eq topicID
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.OK
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
-    override fun read(topicID: String): TopicDTO? {
+    override fun check(topicID: String): HttpStatusCode {
         return try {
-            transaction {
+            return if (transaction {
                 Topic.select {
                     Topic.id eq topicID
-                }.map { mapTopic(it) }.firstOrNull()
-            }
+                }.empty() }) HttpStatusCode.NotFound
+            else HttpStatusCode.Found
         }catch (normal: Exception){
-            null
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            null
+            HttpStatusCode.InternalServerError
         }
     }
     override fun readByUser(userID: String): List<TopicDTO> {
@@ -97,19 +110,24 @@ object TopicDAO: TI {
         mainTopicID: String?,
         header: String?,
         body: String?
-    ): Status {
-        return try {
-            transaction {
-
-            }
-            Status(200, StatusMessages.OK)
-        }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
-        }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
-        }
+    ): HttpStatusCode {
+        TODO()
+//        return try {
+//            transaction {
+//
+//            }
+//            HttpStatusCode.OK
+//        }catch (normal: Exception){
+//            HttpStatusCode.InternalServerError
+//        }catch (psql: PSQLException){
+//            HttpStatusCode.InternalServerError
+//        }
     }
     private fun mapTopic(it: ResultRow): TopicDTO {
-        return TopicDTO(id =  it[Topic.id], header =  it[Topic.header], body =  it[Topic.body], approved =  it[Topic.approved], footer =  it[Topic.footer], creatorID =  it[Topic.creatorID], mainTopicID =  it[Topic.mainTopicID], creationDate =  it[Topic.creationDate].toString("dd-MM-yyyy"), communityID = it[Topic.communityID], imageURL = it[Topic.imageURL])
+        return TopicDTO(id =  it[Topic.id], header =  it[Topic.header],
+            body =  it[Topic.body], approved =  it[Topic.approved],
+            footer =  it[Topic.footer], creatorID =  it[Topic.creatorID],
+            mainTopicID =  it[Topic.mainTopicID], creationDate =  it[Topic.creationDate].toString("dd-MM-yyyy"),
+            communityID = it[Topic.communityID], imageURL = it[Topic.imageURL])
     }
 }

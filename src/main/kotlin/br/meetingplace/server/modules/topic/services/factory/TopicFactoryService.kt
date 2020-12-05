@@ -5,17 +5,18 @@ import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.modules.community.dto.MemberType
 import br.meetingplace.server.modules.topic.dao.TI
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
+import io.ktor.http.*
 
 object TopicFactoryService {
 
-    fun create(data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI): Status {
+    fun create(data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI): HttpStatusCode {
         return try {
             val user = userDAO.read(data.userID)
             when (data.communityID.isNullOrBlank()) {
                 true -> {
                     return if (user != null && data.mainTopicID.isNullOrBlank()) {
                         topicDAO.create(data,true, user.name)
-                    } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
+                    } else HttpStatusCode.FailedDependency
                 }
                 false -> {
                     val member = communityMemberDAO.read(data.communityID, userID = data.userID)
@@ -24,21 +25,22 @@ object TopicFactoryService {
                             approved = member.role == MemberType.DIRECTOR.toString() || member.role == MemberType.LEADER.toString(),
                             userName = user.name
                         )
-                    } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
+                    } else HttpStatusCode.FailedDependency
                 }
             }
         } catch (e: Exception) {
-            Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
-    fun createComment(data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI): Status {
+
+    fun createComment(data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI): HttpStatusCode {
         return try {
             val user = userDAO.read(data.userID)
             when (data.communityID.isNullOrBlank()) {
                 true -> {
-                    return if (user != null && !data.mainTopicID.isNullOrBlank() && topicDAO.read(data.mainTopicID)  != null) {
+                    return if (user != null && !data.mainTopicID.isNullOrBlank() && topicDAO.check(data.mainTopicID)  == HttpStatusCode.Found) {
                         topicDAO.create(data, approved = true, userName = user.name)
-                    } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
+                    } else HttpStatusCode.FailedDependency
                 }
                 false -> {
                     val member = communityMemberDAO.read(data.communityID, userID = data.userID)
@@ -48,11 +50,11 @@ object TopicFactoryService {
                             approved = member.role == MemberType.DIRECTOR.toString() || member.role == MemberType.LEADER.toString(),
                             userName = user.name
                         )
-                    } else Status(statusCode = 404, StatusMessages.NOT_FOUND)
+                    } else HttpStatusCode.FailedDependency
                 }
             }
         } catch (e: Exception) {
-            Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 }

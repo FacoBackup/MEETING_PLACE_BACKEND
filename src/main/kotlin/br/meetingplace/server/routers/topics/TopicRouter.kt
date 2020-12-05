@@ -12,6 +12,7 @@ import br.meetingplace.server.modules.user.dto.requests.RequestUser
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopic
 import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -41,7 +42,7 @@ fun Route.topicRouter() {
             val data = call.receive<RequestUser>()
             val topics = TopicDAO.readByUser(data.userID)
             if (topics.isEmpty())
-                call.respond(Status(404, StatusMessages.NOT_FOUND))
+                call.respond(HttpStatusCode.NotFound)
             else
                 call.respond(topics)
         }
@@ -54,7 +55,7 @@ fun Route.topicRouter() {
             val data = call.receive<RequestTopic>()
             val topics = TopicDAO.readAllComments(data.topicID)
             if (topics.isEmpty())
-                call.respond(Status(404, StatusMessages.NOT_FOUND))
+                call.respond(HttpStatusCode.NotFound)
             else
                 call.respond(topics)
         }
@@ -71,7 +72,7 @@ fun Route.topicRouter() {
             val data = call.receive<RequestTopic>()
             val opinions = TopicOpinionDAO.readAll(data.topicID)
             if (opinions.isEmpty())
-                call.respond(Status(404, StatusMessages.NOT_FOUND))
+                call.respond(HttpStatusCode.NotFound)
             else
                 call.respond(opinions)
         }

@@ -5,26 +5,27 @@ import br.meetingplace.server.modules.community.dto.MemberType
 import br.meetingplace.server.modules.group.dao.GI
 import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.modules.group.dto.requests.RequestGroupCreation
+import io.ktor.http.*
 
 object GroupFactoryService {
 
-    fun create(data: RequestGroupCreation, communityMemberDAO: CMI, groupDAO: GI, userDAO: UI) : Status {
+    fun create(data: RequestGroupCreation, communityMemberDAO: CMI, groupDAO: GI, userDAO: UI) : HttpStatusCode {
         return try {
             return when(data.communityID.isNullOrBlank()){
                 true-> {
-                    if (userDAO.read(data.userID) != null) //user
+                    if (userDAO.check(data.userID) == HttpStatusCode.Found) //user
                         groupDAO.create(data, approved = true)
-                    else Status(404, StatusMessages.NOT_FOUND)
+                    else HttpStatusCode.FailedDependency
                 }
                 false->{ //community
                     val member = communityMemberDAO.read(data.communityID, data.userID)
                     if(member != null)
                         groupDAO.create(data, approved = member.role == MemberType.DIRECTOR.toString() || member.role == MemberType.LEADER.toString())
-                    else Status(404, StatusMessages.NOT_FOUND)
+                    else HttpStatusCode.FailedDependency
                 }
             }
         }catch (e: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 

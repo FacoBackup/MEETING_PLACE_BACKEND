@@ -5,19 +5,20 @@ import br.meetingplace.server.modules.report.dao.RI
 import br.meetingplace.server.modules.topic.dao.TI
 import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.modules.report.dto.requests.RequestReportCreation
+import io.ktor.http.*
 
 object ReportFactoryService{
 
-    fun createReport(data: RequestReportCreation, reportDAO: RI, userDAO: UI, topicDAO: TI, communityMemberDAO: CMI): Status {
+    fun createReport(data: RequestReportCreation, reportDAO: RI, userDAO: UI, topicDAO: TI, communityMemberDAO: CMI): HttpStatusCode {
         return try {
             val topic = topicDAO.read(data.topicID)
-            return if(userDAO.read(data.userID) != null &&
-                      communityMemberDAO.read(data.communityID, userID = data.userID) != null &&
+            return if(userDAO.check(data.userID) == HttpStatusCode.Found &&
+                      communityMemberDAO.check(data.communityID, userID = data.userID) == HttpStatusCode.Found &&
                       topic != null && topic.communityID == data.communityID)
                           reportDAO.create(data)
-            else Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
+            else HttpStatusCode.FailedDependency
         } catch (e: Exception) {
-            Status(statusCode = 500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 

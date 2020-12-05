@@ -2,12 +2,13 @@ package br.meetingplace.server.modules.message.dao.opinions
 
 import br.meetingplace.server.modules.message.dto.response.MessageOpinionsDTO
 import br.meetingplace.server.modules.message.entities.MessageOpinion
+import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object MessageOpinionDAO:MOI {
-    override fun create(messageID: String, userID: String, liked: Boolean): Status {
+    override fun create(messageID: String, userID: String, liked: Boolean): HttpStatusCode {
         return try {
             transaction {
                 MessageOpinion.insert {
@@ -16,15 +17,15 @@ object MessageOpinionDAO:MOI {
                     it[this.liked] = liked
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.Created
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
-    override fun delete(messageID: String, userID: String): Status {
+    override fun delete(messageID: String, userID: String): HttpStatusCode {
         return try {
             transaction {
                 MessageOpinion.deleteWhere {
@@ -32,11 +33,11 @@ object MessageOpinionDAO:MOI {
                     (MessageOpinion.userID eq userID)
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.OK
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
@@ -55,18 +56,18 @@ object MessageOpinionDAO:MOI {
         }
     }
 
-    override fun update(messageID: String, userID: String, liked: Boolean): Status {
+    override fun update(messageID: String, userID: String, liked: Boolean): HttpStatusCode {
        return try {
            transaction {
                MessageOpinion.update({ (MessageOpinion.messageID eq messageID) and (MessageOpinion.userID eq userID) }){
                     it[this.liked] = liked
                }
            }
-           Status(200, StatusMessages.OK)
+           HttpStatusCode.OK
        }catch (normal: Exception){
-           Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+           HttpStatusCode.InternalServerError
        }catch (psql: PSQLException){
-           Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+           HttpStatusCode.InternalServerError
        }
     }
 

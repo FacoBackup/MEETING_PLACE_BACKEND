@@ -3,6 +3,7 @@ package br.meetingplace.server.modules.report.dao
 import br.meetingplace.server.modules.report.entities.Report
 import br.meetingplace.server.modules.report.dto.response.ReportDTO
 import br.meetingplace.server.modules.report.dto.requests.RequestReportCreation
+import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -10,7 +11,7 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 object ReportDAO: RI {
-    override fun create(data: RequestReportCreation): Status {
+    override fun create(data: RequestReportCreation): HttpStatusCode {
         return try {
             transaction {
                 Report.insert {
@@ -24,26 +25,26 @@ object ReportDAO: RI {
                     it[reason] = data.reason
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.Created
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
-    override fun delete(reportID: String): Status {
+    override fun delete(reportID: String): HttpStatusCode {
         return try {
             transaction {
                 Report.deleteWhere {
                     Report.id eq reportID
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.OK
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
@@ -61,6 +62,20 @@ object ReportDAO: RI {
         }
     }
 
+    override fun check(reportID: String): HttpStatusCode {
+        return try {
+            if(transaction {
+                Report.select {
+                    Report.id eq reportID
+                }.empty()
+            }) HttpStatusCode.NotFound
+            else HttpStatusCode.Found
+        }catch (normal: Exception){
+            HttpStatusCode.InternalServerError
+        }catch (psql: PSQLException){
+            HttpStatusCode.InternalServerError
+        }
+    }
     override fun readAll(communityID: String, done: Boolean): List<ReportDTO> {
         return try {
             transaction {
@@ -76,7 +91,7 @@ object ReportDAO: RI {
         }
     }
 
-    override fun update(reportID: String, reason: String?, response: String?, done: Boolean?): Status {
+    override fun update(reportID: String, reason: String?, response: String?, done: Boolean?): HttpStatusCode {
         return try {
             transaction {
                 Report.update({Report.id eq reportID}){
@@ -88,11 +103,11 @@ object ReportDAO: RI {
                         it[this.done] = done
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.OK
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
     private fun mapReport(it: ResultRow): ReportDTO {

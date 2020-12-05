@@ -16,24 +16,24 @@ object CommunityMemberService {
                     MemberType.LEADER.toString()->{
                         if(userMember != null && userMember.role == MemberType.DIRECTOR.toString())
                             communityMemberDAO.update(userID = data.memberID, communityID = data.memberID, role = MemberType.DIRECTOR.toString())
-                        else Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+                        else HttpStatusCode.FailedDependency
                     }
                     MemberType.MEMBER.toString()->{
                         if(userMember != null && userMember.role == MemberType.DIRECTOR.toString())
                             communityMemberDAO.update(userID = data.memberID, communityID = data.memberID, role = MemberType.LEADER.toString())
-                        else Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+                        else HttpStatusCode.FailedDependency
                     }
                     MemberType.FOLLOWER.toString()->{
                         if(userMember != null && (userMember.role == MemberType.DIRECTOR.toString() || userMember.role == MemberType.LEADER.toString()))
                             communityMemberDAO.update(userID = data.memberID, communityID = data.memberID, role = MemberType.MEMBER.toString())
-                        else Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+                        else HttpStatusCode.FailedDependency
                     }
-                    else-> Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+                    else-> HttpStatusCode.FailedDependency
                 }
             }
-            else Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            else HttpStatusCode.InternalServerError
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
@@ -46,19 +46,19 @@ object CommunityMemberService {
                     MemberType.LEADER.toString()->{
                         if(userMember != null && userMember.role == MemberType.DIRECTOR.toString())
                             communityMemberDAO.update(userID = data.memberID, communityID = data.memberID, role = MemberType.MEMBER.toString())
-                        else Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+                        else HttpStatusCode.FailedDependency
                     }
                     MemberType.MEMBER.toString()->{
                         if(userMember != null && (userMember.role == MemberType.DIRECTOR.toString() || userMember.role == MemberType.LEADER.toString()))
                             communityMemberDAO.update(userID = data.memberID, communityID = data.memberID, role = MemberType.FOLLOWER.toString())
-                        else Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+                        else HttpStatusCode.FailedDependency
                     }
-                    else-> Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+                    else-> HttpStatusCode.FailedDependency
                 }
             }
-            else Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            else HttpStatusCode.InternalServerError
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 }

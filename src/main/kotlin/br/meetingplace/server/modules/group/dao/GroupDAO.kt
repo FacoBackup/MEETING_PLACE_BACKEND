@@ -3,6 +3,7 @@ package br.meetingplace.server.modules.group.dao
 import br.meetingplace.server.modules.group.entities.Group
 import br.meetingplace.server.modules.group.dto.response.GroupDTO
 import br.meetingplace.server.modules.group.dto.requests.RequestGroupCreation
+import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -11,7 +12,7 @@ import java.util.*
 
 object GroupDAO: GI {
 
-    override fun create(data: RequestGroupCreation, approved: Boolean): Status {
+    override fun create(data: RequestGroupCreation, approved: Boolean): HttpStatusCode {
         return try {
             transaction {
                 Group.insert {
@@ -24,24 +25,37 @@ object GroupDAO: GI {
                     it[name] = data.name
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.Created
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
-    override fun delete(groupID: String): Status {
+    override fun check(groupID: String): HttpStatusCode {
+        return try {
+            if(transaction {
+                Group.select { Group.id eq groupID }.empty()
+            }) HttpStatusCode.NotFound
+            else HttpStatusCode.Found
+        }catch (normal: Exception){
+            HttpStatusCode.InternalServerError
+        }catch (psql: PSQLException){
+            HttpStatusCode.InternalServerError
+        }
+    }
+
+    override fun delete(groupID: String): HttpStatusCode {
         return try {
             transaction {
                 Group.deleteWhere { Group.id eq groupID }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.OK
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
@@ -57,7 +71,7 @@ object GroupDAO: GI {
         }
     }
 
-    override fun update(groupID: String, name: String?, about: String?, approved: Boolean): Status {
+    override fun update(groupID: String, name: String?, about: String?, approved: Boolean): HttpStatusCode {
         return try {
             transaction {
                 Group.update({Group.id eq groupID}) {
@@ -68,11 +82,11 @@ object GroupDAO: GI {
                     it[this.approved] = approved
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.OK
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
     private fun mapGroup(it: ResultRow): GroupDTO {

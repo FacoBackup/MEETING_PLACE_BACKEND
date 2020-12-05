@@ -2,26 +2,28 @@ package br.meetingplace.server.modules.user.dao.social
 
 import br.meetingplace.server.modules.user.dto.response.SocialDTO
 import br.meetingplace.server.modules.user.entities.Social
+import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object UserSocialDAO:SI {
 
-    override fun create(userID: String, followedID: String): Status {
-        return try {
-            transaction {
-
-            }
-            Status(200, StatusMessages.OK)
-        }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
-        }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
-        }
+    override fun create(userID: String, followedID: String): HttpStatusCode {
+        TODO()
+    //        return try {
+//            transaction {
+//
+//            }
+//            HttpStatusCode.Created
+//        }catch (normal: Exception){
+//            HttpStatusCode.InternalServerError
+//        }catch (psql: PSQLException){
+//            HttpStatusCode.InternalServerError
+//        }
     }
 
-    override fun delete(userID: String, followedID: String): Status {
+    override fun delete(userID: String, followedID: String): HttpStatusCode {
         return try {
             transaction {
                 Social.deleteWhere {
@@ -29,27 +31,26 @@ object UserSocialDAO:SI {
                     (Social.followerID eq userID)
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.OK
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
-    override fun read(followedID: String, userID: String): SocialDTO? {
+    override fun check(followedID: String, userID: String): HttpStatusCode {
         return try {
-            transaction {
+            return if (transaction {
                 Social.select {
                     (Social.followedID eq followedID) and
                     (Social.followerID eq userID)
-                }
-            }
-            null
+            }.empty()}) HttpStatusCode.NotFound
+            else HttpStatusCode.Found
         }catch (normal: Exception){
-            null
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            null
+            HttpStatusCode.InternalServerError
         }
     }
 

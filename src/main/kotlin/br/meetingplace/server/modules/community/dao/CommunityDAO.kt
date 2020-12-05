@@ -3,6 +3,7 @@ package br.meetingplace.server.modules.community.dao
 import br.meetingplace.server.modules.community.entities.Community
 import br.meetingplace.server.modules.community.dto.response.CommunityDTO
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
+import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -11,7 +12,7 @@ import java.util.*
 
 object CommunityDAO: CI {
 
-    override fun create(data: RequestCommunityCreation):Status  {
+    override fun create(data: RequestCommunityCreation):HttpStatusCode  {
         return try{
             transaction {
                 Community.insert {
@@ -24,36 +25,44 @@ object CommunityDAO: CI {
                     it[parentCommunityID]= data.parentCommunityID
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.Created
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
-    override fun delete(id: String):Status  {
+    override fun check(id: String): HttpStatusCode {
         return try{
-            if(transaction { !Community.select { Community.id eq id }.empty() }){
-
-                transaction {
-                    Community.deleteWhere { Community.id eq id }
-                }
-
-                Status(200, StatusMessages.OK)
-            }else Status(404, StatusMessages.NOT_FOUND)
+            if(transaction {
+                Community.select { Community.id eq id }.empty()
+            }) HttpStatusCode.NotFound
+            else HttpStatusCode.Found
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
+        }
+    }
+    override fun delete(id: String): HttpStatusCode {
+        return try{
+            transaction {
+                Community.deleteWhere { Community.id eq id }
+            }
+            HttpStatusCode.OK
+        }catch (normal: Exception){
+            HttpStatusCode.InternalServerError
+        }catch (psql: PSQLException){
+            HttpStatusCode.InternalServerError
         }
     }
 
     override fun read(id: String): CommunityDTO? {
         return try{
-            return transaction {
-                    Community.select { Community.id eq id }.map { mapCommunityDTO(it) }.firstOrNull()
-                }
+            transaction {
+                Community.select { Community.id eq id }.map { mapCommunityDTO(it) }.firstOrNull()
+            }
         }catch (normal: Exception){
             null
         }catch (psql: PSQLException){
@@ -61,27 +70,23 @@ object CommunityDAO: CI {
         }
     }
 
-    override fun update(communityID: String, name: String?, about: String?, parentID: String?):Status {
+    override fun update(communityID: String, name: String?, about: String?, parentID: String?):HttpStatusCode {
         return try{
-            if(transaction { !Community.select { Community.id eq communityID }.empty() }){
-
-                transaction {
-                    Community.update( { Community.id eq communityID } ){
-                        if(!name.isNullOrBlank())
-                            it[this.name] = name
-                        if(!about.isNullOrBlank())
-                            it[this.about] = about
-                        if(!parentID.isNullOrBlank() && read(parentID) != null)
-                            it[parentCommunityID] = parentID
-                    }
+            transaction {
+                Community.update( { Community.id eq communityID } ){
+                    if(!name.isNullOrBlank())
+                        it[this.name] = name
+                    if(!about.isNullOrBlank())
+                        it[this.about] = about
+                    if(!parentID.isNullOrBlank() && read(parentID) != null)
+                        it[parentCommunityID] = parentID
                 }
-
-                Status(200, StatusMessages.OK)
-            }else Status(404, StatusMessages.NOT_FOUND)
+            }
+            HttpStatusCode.OK
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 

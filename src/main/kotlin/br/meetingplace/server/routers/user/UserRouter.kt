@@ -13,6 +13,7 @@ import br.meetingplace.server.modules.user.dto.requests.RequestProfileUpdate
 import br.meetingplace.server.modules.user.dto.requests.RequestSocial
 import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
 import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -23,7 +24,7 @@ fun Route.userRouter() {
         get(UserPaths.USER+"/all") {
             val user = UserDAO.readAll()
             if (user.isEmpty())
-                call.respond(Status(404, StatusMessages.NOT_FOUND))
+                call.respond(HttpStatusCode.NotFound)
             else
                 call.respond(user)
         }
@@ -31,7 +32,7 @@ fun Route.userRouter() {
             val data = call.receive<RequestUser>()
             val user = UserDAO.read(data.userID)
             if (user == null)
-                call.respond(Status(404, StatusMessages.NOT_FOUND))
+                call.respond(HttpStatusCode.NotFound)
             else
                 call.respond(user)
         }
@@ -39,7 +40,7 @@ fun Route.userRouter() {
             val data = call.receive<RequestUser>()
             val user = UserDAO.readAllByAttribute(name = data.userID, null,null,null,null)
             if (user.isEmpty())
-                call.respond(Status(404, StatusMessages.NOT_FOUND))
+                call.respond(HttpStatusCode.NotFound)
             else
                 call.respond(user)
         }

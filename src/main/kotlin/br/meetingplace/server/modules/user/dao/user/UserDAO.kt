@@ -3,6 +3,7 @@ package br.meetingplace.server.modules.user.dao.user
 import br.meetingplace.server.modules.user.dto.response.UserDTO
 import br.meetingplace.server.modules.user.entities.User
 import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
+import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.format.DateTimeFormat
@@ -11,12 +12,12 @@ import java.security.MessageDigest
 import kotlin.text.Charsets.UTF_8
 
 object UserDAO: UI {
-    override fun create(data: RequestUserCreation): Status {
+    override fun create(data: RequestUserCreation): HttpStatusCode {
         return try {
             transaction {
                 User.insert {
                     it[email] = data.email
-                    it[password] = MessageDigest.getInstance("MD5").digest(data.password.toByteArray(UTF_8)).toString()
+                    it[password] = MessageDigest.getInstance("SHA-1").digest(data.password.toByteArray(UTF_8)).toString()
                     it[userName] = data.userName
                     it[gender] = data.gender
                     it[nationality] = data.nationality
@@ -27,24 +28,24 @@ object UserDAO: UI {
                     it[phoneNumber] = data.phoneNumber
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.Created
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
-    override fun delete(userID: String): Status {
+    override fun delete(userID: String): HttpStatusCode {
         return try {
             transaction {
                 User.deleteWhere { User.email eq userID }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.OK
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
 
@@ -70,6 +71,20 @@ object UserDAO: UI {
             listOf()
         }catch (psql: PSQLException){
             listOf()
+        }
+    }
+
+    override fun check(userID: String): HttpStatusCode {
+        return try {
+            return if(transaction {
+                User.select { User.email eq userID }.empty()
+            }) HttpStatusCode.NotFound
+            else HttpStatusCode.Found
+
+        }catch (normal: Exception){
+            HttpStatusCode.InternalServerError
+        }catch (psql: PSQLException){
+            HttpStatusCode.InternalServerError
         }
     }
     override fun readAllByAttribute(
@@ -124,7 +139,7 @@ object UserDAO: UI {
         nationality: String?,
         phoneNumber: String?,
         city: String?
-    ): Status {
+    ): HttpStatusCode {
         return try {
             transaction {
                 User.update({User.email eq userID}){
@@ -142,11 +157,11 @@ object UserDAO: UI {
                         it[this.imageURL] = imageURL
                 }
             }
-            Status(200, StatusMessages.OK)
+            HttpStatusCode.OK
         }catch (normal: Exception){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            Status(500, StatusMessages.INTERNAL_SERVER_ERROR)
+            HttpStatusCode.InternalServerError
         }
     }
     private fun mapUser(it: ResultRow): UserDTO {

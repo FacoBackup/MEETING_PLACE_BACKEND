@@ -10,6 +10,7 @@ import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCre
 import br.meetingplace.server.modules.group.dao.GroupDAO
 import br.meetingplace.server.modules.user.dao.user.UserDAO
 import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -28,7 +29,7 @@ fun Route.communityRouter() {
             val data= call.receive<RequestCommunity>()
             val community = CommunityDAO.read(id = data.communityID)
             if(community == null)
-                call.respond(Status(404, StatusMessages.NOT_FOUND))
+                call.respond(HttpStatusCode.NotFound)
             else
                 call.respond(community)
         }
