@@ -2,11 +2,11 @@ package br.meetingplace.server.routers.community
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
-import br.meetingplace.server.modules.community.services.factory.CommunityFactoryService
-import br.meetingplace.server.modules.community.services.approval.CommunityApprovalService
 import br.meetingplace.server.modules.community.dto.requests.RequestApproval
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunity
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
+import br.meetingplace.server.modules.community.services.approval.CommunityApprovalService
+import br.meetingplace.server.modules.community.services.factory.CommunityFactoryService
 import br.meetingplace.server.modules.group.dao.GroupDAO
 import br.meetingplace.server.modules.user.dao.user.UserDAO
 import io.ktor.application.*

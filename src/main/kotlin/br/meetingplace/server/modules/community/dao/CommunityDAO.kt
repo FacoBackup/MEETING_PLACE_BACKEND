@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.community.dao
 
-import br.meetingplace.server.modules.community.entities.Community
-import br.meetingplace.server.modules.community.dto.response.CommunityDTO
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
+import br.meetingplace.server.modules.community.dto.response.CommunityDTO
+import br.meetingplace.server.modules.community.entities.Community
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -33,16 +33,15 @@ object CommunityDAO: CI {
         }
     }
 
-    override fun check(id: String): HttpStatusCode {
+    override fun check(id: String): Boolean {
         return try{
-            if(transaction {
+            !transaction {
                 Community.select { Community.id eq id }.empty()
-            }) HttpStatusCode.NotFound
-            else HttpStatusCode.Found
+            }
         }catch (normal: Exception){
-            HttpStatusCode.InternalServerError
+            false
         }catch (psql: PSQLException){
-            HttpStatusCode.InternalServerError
+            false
         }
     }
     override fun delete(id: String): HttpStatusCode {

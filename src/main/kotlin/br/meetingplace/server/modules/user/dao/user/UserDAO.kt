@@ -1,17 +1,15 @@
 package br.meetingplace.server.modules.user.dao.user
 
 import br.meetingplace.server.methods.hashString
-import br.meetingplace.server.modules.user.dto.response.UserDTO
-import br.meetingplace.server.modules.user.entities.User
 import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
 import br.meetingplace.server.modules.user.dto.response.UserAuthDTO
+import br.meetingplace.server.modules.user.dto.response.UserDTO
+import br.meetingplace.server.modules.user.entities.User
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.format.DateTimeFormat
 import org.postgresql.util.PSQLException
-import java.security.MessageDigest
-import kotlin.text.Charsets.UTF_8
 
 object UserDAO: UI {
     override fun create(data: RequestUserCreation): HttpStatusCode {
@@ -96,17 +94,15 @@ object UserDAO: UI {
         }
     }
 
-    override fun check(userID: String): HttpStatusCode {
+    override fun check(userID: String): Boolean {
         return try {
-            return if(transaction {
+            return !transaction {
                 User.select { User.email eq userID }.empty()
-            }) HttpStatusCode.NotFound
-            else HttpStatusCode.Found
-
+            }
         }catch (normal: Exception){
-            HttpStatusCode.InternalServerError
+            false
         }catch (psql: PSQLException){
-            HttpStatusCode.InternalServerError
+            false
         }
     }
     override fun readAllByAttribute(

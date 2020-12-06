@@ -3,7 +3,10 @@ package br.meetingplace.server.modules.user.dao.social
 import br.meetingplace.server.modules.user.dto.response.SocialDTO
 import br.meetingplace.server.modules.user.entities.Social
 import io.ktor.http.*
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 

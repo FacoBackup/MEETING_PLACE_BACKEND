@@ -1,10 +1,10 @@
 package br.meetingplace.server.modules.topic.services.factory
 
 import br.meetingplace.server.modules.community.dao.member.CMI
-import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.modules.community.dto.MemberType
 import br.meetingplace.server.modules.topic.dao.TI
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
+import br.meetingplace.server.modules.user.dao.user.UI
 import io.ktor.http.*
 
 object TopicFactoryService {
@@ -38,7 +38,7 @@ object TopicFactoryService {
             val user = userDAO.read(data.userID)
             when (data.communityID.isNullOrBlank()) {
                 true -> {
-                    return if (user != null && !data.mainTopicID.isNullOrBlank() && topicDAO.check(data.mainTopicID)  == HttpStatusCode.Found) {
+                    return if (user != null && !data.mainTopicID.isNullOrBlank() && topicDAO.check(data.mainTopicID)) {
                         topicDAO.create(data, approved = true, userName = user.name)
                     } else HttpStatusCode.FailedDependency
                 }

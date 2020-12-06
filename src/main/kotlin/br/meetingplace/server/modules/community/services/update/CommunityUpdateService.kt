@@ -5,7 +5,6 @@ import br.meetingplace.server.modules.community.dao.member.CMI
 import br.meetingplace.server.modules.community.dto.MemberType
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityUpdate
 import io.ktor.http.*
-import org.postgresql.util.PSQLException
 
 object CommunityUpdateService {
     fun updateCommunity(data: RequestCommunityUpdate, community: CI, member: CMI): HttpStatusCode {

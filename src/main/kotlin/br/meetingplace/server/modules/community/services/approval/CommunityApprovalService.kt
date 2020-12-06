@@ -2,8 +2,8 @@ package br.meetingplace.server.modules.community.services.approval
 
 import br.meetingplace.server.modules.community.dao.member.CMI
 import br.meetingplace.server.modules.community.dto.MemberType
-import br.meetingplace.server.modules.group.dao.GI
 import br.meetingplace.server.modules.community.dto.requests.RequestApproval
+import br.meetingplace.server.modules.group.dao.GI
 import io.ktor.http.*
 
 object CommunityApprovalService {

@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.message.dao
 
-import br.meetingplace.server.modules.message.entities.Message
-import br.meetingplace.server.modules.message.dto.response.MessageDTO
 import br.meetingplace.server.modules.message.dto.requests.RequestMessageCreation
+import br.meetingplace.server.modules.message.dto.response.MessageDTO
+import br.meetingplace.server.modules.message.entities.Message
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -68,18 +68,17 @@ object MessageDAO: MI{
         }
     }
 
-    override fun check(messageID: String): HttpStatusCode {
+    override fun check(messageID: String): Boolean {
         return try {
-            if(transaction {
+            !transaction {
                 Message.select {
                     Message.id eq messageID
                 }.empty()
-            }) HttpStatusCode.NotFound
-            else HttpStatusCode.Found
+            }
         }catch (normal: Exception){
-            HttpStatusCode.InternalServerError
+            false
         }catch (psql: PSQLException){
-            HttpStatusCode.InternalServerError
+            false
         }
     }
     override fun read(messageID: String): MessageDTO? {

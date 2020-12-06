@@ -2,7 +2,6 @@ package br.meetingplace.server.modules.user.entities
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.date
-import org.jetbrains.exposed.sql.jodatime.datetime
 
 object User: Table("users"){
     val email = varchar("user_id", 128)

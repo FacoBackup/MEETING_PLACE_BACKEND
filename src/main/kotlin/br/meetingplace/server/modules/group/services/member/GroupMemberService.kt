@@ -3,7 +3,6 @@ package br.meetingplace.server.modules.group.services.member
 import br.meetingplace.server.modules.group.dao.member.GMI
 import br.meetingplace.server.modules.group.dto.requests.RequestGroupMember
 import io.ktor.http.*
-import org.postgresql.util.PSQLException
 
 object GroupMemberService {
     fun addMember(data: RequestGroupMember, groupMemberDAO: GMI): HttpStatusCode {

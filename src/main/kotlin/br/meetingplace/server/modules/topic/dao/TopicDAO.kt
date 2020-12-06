@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.topic.dao
 
-import br.meetingplace.server.modules.topic.entities.Topic
-import br.meetingplace.server.modules.topic.dto.response.TopicDTO
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
+import br.meetingplace.server.modules.topic.dto.response.TopicDTO
+import br.meetingplace.server.modules.topic.entities.Topic
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -63,17 +63,16 @@ object TopicDAO: TI {
         }
     }
 
-    override fun check(topicID: String): HttpStatusCode {
+    override fun check(topicID: String): Boolean {
         return try {
-            return if (transaction {
+            return !transaction {
                 Topic.select {
                     Topic.id eq topicID
-                }.empty() }) HttpStatusCode.NotFound
-            else HttpStatusCode.Found
+                }.empty() }
         }catch (normal: Exception){
-            HttpStatusCode.InternalServerError
+            false
         }catch (psql: PSQLException){
-            HttpStatusCode.InternalServerError
+            false
         }
     }
     override fun readByUser(userID: String): List<TopicDTO> {

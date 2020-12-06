@@ -2,16 +2,16 @@ package br.meetingplace.server.routers.user
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
+import br.meetingplace.server.modules.user.dao.social.UserSocialDAO
 import br.meetingplace.server.modules.user.dao.user.UserDAO
+import br.meetingplace.server.modules.user.dto.requests.RequestProfileUpdate
+import br.meetingplace.server.modules.user.dto.requests.RequestSocial
+import br.meetingplace.server.modules.user.dto.requests.RequestUser
+import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
 import br.meetingplace.server.modules.user.services.delete.UserDeleteService
 import br.meetingplace.server.modules.user.services.factory.UserFactoryService
 import br.meetingplace.server.modules.user.services.profile.UserUpdateService
 import br.meetingplace.server.modules.user.services.social.UserSocialService
-import br.meetingplace.server.modules.user.dto.requests.RequestUser
-import br.meetingplace.server.modules.user.dao.social.UserSocialDAO
-import br.meetingplace.server.modules.user.dto.requests.RequestProfileUpdate
-import br.meetingplace.server.modules.user.dto.requests.RequestSocial
-import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*

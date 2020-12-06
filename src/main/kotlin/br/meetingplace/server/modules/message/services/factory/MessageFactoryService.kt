@@ -12,7 +12,7 @@ object MessageFactoryService {
 
     fun createMessage(data: RequestMessageCreation, groupMemberDAO: GMI, userDAO: UI, groupDAO: GI, messageDAO: MI): HttpStatusCode {
         return try {
-            if(userDAO.check(data.userID) == HttpStatusCode.Found)
+            if(userDAO.check(data.userID))
                 when(data.isGroup){
                     true->{
                         val group =groupDAO.read(data.receiverID)
@@ -21,7 +21,7 @@ object MessageFactoryService {
                         else HttpStatusCode.FailedDependency
                     }
                     false->{
-                        if(userDAO.check(data.receiverID) == HttpStatusCode.Found )
+                        if(userDAO.check(data.receiverID))
                             messageDAO.create(data)
                         else HttpStatusCode.FailedDependency
 

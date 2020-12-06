@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.group.dao
 
-import br.meetingplace.server.modules.group.entities.Group
-import br.meetingplace.server.modules.group.dto.response.GroupDTO
 import br.meetingplace.server.modules.group.dto.requests.RequestGroupCreation
+import br.meetingplace.server.modules.group.dto.response.GroupDTO
+import br.meetingplace.server.modules.group.entities.Group
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -33,16 +33,15 @@ object GroupDAO: GI {
         }
     }
 
-    override fun check(groupID: String): HttpStatusCode {
+    override fun check(groupID: String): Boolean {
         return try {
-            if(transaction {
+            !transaction {
                 Group.select { Group.id eq groupID }.empty()
-            }) HttpStatusCode.NotFound
-            else HttpStatusCode.Found
+            }
         }catch (normal: Exception){
-            HttpStatusCode.InternalServerError
+            false
         }catch (psql: PSQLException){
-            HttpStatusCode.InternalServerError
+            false
         }
     }
 

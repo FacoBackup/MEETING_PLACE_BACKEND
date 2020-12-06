@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.community.services.factory
 
 import br.meetingplace.server.modules.community.dao.CI
-import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
+import br.meetingplace.server.modules.user.dao.user.UI
 import io.ktor.http.*
 
 object CommunityFactoryService {

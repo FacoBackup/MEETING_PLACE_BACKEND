@@ -1,8 +1,8 @@
 package br.meetingplace.server.modules.report.dao
 
-import br.meetingplace.server.modules.report.entities.Report
-import br.meetingplace.server.modules.report.dto.response.ReportDTO
 import br.meetingplace.server.modules.report.dto.requests.RequestReportCreation
+import br.meetingplace.server.modules.report.dto.response.ReportDTO
+import br.meetingplace.server.modules.report.entities.Report
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -62,18 +62,17 @@ object ReportDAO: RI {
         }
     }
 
-    override fun check(reportID: String): HttpStatusCode {
+    override fun check(reportID: String): Boolean {
         return try {
-            if(transaction {
+            !transaction {
                 Report.select {
                     Report.id eq reportID
                 }.empty()
-            }) HttpStatusCode.NotFound
-            else HttpStatusCode.Found
+            }
         }catch (normal: Exception){
-            HttpStatusCode.InternalServerError
+            false
         }catch (psql: PSQLException){
-            HttpStatusCode.InternalServerError
+            false
         }
     }
     override fun readAll(communityID: String, done: Boolean): List<ReportDTO> {
