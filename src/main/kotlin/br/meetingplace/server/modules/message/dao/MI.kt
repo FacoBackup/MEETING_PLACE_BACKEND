@@ -5,10 +5,10 @@ import br.meetingplace.server.modules.message.dto.response.MessageDTO
 import io.ktor.http.*
 
 interface MI {
-    fun create(data: RequestMessageCreation): HttpStatusCode
+    fun create(message: String, imageURL: String?, to: String, from: String, isGroup: Boolean): HttpStatusCode
     fun read(messageID: String): MessageDTO?
     fun check(messageID: String): Boolean
-    fun readAllConversation(userID: String, receiverID: String, isGroup: Boolean): List<MessageDTO>
+    fun readAllConversation(userID: String, receiverID: String, isGroup: Boolean, date: String): List<MessageDTO>
     fun readAllFromCreator(creatorID: String, receiverID: String, isGroup: Boolean): List<MessageDTO>
     fun delete(messageID: String): HttpStatusCode
 }

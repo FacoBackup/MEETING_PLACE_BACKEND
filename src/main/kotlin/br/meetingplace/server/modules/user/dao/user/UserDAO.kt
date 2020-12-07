@@ -31,12 +31,8 @@ object UserDAO: UI {
             }
             HttpStatusCode.Created
         }catch (normal: Exception){
-            println("NORMAL")
-            println(normal.message)
             HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            println("PSQL")
-            println(psql.message)
             HttpStatusCode.InternalServerError
         }
     }
@@ -48,10 +44,8 @@ object UserDAO: UI {
             }
             HttpStatusCode.OK
         }catch (normal: Exception){
-            println(normal.message)
             HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            println(psql.message)
             HttpStatusCode.InternalServerError
         }
     }

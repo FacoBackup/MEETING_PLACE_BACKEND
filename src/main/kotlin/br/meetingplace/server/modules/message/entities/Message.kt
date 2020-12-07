@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.datetime
 
 object Message: Table("messages"){
-    var content = varchar("message_content", 1024)
+    var content = varchar("message_content", 4096)
     val imageURL = varchar("image_url", 256).nullable()
     val id = varchar("message_id", 36)
     val creatorID = varchar("creator_id", 36).references(User.email, onDelete = ReferenceOption.SET_NULL)

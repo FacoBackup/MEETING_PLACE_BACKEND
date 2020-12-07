@@ -1,6 +1,7 @@
 package br.meetingplace.server.routers.topics
 
 
+import br.meetingplace.server.methods.AES
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
 import br.meetingplace.server.modules.topic.dao.TopicDAO
 import br.meetingplace.server.modules.topic.dao.opinion.TopicOpinionDAO
@@ -31,7 +32,7 @@ fun Route.topicRouter() {
         }
 
         post<RequestTopicCreation>(TopicPaths.TOPIC) {
-            call.respond(TopicFactoryService.create(it, TopicDAO, UserDAO, CommunityMemberDAO))
+            call.respond(TopicFactoryService.create(it, TopicDAO, UserDAO, CommunityMemberDAO,AES))
         }
         delete(TopicPaths.TOPIC) {
             val topic = call.receive<RequestTopic>()
@@ -47,7 +48,7 @@ fun Route.topicRouter() {
         }
 
         post<RequestTopicCreation>(TopicPaths.COMMENT) {
-            call.respond(TopicFactoryService.createComment(it,TopicDAO, UserDAO, CommunityMemberDAO))
+            call.respond(TopicFactoryService.createComment(it,TopicDAO, UserDAO, CommunityMemberDAO, AES))
         }
         get (TopicPaths.COMMENT){
             val data = call.receive<RequestTopic>()

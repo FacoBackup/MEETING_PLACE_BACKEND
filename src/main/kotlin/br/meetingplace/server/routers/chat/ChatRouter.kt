@@ -1,5 +1,6 @@
 package br.meetingplace.server.routers.chat
 
+import br.meetingplace.server.methods.AES
 import br.meetingplace.server.modules.group.dao.GroupDAO
 import br.meetingplace.server.modules.group.dao.member.GroupMemberDAO
 import br.meetingplace.server.modules.message.dao.MessageDAO
@@ -12,6 +13,7 @@ import br.meetingplace.server.modules.message.services.delete.MessageDeleteServi
 import br.meetingplace.server.modules.message.services.factory.MessageFactoryService
 import br.meetingplace.server.modules.message.services.opinion.MessageOpinionService
 import br.meetingplace.server.modules.message.services.quote.MessageQuoteService
+import br.meetingplace.server.modules.message.services.read.ChatReadService
 import br.meetingplace.server.modules.message.services.share.MessageShareService
 import br.meetingplace.server.modules.user.dao.user.UserDAO
 import io.ktor.application.*
@@ -25,11 +27,11 @@ fun Route.messageRouter() {
 
         get(ChatPaths.MESSAGE) {
             val data = call.receive<RequestConversation>()
-            call.respond(MessageDAO.readAllConversation(userID = data.userID, receiverID = data.receiverID, isGroup = data.isGroup))
+            call.respond(ChatReadService.readConversation(userID = data.userID, receiverID = data.receiverID, isGroup = data.isGroup, date = data.date,MessageDAO, AES))
         }
 
         post<RequestMessageCreation>(ChatPaths.MESSAGE) {
-            call.respond(MessageFactoryService.createMessage(it, GroupMemberDAO, UserDAO, GroupDAO, MessageDAO))
+            call.respond(MessageFactoryService.createMessage(it, GroupMemberDAO, UserDAO, GroupDAO, MessageDAO, AES))
         }
         delete(ChatPaths.MESSAGE) {
             val data = call.receive<RequestMessage>()

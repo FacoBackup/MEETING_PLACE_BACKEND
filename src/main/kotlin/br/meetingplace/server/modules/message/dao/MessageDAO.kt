@@ -1,29 +1,30 @@
 package br.meetingplace.server.modules.message.dao
 
-import br.meetingplace.server.modules.message.dto.requests.RequestMessageCreation
 import br.meetingplace.server.modules.message.dto.response.MessageDTO
 import br.meetingplace.server.modules.message.entities.Message
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 import org.postgresql.util.PSQLException
 import java.util.*
 
 object MessageDAO: MI{
-    override fun create(data: RequestMessageCreation): HttpStatusCode {
+    override fun create(message: String, imageURL: String?, to: String, from: String, isGroup: Boolean): HttpStatusCode {
         return try {
             transaction {
                 Message.insert {
                     it[id] = UUID.randomUUID().toString()
                     it[creationDate] = DateTime.now()
-                    it[content] = data.message
-                    it[creatorID] = data.userID
-                    it[imageURL] = data.imageURL
+                    it[content] = message
+                    it[creatorID] = from
+                    it[this.imageURL] = imageURL
                     it[type] = 0
-                    when(data.isGroup){
-                        true-> it[groupReceiverID] = data.receiverID
-                        false -> it[userReceiverID] = data.receiverID
+                    when(isGroup){
+                        true-> it[groupReceiverID] = to
+                        false -> it[userReceiverID] = to
                     }
                 }
             }
@@ -94,17 +95,18 @@ object MessageDAO: MI{
             null
         }
     }
-    override fun readAllConversation(userID: String, receiverID: String, isGroup: Boolean): List<MessageDTO> {
+    override fun readAllConversation(userID: String, receiverID: String, isGroup: Boolean, date: String): List<MessageDTO> {
         return try {
             transaction {
                 Message.select {
                     when(isGroup){
                         true->(Message.groupReceiverID eq receiverID)
                         false->{
-                            ((Message.userReceiverID eq receiverID) and
+                            (((Message.userReceiverID eq receiverID) and
                             (Message.creatorID eq userID)) or
                             ((Message.userReceiverID eq userID) and
-                            (Message.creatorID eq receiverID))
+                            (Message.creatorID eq receiverID))) and
+                            (Message.creationDate eq DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime(date))
                         }
                     }
                 }.map { mapMessage(it) }

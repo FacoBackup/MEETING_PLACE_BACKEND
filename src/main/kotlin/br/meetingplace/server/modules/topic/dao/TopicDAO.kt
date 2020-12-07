@@ -24,19 +24,26 @@ object TopicDAO: TI {
             null
         }
     }
-    override fun create(data: RequestTopicCreation, approved:Boolean, userName: String): HttpStatusCode {
+    override fun create(header: String,
+                        body: String,
+                        imageURL: String?,
+                        communityID: String?,
+                        userID:String,
+                        mainTopicID: String?,
+                        approved:Boolean,
+                        userName: String): HttpStatusCode {
         return try {
             transaction {
                 Topic.insert {
                     it[id] = UUID.randomUUID().toString()
-                    it[header] = data.header
-                    it[body] = data.body
-                    it[imageURL] = data.imageURL
+                    it[this.header] = header
+                    it[this.body] = body
+                    it[this.imageURL] = imageURL
                     it[Topic.approved] = approved
                     it[footer] = userName
-                    it[creatorID] = data.userID
-                    it[mainTopicID] = data.mainTopicID
-                    it[communityID] = data.communityID
+                    it[creatorID] = userID
+                    it[this.mainTopicID] = mainTopicID
+                    it[this.communityID] = communityID
                     it[creationDate] = DateTime.now()
                 }
             }

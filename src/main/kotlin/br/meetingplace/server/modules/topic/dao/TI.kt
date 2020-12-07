@@ -6,7 +6,14 @@ import io.ktor.http.*
 
 interface TI {
     fun read(topicID: String): TopicDTO?
-    fun create(data: RequestTopicCreation, approved:Boolean, userName: String): HttpStatusCode
+    fun create(header: String,
+               body: String,
+               imageURL: String?,
+               communityID: String?,
+               userID:String,
+               mainTopicID: String?,
+               approved:Boolean,
+               userName: String): HttpStatusCode
     fun check(topicID: String): Boolean
     fun readByUser(userID: String): List<TopicDTO>
     fun readAllComments(topicID: String): List<TopicDTO>
