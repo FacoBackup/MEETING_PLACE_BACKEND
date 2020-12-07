@@ -9,16 +9,16 @@ import io.ktor.http.*
 
 object GroupFactoryService {
 
-    fun create(data: RequestGroupCreation, communityMemberDAO: CMI, groupDAO: GI, userDAO: UI) : HttpStatusCode {
+    fun create(requester: String,data: RequestGroupCreation, communityMemberDAO: CMI, groupDAO: GI, userDAO: UI) : HttpStatusCode {
         return try {
             return when(data.communityID.isNullOrBlank()){
                 true-> {
-                    if (userDAO.check(data.userID)) //user
+                    if (userDAO.check(requester)) //user
                         groupDAO.create(data, approved = true)
                     else HttpStatusCode.FailedDependency
                 }
                 false->{ //community
-                    val member = communityMemberDAO.read(data.communityID, data.userID)
+                    val member = communityMemberDAO.read(data.communityID, userID = requester)
                     if(member != null)
                         groupDAO.create(data, approved = member.role == MemberType.DIRECTOR.toString() || member.role == MemberType.LEADER.toString())
                     else HttpStatusCode.FailedDependency

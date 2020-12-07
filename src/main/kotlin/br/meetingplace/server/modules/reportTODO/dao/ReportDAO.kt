@@ -11,12 +11,12 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 object ReportDAO: RI {
-    override fun create(data: RequestReportCreation): HttpStatusCode {
+    override fun create(requester: String, data: RequestReportCreation): HttpStatusCode {
         return try {
             transaction {
                 Report.insert {
                     it[id] = UUID.randomUUID().toString()
-                    it[creatorID] = data.userID
+                    it[creatorID] = requester
                     it[topicID] = data.topicID
                     it[communityID] = data.communityID
                     it[creationDate] =  DateTime.now()

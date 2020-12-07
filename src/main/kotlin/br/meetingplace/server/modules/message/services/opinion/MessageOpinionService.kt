@@ -7,15 +7,15 @@ import br.meetingplace.server.modules.user.dao.user.UserDAO
 import io.ktor.http.*
 
 object MessageOpinionService {
-    fun dislikeMessage(data: RequestMessage, userDAO: UserDAO, messageDAO: MessageDAO, messageOpinionsDAO: MessageOpinionDAO): HttpStatusCode {
+    fun dislikeMessage(requester: String,data: RequestMessage, userDAO: UserDAO, messageDAO: MessageDAO, messageOpinionsDAO: MessageOpinionDAO): HttpStatusCode {
         return try {
-            if(messageDAO.check(data.messageID) && userDAO.check(data.userID)){
-                when(messageOpinionsDAO.read(data.messageID, userID = data.userID) == null){
-                    true-> messageOpinionsDAO.create(data.messageID, userID = data.userID, liked = false)
+            if(messageDAO.check(data.messageID) && userDAO.check(requester)){
+                when(messageOpinionsDAO.read(data.messageID, userID = requester) == null){
+                    true-> messageOpinionsDAO.create(data.messageID, userID = requester, liked = false)
                     false-> {
-                        val opinion = messageOpinionsDAO.read(data.messageID, userID = data.userID)
-                        if(opinion != null && !opinion.liked) messageOpinionsDAO.delete(data.messageID, userID = data.userID)
-                        else messageOpinionsDAO.update(data.messageID, userID = data.userID, liked = false)
+                        val opinion = messageOpinionsDAO.read(data.messageID, userID = requester)
+                        if(opinion != null && !opinion.liked) messageOpinionsDAO.delete(data.messageID, userID = requester)
+                        else messageOpinionsDAO.update(data.messageID, userID = requester, liked = false)
                     }
                 }
             }
@@ -25,15 +25,15 @@ object MessageOpinionService {
         }
     }
 
-    fun likeMessage(data: RequestMessage, userDAO: UserDAO, messageDAO: MessageDAO, messageOpinionsDAO: MessageOpinionDAO): HttpStatusCode {
+    fun likeMessage(requester: String,data: RequestMessage, userDAO: UserDAO, messageDAO: MessageDAO, messageOpinionsDAO: MessageOpinionDAO): HttpStatusCode {
         return try {
-            if(messageDAO.check(data.messageID) && userDAO.check(data.userID) ){
-                when(messageOpinionsDAO.read(data.messageID, userID = data.userID) == null){
-                    true-> messageOpinionsDAO.create(data.messageID, userID = data.userID, liked = true)
+            if(messageDAO.check(data.messageID) && userDAO.check(requester) ){
+                when(messageOpinionsDAO.read(data.messageID, userID = requester) == null){
+                    true-> messageOpinionsDAO.create(data.messageID, userID = requester, liked = true)
                     false-> {
-                        val opinion = messageOpinionsDAO.read(data.messageID, userID = data.userID)
-                        if(opinion != null && opinion.liked) messageOpinionsDAO.delete(data.messageID, userID = data.userID)
-                        else messageOpinionsDAO.update(data.messageID, userID = data.userID, liked = true)
+                        val opinion = messageOpinionsDAO.read(data.messageID, userID = requester)
+                        if(opinion != null && opinion.liked) messageOpinionsDAO.delete(data.messageID, userID = requester)
+                        else messageOpinionsDAO.update(data.messageID, userID = requester, liked = true)
                     }
                 }
             }

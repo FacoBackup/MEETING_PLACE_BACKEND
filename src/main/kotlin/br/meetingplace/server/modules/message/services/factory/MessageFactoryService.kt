@@ -12,20 +12,20 @@ import io.ktor.http.*
 
 object MessageFactoryService {
     private const val key = AESMessageKey.key
-    fun createMessage(data: RequestMessageCreation, groupMemberDAO: GMI, userDAO: UI, groupDAO: GI, messageDAO: MI, encryption: AESInterface): HttpStatusCode {
+    fun createMessage(requester: String,data: RequestMessageCreation, groupMemberDAO: GMI, userDAO: UI, groupDAO: GI, messageDAO: MI, encryption: AESInterface): HttpStatusCode {
         return try {
-            if(userDAO.check(data.userID))
+            if(userDAO.check(requester))
                 when(data.isGroup){
                     true->{
                         val group =groupDAO.read(data.receiverID)
-                        if(group != null && group.approved && groupMemberDAO.read(groupID = data.receiverID, userID = data.userID) != null){
+                        if(group != null && group.approved && groupMemberDAO.read(groupID = data.receiverID, userID = requester) != null){
 
                             val encryptedMessage = encryption.encrypt(myKey = key, data.message)
                             val encryptedImageURL = data.imageURL?.let { encryption.encrypt(myKey = key, it) }
                             if(encryptedMessage.isNullOrBlank())
                                 return HttpStatusCode.InternalServerError
                             else
-                                messageDAO.create(message = encryptedMessage, imageURL = encryptedImageURL,from = data.userID,to = data.receiverID,isGroup = true)
+                                messageDAO.create(message = encryptedMessage, imageURL = encryptedImageURL,from = requester,to = data.receiverID,isGroup = true)
                         }
                         else HttpStatusCode.FailedDependency
                     }
@@ -36,7 +36,7 @@ object MessageFactoryService {
                             if(encryptedMessage.isNullOrBlank())
                                 return HttpStatusCode.InternalServerError
                             else
-                                messageDAO.create(message = encryptedMessage, imageURL = encryptedImageURL,from = data.userID,to = data.receiverID,isGroup = false)
+                                messageDAO.create(message = encryptedMessage, imageURL = encryptedImageURL,from = requester,to = data.receiverID,isGroup = false)
                         }
 
                         else HttpStatusCode.FailedDependency

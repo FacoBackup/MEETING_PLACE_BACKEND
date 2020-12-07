@@ -17,13 +17,14 @@ object JWTSettings {
         .withIssuer(issuer)
         .build()
 
-    fun makeToken(userID: String): String?{
+    fun makeToken(userID: String, ip: String): String?{
 
         return try{
             JWT.create()
                 .withSubject("Authentication")
                 .withIssuer(issuer)
                 .withExpiresAt(getExpiration())
+                .withClaim("ip", ip)
                 .withClaim("userID", userID)
                 .sign(algorithm)
         }catch (e: Exception){

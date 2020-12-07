@@ -5,10 +5,10 @@ import br.meetingplace.server.modules.reportTODO.dto.requests.RequestReportSimpl
 import io.ktor.http.*
 
 object ReportDeleteService {
-    fun deleteReport(data: RequestReportSimple, reportDAO: RI) : HttpStatusCode {
+    fun deleteReport(requester: String,data: RequestReportSimple, reportDAO: RI) : HttpStatusCode {
         return try {
             val report = reportDAO.read(data.reportID)
-            if(report != null && report.creatorID == data.userID)
+            if(report != null && report.creatorID == requester)
                 reportDAO.delete(data.reportID)
             else HttpStatusCode.FailedDependency
         }catch (e: Exception){

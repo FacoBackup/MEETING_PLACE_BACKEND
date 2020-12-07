@@ -9,13 +9,13 @@ import io.ktor.http.*
 
 object TopicOpinionService{
 
-    fun dislike(data: RequestTopic, userDAO: UI, topicDAO: TI, topicOpinionDAO: TOI): HttpStatusCode {
+    fun dislike(requester: String,data: RequestTopic, userDAO: UI, topicDAO: TI, topicOpinionDAO: TOI): HttpStatusCode {
         return try {
-            return if (userDAO.check(data.userID) && topicDAO.check(data.topicID))
-                 when (checkLikeDislike(topicOpinion = topicOpinionDAO.read(data.topicID, userID = data.userID))) {
-                    0 -> topicOpinionDAO.update(topicID = data.topicID, userID = data.userID, false)// like to dislike
-                    1 -> topicOpinionDAO.delete(topicID = data.topicID, userID = data.userID)
-                    2 -> topicOpinionDAO.create(topicID = data.topicID, userID = data.userID, false)
+            return if (userDAO.check(requester) && topicDAO.check(data.topicID))
+                 when (checkLikeDislike(topicOpinion = topicOpinionDAO.read(data.topicID, userID = requester))) {
+                    0 -> topicOpinionDAO.update(topicID = data.topicID, userID = requester, false)// like to dislike
+                    1 -> topicOpinionDAO.delete(topicID = data.topicID, userID = requester)
+                    2 -> topicOpinionDAO.create(topicID = data.topicID, userID = requester, false)
                     else -> HttpStatusCode.FailedDependency
                  }
             else HttpStatusCode.InternalServerError
@@ -24,13 +24,13 @@ object TopicOpinionService{
         }
     }
 
-    fun like(data: RequestTopic, userDAO: UI, topicDAO: TI, topicOpinionDAO: TOI): HttpStatusCode {
+    fun like(requester: String,data: RequestTopic, userDAO: UI, topicDAO: TI, topicOpinionDAO: TOI): HttpStatusCode {
         return try {
-            return if (userDAO.check(data.userID) && topicDAO.check(data.topicID))
-                when (checkLikeDislike(topicOpinion = topicOpinionDAO.read(data.topicID, userID = data.userID))) {
-                    0 -> topicOpinionDAO.delete(topicID = data.topicID, userID = data.userID)
-                    1 -> topicOpinionDAO.update(topicID = data.topicID, userID = data.userID, true)// like to dislike
-                    2 -> topicOpinionDAO.create(topicID = data.topicID, userID = data.userID, true)
+            return if (userDAO.check(requester) && topicDAO.check(data.topicID))
+                when (checkLikeDislike(topicOpinion = topicOpinionDAO.read(data.topicID, userID = requester))) {
+                    0 -> topicOpinionDAO.delete(topicID = data.topicID, userID = requester)
+                    1 -> topicOpinionDAO.update(topicID = data.topicID, userID = requester, true)// like to dislike
+                    2 -> topicOpinionDAO.create(topicID = data.topicID, userID = requester, true)
                     else -> HttpStatusCode.FailedDependency
                 }
             else HttpStatusCode.InternalServerError

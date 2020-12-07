@@ -1,3 +1,3 @@
 package br.meetingplace.server.modules.topic.dto.requests
 
-data class RequestTopic(val topicID: String, val userID: String)
+data class RequestTopic(val topicID: String)

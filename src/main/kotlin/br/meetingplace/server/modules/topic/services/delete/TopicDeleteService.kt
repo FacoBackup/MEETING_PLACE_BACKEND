@@ -6,10 +6,10 @@ import io.ktor.http.*
 
 object TopicDeleteService{
 
-    fun deleteTopic(data: RequestTopic, topicDAO: TI): HttpStatusCode {
+    fun deleteTopic(requester: String,data: RequestTopic, topicDAO: TI): HttpStatusCode {
         return try {
             val topic = topicDAO.read(topicID = data.topicID)
-            if(topic != null && topic.creatorID == data.userID)
+            if(topic != null && topic.creatorID == requester)
                 topicDAO.delete(data.topicID)
             else
                 HttpStatusCode.FailedDependency

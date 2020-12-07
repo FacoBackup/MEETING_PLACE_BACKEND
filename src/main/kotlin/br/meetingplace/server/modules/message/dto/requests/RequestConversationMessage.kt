@@ -6,5 +6,4 @@ data class RequestConversationMessage(
         val messageID: String,
         val sourceID: String,
         val receiverID: String,
-        val userID: String
 )

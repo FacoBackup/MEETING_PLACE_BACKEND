@@ -5,7 +5,7 @@ import br.meetingplace.server.modules.reportTODO.dto.response.ReportDTO
 import io.ktor.http.*
 
 interface RI {
-    fun create(data: RequestReportCreation): HttpStatusCode
+    fun create(requester: String, data: RequestReportCreation): HttpStatusCode
     fun readAll(communityID: String, done: Boolean): List<ReportDTO>
     fun read(reportID: String): ReportDTO?
     fun check(reportID: String): Boolean

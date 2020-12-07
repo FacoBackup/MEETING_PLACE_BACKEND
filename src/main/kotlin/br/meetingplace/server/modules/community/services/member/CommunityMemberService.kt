@@ -7,9 +7,9 @@ import io.ktor.http.*
 
 object CommunityMemberService {
 
-    fun promoteMember(data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
+    fun promoteMember(requester: String,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
         return try {
-            val userMember = communityMemberDAO.read(communityID = data.communityID, userID = data.userID)
+            val userMember = communityMemberDAO.read(communityID = data.communityID, userID = requester)
             val member = communityMemberDAO.read(communityID = data.communityID, userID = data.memberID)
             return if(member != null){
                 when(member.role){
@@ -37,9 +37,9 @@ object CommunityMemberService {
         }
     }
 
-    fun lowerMember(data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
+    fun lowerMember(requester: String,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
         return try {
-            val userMember = communityMemberDAO.read(communityID = data.communityID, userID = data.userID)
+            val userMember = communityMemberDAO.read(communityID = data.communityID, userID = requester)
             val member = communityMemberDAO.read(communityID = data.communityID, userID = data.memberID)
             return if(member != null){
                 when(member.role){

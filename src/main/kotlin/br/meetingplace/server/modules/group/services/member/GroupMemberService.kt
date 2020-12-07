@@ -5,9 +5,9 @@ import br.meetingplace.server.modules.group.dto.requests.RequestGroupMember
 import io.ktor.http.*
 
 object GroupMemberService {
-    fun addMember(data: RequestGroupMember, groupMemberDAO: GMI): HttpStatusCode {
+    fun addMember(requester: String,data: RequestGroupMember, groupMemberDAO: GMI): HttpStatusCode {
         return try{
-            if(groupMemberDAO.check(userID = data.userID, groupID = data.groupID) == HttpStatusCode.Found &&
+            if(groupMemberDAO.check(userID = requester, groupID = data.groupID) == HttpStatusCode.Found &&
                groupMemberDAO.check(userID = data.memberID, groupID = data.groupID) == HttpStatusCode.NotFound)
 
                groupMemberDAO.create(data.memberID, groupID = data.groupID, false)
@@ -17,9 +17,9 @@ object GroupMemberService {
         }
     }
 
-    fun removeMember(data: RequestGroupMember, groupMemberDAO: GMI): HttpStatusCode {
+    fun removeMember(requester: String,data: RequestGroupMember, groupMemberDAO: GMI): HttpStatusCode {
         return try {
-            val userMember = groupMemberDAO.read(data.userID, groupID = data.groupID)
+            val userMember = groupMemberDAO.read(requester, groupID = data.groupID)
             if(userMember != null && userMember.admin)
                 groupMemberDAO.delete(data.memberID, groupID = data.groupID)
             else HttpStatusCode.FailedDependency
@@ -27,9 +27,9 @@ object GroupMemberService {
             HttpStatusCode.InternalServerError
         }
     }
-    fun promoteMember(data: RequestGroupMember, memberDAO: GMI): HttpStatusCode{
+    fun promoteMember(requester: String,data: RequestGroupMember, memberDAO: GMI): HttpStatusCode{
         return try {
-            val member = memberDAO.read(data.userID, groupID = data.groupID)
+            val member = memberDAO.read(requester, groupID = data.groupID)
             if(member != null && member.admin)
                 memberDAO.update(data.memberID, groupID = data.groupID, admin = true)
             else HttpStatusCode.FailedDependency
@@ -38,9 +38,9 @@ object GroupMemberService {
         }
 
     }
-    fun lowerMember(data: RequestGroupMember, memberDAO: GMI): HttpStatusCode{
+    fun lowerMember(requester: String,data: RequestGroupMember, memberDAO: GMI): HttpStatusCode{
         return try {
-            val member = memberDAO.read(data.userID, groupID = data.groupID)
+            val member = memberDAO.read(requester, groupID = data.groupID)
             if(member != null && member.admin)
                 memberDAO.update(data.memberID, groupID = data.groupID, admin = false)
             else HttpStatusCode.FailedDependency

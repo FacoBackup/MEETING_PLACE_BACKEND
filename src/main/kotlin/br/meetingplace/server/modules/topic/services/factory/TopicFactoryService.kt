@@ -10,10 +10,10 @@ import br.meetingplace.server.modules.user.dao.user.UI
 import io.ktor.http.*
 
 object TopicFactoryService {
-    private val key = AESTopicKey.key
-    fun create(data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
+    private const val key = AESTopicKey.key
+    fun create(requester: String, data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
         return try {
-            val user = userDAO.read(data.userID)
+            val user = userDAO.read(requester)
             when (data.communityID.isNullOrBlank()) {
                 true -> {
                     return if (user != null && data.mainTopicID.isNullOrBlank()) {
@@ -27,14 +27,14 @@ object TopicFactoryService {
                             body = encryptedBody,
                             imageURL = encryptedImageURL ,
                             communityID = null,
-                            userID = data.userID,
+                            userID = requester,
                             mainTopicID = null,
                             approved = true,
                             userName = user.name)
                     } else HttpStatusCode.FailedDependency
                 }
                 false -> {
-                    val member = communityMemberDAO.read(data.communityID, userID = data.userID)
+                    val member = communityMemberDAO.read(data.communityID, userID = requester)
                     return if (user != null && member != null && data.mainTopicID.isNullOrBlank()) {
                         val encryptedHeader = encryption.encrypt(myKey = key, data.header)
                         val encryptedBody= encryption.encrypt(myKey = key, data.body)
@@ -46,7 +46,7 @@ object TopicFactoryService {
                             body = encryptedBody,
                             imageURL = encryptedImageURL ,
                             communityID = member.communityID,
-                            userID = data.userID,
+                            userID = requester,
                             mainTopicID = null,
                             approved = member.role == MemberType.DIRECTOR.toString() || member.role == MemberType.LEADER.toString(),
                             userName = user.name)
@@ -58,9 +58,9 @@ object TopicFactoryService {
         }
     }
 
-    fun createComment(data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
+    fun createComment(requester: String,data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
         return try {
-            val user = userDAO.read(data.userID)
+            val user = userDAO.read(requester)
             when (data.communityID.isNullOrBlank()) {
                 true -> {
                     return if (user != null && !data.mainTopicID.isNullOrBlank() && topicDAO.check(data.mainTopicID)) {
@@ -74,14 +74,14 @@ object TopicFactoryService {
                             body = encryptedBody,
                             imageURL = encryptedImageURL ,
                             communityID = null,
-                            userID = data.userID,
+                            userID = requester,
                             mainTopicID = data.mainTopicID,
                             approved = true,
                             userName = user.name)
                     } else HttpStatusCode.FailedDependency
                 }
                 false -> {
-                    val member = communityMemberDAO.read(data.communityID, userID = data.userID)
+                    val member = communityMemberDAO.read(data.communityID, userID = requester)
                     val mainTopic = data.mainTopicID?.let { topicDAO.read(it) }
                     return if (mainTopic  != null && mainTopic.approved  && user != null && member != null) {
 
@@ -95,7 +95,7 @@ object TopicFactoryService {
                             body = encryptedBody,
                             imageURL = encryptedImageURL ,
                             communityID = member.communityID,
-                            userID = data.userID,
+                            userID = requester,
                             mainTopicID = data.mainTopicID,
                             approved = member.role == MemberType.DIRECTOR.toString() || member.role == MemberType.LEADER.toString(),
                             userName = user.name)

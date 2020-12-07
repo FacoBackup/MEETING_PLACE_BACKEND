@@ -7,9 +7,9 @@ import br.meetingplace.server.modules.message.key.AESMessageKey
 import java.lang.Exception
 
 object ChatReadService {
-    fun readConversation(userID: String, receiverID: String, isGroup: Boolean, date: String,messageDAO: MI, decryption: AESInterface): List<MessageDTO>{
+    fun readConversation(requester: String, receiverID: String, isGroup: Boolean, date: String, messageDAO: MI, decryption: AESInterface): List<MessageDTO>{
         return try {
-            val encryptedConversation = messageDAO.readAllConversation(userID = userID, receiverID = receiverID, isGroup = isGroup, date)
+            val encryptedConversation = messageDAO.readAllConversation(userID = requester, receiverID = receiverID, isGroup = isGroup, date)
             val decryptedConversation = mutableListOf<MessageDTO>()
 
             for (i in encryptedConversation.indices){

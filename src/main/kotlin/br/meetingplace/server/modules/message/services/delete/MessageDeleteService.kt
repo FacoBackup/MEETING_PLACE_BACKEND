@@ -6,10 +6,10 @@ import io.ktor.http.*
 
 object MessageDeleteService {
 
-    fun deleteMessage(data: RequestMessage, messageDAO: MI): HttpStatusCode {
+    fun deleteMessage(requester: String,data: RequestMessage, messageDAO: MI): HttpStatusCode {
         return try {
             val message = messageDAO.read(messageID = data.messageID)
-            if(message != null && message.creatorID == data.userID)
+            if(message != null && message.creatorID == requester)
                 messageDAO.delete(data.messageID)
             else
                 HttpStatusCode.FailedDependency

@@ -9,13 +9,13 @@ import io.ktor.http.*
 
 object ReportFactoryService{
 
-    fun createReport(data: RequestReportCreation, reportDAO: RI, userDAO: UI, topicDAO: TI, communityMemberDAO: CMI): HttpStatusCode {
+    fun createReport(requester: String,data: RequestReportCreation, reportDAO: RI, userDAO: UI, topicDAO: TI, communityMemberDAO: CMI): HttpStatusCode {
         return try {
             val topic = topicDAO.read(data.topicID)
-            return if(userDAO.check(data.userID) &&
-                      communityMemberDAO.check(data.communityID, userID = data.userID) == HttpStatusCode.Found &&
+            return if(userDAO.check(requester) &&
+                      communityMemberDAO.check(data.communityID, userID = requester) == HttpStatusCode.Found &&
                       topic != null && topic.communityID == data.communityID)
-                          reportDAO.create(data)
+                          reportDAO.create(requester = requester,data)
             else HttpStatusCode.FailedDependency
         } catch (e: Exception) {
             HttpStatusCode.InternalServerError
