@@ -1,7 +1,6 @@
 package br.meetingplace.server.server
 
 import br.meetingplace.server.modules.authentication.dao.AccessLogDAO
-import br.meetingplace.server.modules.user.dao.user.UserDAO
 import br.meetingplace.server.modules.authentication.routes.authentication
 import br.meetingplace.server.modules.message.routes.messageRouter
 import br.meetingplace.server.modules.community.routes.communityRouter
@@ -14,10 +13,26 @@ import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.gson.*
+import io.ktor.http.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Application.module(){
+    install(CORS){
+        method(HttpMethod.Get)
+        method(HttpMethod.Put)
+        method(HttpMethod.Patch)
+        method(HttpMethod.Delete)
+        method(HttpMethod.Post)
+        method(HttpMethod.Options)
+        allowCredentials = true
+        anyHost()
+
+//        intercept(ApplicationCallPipeline.Setup){
+//            if(call.request.httpMethod == HttpMethod.Options)
+//        }
+    }
     install(ContentNegotiation) {
         gson {
             setPrettyPrinting()
@@ -38,7 +53,16 @@ fun Application.module(){
         }
     }
     install(Routing){
-
+        get("/api/test"){
+            val data = call.receive<String>()
+//            println("email: ${data.email}")
+//            println("nome: ${data.name}")
+//            println("requested")
+//            data.email = "$it ok"
+//            data.name = "$it ok"
+            println("here")
+            call.respond(data + "done")
+        }
         authenticate(optional = true){
             userRouter()
             authentication()
@@ -51,3 +75,4 @@ fun Application.module(){
         }
     }
 }
+data class Test(var name: String, var email: String)

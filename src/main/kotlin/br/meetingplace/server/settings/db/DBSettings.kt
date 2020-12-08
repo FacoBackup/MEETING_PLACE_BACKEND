@@ -24,6 +24,8 @@ object DBSettings {
             null
         }catch (psql: PSQLException){
             null
+        }catch (e: SQLException){
+            null
         }
     }
     fun setUpTables(){
