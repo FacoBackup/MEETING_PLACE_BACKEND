@@ -55,26 +55,24 @@ fun Application.module(){
     }
     install(Routing){
         post<Test>("/api/post/test"){
-            println("Requested.")
-            println(it)
-//            println(it.name)
-            call.respond(HttpStatusCode.OK)
+            println("POST Requested.")
+            call.respond(HttpStatusCode.OK.toString())
         }
         get ("/api/get/test"){
-            println("Requested.")
+            println("GET Requested.")
             call.respond(Test("My name here.", email = "gustavo@gmail.com"))
         }
         put ("/api/put/test"){
             val data = call.receive<Test>()
-            println("Requested.")
-            data.email = "$it ok"
-            data.name = "$it ok"
+            println("PUT Requested.")
+            data.email = "${data.email} ok"
+            data.name = "${data.name} ok"
             call.respond(data)
         }
         patch ("/api/patch/test"){
             val data = call.receive<Test>()
-            println("Requested.")
-            data.email = "$it ok"
+            println("PATCH Requested.")
+            data.email = "${data.email} ok"
             call.respond(data)
         }
 
