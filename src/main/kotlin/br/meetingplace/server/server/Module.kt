@@ -20,6 +20,7 @@ import io.ktor.routing.*
 
 fun Application.module(){
     install(CORS){
+        header("Content-Type")
         method(HttpMethod.Get)
         method(HttpMethod.Put)
         method(HttpMethod.Patch)
@@ -53,16 +54,30 @@ fun Application.module(){
         }
     }
     install(Routing){
-        get("/api/test"){
-            val data = call.receive<String>()
-//            println("email: ${data.email}")
-//            println("nome: ${data.name}")
-//            println("requested")
-//            data.email = "$it ok"
-//            data.name = "$it ok"
-            println("here")
-            call.respond(data + "done")
+        post<Test>("/api/post/test"){
+            println("Requested.")
+            println(it)
+//            println(it.name)
+            call.respond(HttpStatusCode.OK)
         }
+        get ("/api/get/test"){
+            println("Requested.")
+            call.respond(Test("My name here.", email = "gustavo@gmail.com"))
+        }
+        put ("/api/put/test"){
+            val data = call.receive<Test>()
+            println("Requested.")
+            data.email = "$it ok"
+            data.name = "$it ok"
+            call.respond(data)
+        }
+        patch ("/api/patch/test"){
+            val data = call.receive<Test>()
+            println("Requested.")
+            data.email = "$it ok"
+            call.respond(data)
+        }
+
         authenticate(optional = true){
             userRouter()
             authentication()
