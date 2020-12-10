@@ -5,6 +5,7 @@ import br.meetingplace.server.modules.authentication.routes.authentication
 import br.meetingplace.server.modules.message.routes.messageRouter
 import br.meetingplace.server.modules.community.routes.communityRouter
 import br.meetingplace.server.modules.group.routes.groupRouter
+import br.meetingplace.server.modules.test.testing
 import br.meetingplace.server.modules.topic.routes.topicRouter
 import br.meetingplace.server.modules.user.routes.userRouter
 import br.meetingplace.server.settings.jwt.JWTSettings
@@ -54,33 +55,15 @@ fun Application.module(){
         }
     }
     install(Routing){
-        post<Test>("/api/post/test"){
-            println("POST Requested.")
-            call.respond(HttpStatusCode.OK.toString())
-        }
-        get ("/api/get/test"){
-            println("GET Requested.")
-            call.respond(Test("My name here.", email = "gustavo@gmail.com"))
-        }
-        put ("/api/put/test"){
-            val data = call.receive<Test>()
-            println("PUT Requested.")
-            data.email = "${data.email} ok"
-            data.name = "${data.name} ok"
-            call.respond(data)
-        }
-        patch ("/api/patch/test"){
-            val data = call.receive<Test>()
-            println("PATCH Requested.")
-            data.email = "${data.email} ok"
-            call.respond(data)
-        }
+
 
         authenticate(optional = true){
+            testing()
             userRouter()
             authentication()
         }
         authenticate(optional = false){
+
             topicRouter()
             communityRouter()
             groupRouter()
@@ -88,4 +71,3 @@ fun Application.module(){
         }
     }
 }
-data class Test(var name: String, var email: String)
