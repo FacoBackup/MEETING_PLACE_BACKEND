@@ -25,7 +25,6 @@ fun Route.testing(){
                 call.respond(Test("Joao", email = "joao@gmail.com"))
             else
                 call.respond(HttpStatusCode.NotFound)
-
         }
         put ("/put/test"){
             val data = call.receive<Test>()
