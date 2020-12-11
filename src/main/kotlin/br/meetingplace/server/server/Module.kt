@@ -9,6 +9,7 @@ import br.meetingplace.server.modules.test.testing
 import br.meetingplace.server.modules.topic.routes.topicRouter
 import br.meetingplace.server.modules.user.routes.userRouter
 import br.meetingplace.server.settings.jwt.JWTSettings
+import com.auth0.jwt.interfaces.Header
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -21,7 +22,8 @@ import io.ktor.routing.*
 
 fun Application.module(){
     install(CORS){
-        header("Content-Type")
+        header(HttpHeaders.Authorization)
+        header(HttpHeaders.AccessControlAllowOrigin)
         method(HttpMethod.Get)
         method(HttpMethod.Put)
         method(HttpMethod.Patch)

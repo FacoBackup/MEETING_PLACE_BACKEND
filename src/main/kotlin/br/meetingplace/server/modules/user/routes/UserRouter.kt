@@ -38,12 +38,16 @@ fun Route.userRouter() {
                     call.respond(user)
             }
             get(UserPaths.USER) {
-                val data = call.receive<RequestUser>()
-                val user = UserDAO.read(data.requestedUser)
-                if (user == null)
-                    call.respond(HttpStatusCode.NotFound)
-                else
-                    call.respond(user)
+                val log = call.log
+                if(log != null){
+                    val user = UserDAO.read(log.userID)
+                    if (user == null)
+                        call.respond(HttpStatusCode.NotFound)
+                    else
+                        call.respond(user)
+                }
+                else call.respond(HttpStatusCode.Unauthorized)
+
             }
             get(UserPaths.USER +"/name") {
                 val data = call.receive<RequestUser>()
