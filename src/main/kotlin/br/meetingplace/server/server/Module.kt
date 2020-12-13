@@ -5,11 +5,9 @@ import br.meetingplace.server.modules.authentication.routes.authentication
 import br.meetingplace.server.modules.message.routes.messageRouter
 import br.meetingplace.server.modules.community.routes.communityRouter
 import br.meetingplace.server.modules.group.routes.groupRouter
-import br.meetingplace.server.modules.test.testing
 import br.meetingplace.server.modules.topic.routes.topicRouter
 import br.meetingplace.server.modules.user.routes.userRouter
 import br.meetingplace.server.settings.jwt.JWTSettings
-import com.auth0.jwt.interfaces.Header
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -24,6 +22,9 @@ fun Application.module(){
     install(CORS){
         header(HttpHeaders.Authorization)
         header(HttpHeaders.AccessControlAllowOrigin)
+        header(HttpHeaders.ContentType)
+        //header(HttpHeaders.)
+        anyHost()
         method(HttpMethod.Get)
         method(HttpMethod.Put)
         method(HttpMethod.Patch)
@@ -31,10 +32,15 @@ fun Application.module(){
         method(HttpMethod.Post)
         method(HttpMethod.Options)
         allowCredentials = true
-        anyHost()
+        allowSameOrigin = true
+        allowNonSimpleContentTypes = true
 
 //        intercept(ApplicationCallPipeline.Setup){
-//            if(call.request.httpMethod == HttpMethod.Options)
+//            if(call.request.htt == HttpHeaders.AccessControlAllowOrigin){
+//
+//            }
+//            else
+//                println("here")
 //        }
     }
     install(ContentNegotiation) {
@@ -58,9 +64,7 @@ fun Application.module(){
     }
     install(Routing){
 
-
         authenticate(optional = true){
-            testing()
             userRouter()
             authentication()
         }

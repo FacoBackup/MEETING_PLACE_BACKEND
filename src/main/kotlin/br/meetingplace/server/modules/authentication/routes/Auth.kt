@@ -9,6 +9,7 @@ import br.meetingplace.server.modules.user.dao.user.UserDAO
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import org.jetbrains.exposed.sql.deleteAll
@@ -17,9 +18,24 @@ import org.postgresql.util.PSQLException
 
 
 fun Route.authentication(){
+
     route("/api"){
-        post<RequestLog>("/login") {
-            val token = AuthenticationService.login(it, UserDAO, AccessLogDAO)
+        authenticate {
+            get("/verify/token"){
+                val log = call.log
+                println("Verification requested")
+                if(log != null){
+                    println("Token accepted")
+                    call.respond(HttpStatusCode.Accepted)
+                }
+
+                else
+                    call.respond(HttpStatusCode.Unauthorized)
+            }
+        }
+        put("/login") {
+            val data = call.receive<RequestLog>()
+            val token = AuthenticationService.login(data, UserDAO, AccessLogDAO)
             if(token.isNullOrBlank())
                 call.respond(HttpStatusCode.Unauthorized)
             else
@@ -40,7 +56,7 @@ fun Route.authentication(){
 
         }
         authenticate {
-            post<RequestLog>("/logout"){
+            post("/logout"){
                 val log = call.log
                 if(log != null)
                     call.respond(AuthenticationService.logout(userDAO = UserDAO,

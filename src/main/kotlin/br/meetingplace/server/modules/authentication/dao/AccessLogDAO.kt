@@ -28,15 +28,10 @@ object AccessLogDAO: ALI {
         }
     }
 
-    override fun update(userID: String, ip: String): HttpStatusCode {
+    override fun delete(userID: String, ip: String): HttpStatusCode {
         return try {
             transaction {
-                AccessLog.update({
-                    (AccessLog.userID eq userID) and
-                            (AccessLog.ip eq ip)
-                }){
-                    it[active] = false
-                }
+                AccessLog.deleteWhere { (AccessLog.ip eq ip) and (AccessLog.userID eq userID)}
             }
             HttpStatusCode.OK
         }catch (normal: Exception){

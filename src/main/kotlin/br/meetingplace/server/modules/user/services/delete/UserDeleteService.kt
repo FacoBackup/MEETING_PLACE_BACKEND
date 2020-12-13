@@ -10,7 +10,7 @@ object UserDeleteService {
         return try{
             val userRequester = userDAO.read(requester)
             if( userRequester != null && userRequester.admin)
-                userDAO.delete(data.requestedUser)
+                userDAO.delete(data.userID)
             else
                 HttpStatusCode.FailedDependency
         }catch (e: Exception){

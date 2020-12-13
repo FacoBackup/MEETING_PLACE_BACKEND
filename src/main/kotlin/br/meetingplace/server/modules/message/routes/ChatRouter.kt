@@ -3,7 +3,6 @@ package br.meetingplace.server.modules.message.routes
 import br.meetingplace.server.methods.AES
 import br.meetingplace.server.modules.group.dao.GroupDAO
 import br.meetingplace.server.modules.group.dao.member.GroupMemberDAO
-import br.meetingplace.server.modules.group.services.member.GroupMemberService
 import br.meetingplace.server.modules.message.dao.MessageDAO
 import br.meetingplace.server.modules.message.dao.opinions.MessageOpinionDAO
 import br.meetingplace.server.modules.message.dto.requests.RequestConversation
@@ -28,17 +27,22 @@ fun Route.messageRouter() {
 
     route("/api") {
 
-        get(ChatPaths.MESSAGE) {
-            val data = call.receive<RequestConversation>()
+        post<RequestConversation>("/get/conversation") {
             val log = call.log
-            if(log != null)
-                call.respond(ChatReadService.readConversation(requester = log.userID, receiverID = data.receiverID, isGroup = data.isGroup, date = data.date,MessageDAO, AES))
-            else call.respond(HttpStatusCode.Unauthorized)
+            println("---------------------------------------------------------------------------------------")
+            println(it)
+            if(log != null){
+                val chats = ChatReadService.readConversation(requester = log.userID, subjectID = it.subjectID, isGroup = it.isGroup, decryption = AES, messageDAO = MessageDAO)
+                println(chats)
+                call.respond(chats)
+            }
 
+            else call.respond(HttpStatusCode.Unauthorized)
         }
 
         post<RequestMessageCreation>(ChatPaths.MESSAGE) {
             val log = call.log
+            println(it)
             if(log != null)
                 call.respond(MessageFactoryService.createMessage(requester = log.userID, it, GroupMemberDAO, UserDAO, GroupDAO, MessageDAO, AES))
             else call.respond(HttpStatusCode.Unauthorized)

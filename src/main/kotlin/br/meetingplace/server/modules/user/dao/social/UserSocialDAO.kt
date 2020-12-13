@@ -3,27 +3,26 @@ package br.meetingplace.server.modules.user.dao.social
 import br.meetingplace.server.modules.user.dto.response.SocialDTO
 import br.meetingplace.server.modules.user.entities.Social
 import io.ktor.http.*
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object UserSocialDAO:SI {
 
     override fun create(userID: String, followedID: String): HttpStatusCode {
-        TODO()
-    //        return try {
-//            transaction {
-//
-//            }
-//            HttpStatusCode.Created
-//        }catch (normal: Exception){
-//            HttpStatusCode.InternalServerError
-//        }catch (psql: PSQLException){
-//            HttpStatusCode.InternalServerError
-//        }
+        return try {
+            transaction {
+                Social.insert{
+                    it[Social.followedID] = followedID
+                    it[Social.followerID] = userID
+                }
+            }
+            HttpStatusCode.Created
+        }catch (normal: Exception){
+            HttpStatusCode.InternalServerError
+        }catch (psql: PSQLException){
+            HttpStatusCode.InternalServerError
+        }
     }
 
     override fun delete(userID: String, followedID: String): HttpStatusCode {
@@ -42,18 +41,17 @@ object UserSocialDAO:SI {
         }
     }
 
-    override fun check(followedID: String, userID: String): HttpStatusCode {
+    override fun check(followedID: String, userID: String): Boolean {
         return try {
-            return if (transaction {
+            return !transaction {
                 Social.select {
                     (Social.followedID eq followedID) and
-                    (Social.followerID eq userID)
-            }.empty()}) HttpStatusCode.NotFound
-            else HttpStatusCode.Found
+                            (Social.followerID eq userID)
+                }.empty()}
         }catch (normal: Exception){
-            HttpStatusCode.InternalServerError
+           false
         }catch (psql: PSQLException){
-            HttpStatusCode.InternalServerError
+            false
         }
     }
 

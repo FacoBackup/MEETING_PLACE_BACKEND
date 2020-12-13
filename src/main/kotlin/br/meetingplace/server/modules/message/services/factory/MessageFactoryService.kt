@@ -5,7 +5,7 @@ import br.meetingplace.server.modules.group.dao.GI
 import br.meetingplace.server.modules.group.dao.member.GMI
 import br.meetingplace.server.modules.message.dao.MI
 import br.meetingplace.server.modules.message.dto.requests.RequestMessageCreation
-import br.meetingplace.server.modules.message.key.AESMessageKey
+import br.meetingplace.server.modules.message.control.encryption.key.AESMessageKey
 import br.meetingplace.server.modules.user.dao.user.UI
 import io.ktor.http.*
 

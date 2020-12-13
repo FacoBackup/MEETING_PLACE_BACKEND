@@ -14,7 +14,8 @@ object Message: Table("messages"){
     val userReceiverID = varchar("receiver_id", 36).references(User.email, onDelete = ReferenceOption.SET_NULL).nullable()
     val groupReceiverID = varchar("group_id", 36).references(Group.id, onDelete = ReferenceOption.SET_NULL).nullable()
     val type = short("message_type")
-    val creationDate = datetime("date_of_creation")
+    val valid = integer("valid_until")
+    val read = bool("read")
 
     override val primaryKey = PrimaryKey(id)
 }

@@ -28,7 +28,7 @@ object AuthenticationService {
         return try {
             val logged = authenticationDAO.read(requester, ip)
             if(userDAO.check(requester) && logged != null && logged.active){
-                authenticationDAO.update(userID = requester, ip = ip)
+                authenticationDAO.delete(userID = requester, ip = ip)
             }else HttpStatusCode.InternalServerError
         }catch (e: Exception){
             HttpStatusCode.InternalServerError

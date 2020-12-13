@@ -5,9 +5,6 @@ import br.meetingplace.server.modules.message.entities.Message
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.format.DateTimeFormatter
 import org.postgresql.util.PSQLException
 import java.util.*
 
@@ -17,11 +14,12 @@ object MessageDAO: MI{
             transaction {
                 Message.insert {
                     it[id] = UUID.randomUUID().toString()
-                    it[creationDate] = DateTime.now()
+                    it[valid] = 0
                     it[content] = message
                     it[creatorID] = from
                     it[this.imageURL] = imageURL
                     it[type] = 0
+                    it[read] = false
                     when(isGroup){
                         true-> it[groupReceiverID] = to
                         false -> it[userReceiverID] = to
@@ -50,25 +48,6 @@ object MessageDAO: MI{
             HttpStatusCode.InternalServerError
         }
     }
-
-    override fun readAllFromCreator(creatorID: String, receiverID: String, isGroup: Boolean): List<MessageDTO> {
-        return try {
-            transaction {
-                Message.select {
-                    (Message.creatorID eq creatorID) and
-                    when(isGroup){
-                        true->(Message.groupReceiverID eq receiverID)
-                        false->(Message.userReceiverID eq receiverID)
-                    }
-                }.map { mapMessage(it) }
-            }
-        }catch (normal: Exception){
-            listOf()
-        }catch (psql: PSQLException){
-            listOf()
-        }
-    }
-
     override fun check(messageID: String): Boolean {
         return try {
             !transaction {
@@ -95,22 +74,35 @@ object MessageDAO: MI{
             null
         }
     }
-    override fun readAllConversation(userID: String, receiverID: String, isGroup: Boolean, date: String): List<MessageDTO> {
+    override fun readAllConversation(userID: String, subjectID: String, isGroup: Boolean): List<MessageDTO> {
         return try {
+            val conversation  = mutableListOf<MessageDTO>()
             transaction {
+                Message.update({(Message.valid eq 0) and (Message.read eq false) and (Message.creatorID eq subjectID)}){
+                    it[valid] = System.currentTimeMillis().toInt() + 86400000 //24hours + current time
+                    it[read] = true
+                }
+            }
+            transaction {
+                Message.deleteWhere {
+                    (Message.valid.greater(System.currentTimeMillis().toInt())) or (Message.valid eq System.currentTimeMillis().toInt())
+                }
+            }
+            conversation.addAll(transaction {
                 Message.select {
                     when(isGroup){
-                        true->(Message.groupReceiverID eq receiverID)
+                        true->(Message.groupReceiverID eq subjectID)
                         false->{
-                            (((Message.userReceiverID eq receiverID) and
+                            (((Message.userReceiverID eq subjectID) and
                             (Message.creatorID eq userID)) or
                             ((Message.userReceiverID eq userID) and
-                            (Message.creatorID eq receiverID))) and
-                            (Message.creationDate eq DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime(date))
+                            (Message.creatorID eq subjectID)))
                         }
                     }
                 }.map { mapMessage(it) }
-            }
+            })
+            println(conversation)
+            return conversation
         }catch (normal: Exception){
             listOf()
         }catch (psql: PSQLException){
@@ -122,7 +114,7 @@ object MessageDAO: MI{
                 content = it[Message.content],
                 imageURL = it[Message.imageURL],
                 id = it[Message.id],
-                creationDate = it[Message.creationDate].toString("dd-MM-yyyy"),
+                valid = it[Message.valid],
                 creatorID = it[Message.creatorID],
                 type =  it[Message.type],
                 receiverID = it[Message.userReceiverID],
