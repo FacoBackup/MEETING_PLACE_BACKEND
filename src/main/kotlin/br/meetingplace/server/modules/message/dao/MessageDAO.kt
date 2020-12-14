@@ -85,7 +85,7 @@ object MessageDAO: MI{
             }
             transaction {
                 Message.deleteWhere {
-                    (Message.valid.greater(System.currentTimeMillis().toInt())) or (Message.valid eq System.currentTimeMillis().toInt())
+                    ((Message.valid.less(System.currentTimeMillis().toInt())) and (Message.valid neq 0))   or (Message.valid eq System.currentTimeMillis().toInt())
                 }
             }
             conversation.addAll(transaction {
@@ -101,7 +101,6 @@ object MessageDAO: MI{
                     }
                 }.map { mapMessage(it) }
             })
-            println(conversation)
             return conversation
         }catch (normal: Exception){
             listOf()
@@ -111,13 +110,14 @@ object MessageDAO: MI{
     }
     private fun mapMessage(it: ResultRow): MessageDTO {
         return MessageDTO(
-                content = it[Message.content],
-                imageURL = it[Message.imageURL],
-                id = it[Message.id],
-                valid = it[Message.valid],
-                creatorID = it[Message.creatorID],
-                type =  it[Message.type],
-                receiverID = it[Message.userReceiverID],
-                groupID = it[Message.groupReceiverID])
+            content = it[Message.content],
+            imageURL = it[Message.imageURL],
+            id = it[Message.id],
+            valid = it[Message.valid],
+            creatorID = it[Message.creatorID],
+            type =  it[Message.type],
+            receiverID = it[Message.userReceiverID],
+            groupID = it[Message.groupReceiverID],
+            read = it[Message.read])
     }
 }

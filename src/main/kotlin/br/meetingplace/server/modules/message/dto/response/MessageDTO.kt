@@ -7,4 +7,5 @@ data class MessageDTO(var content: String,
                       val type: Short,
                       val receiverID: String?,
                       val valid: Int,
+                      val read: Boolean,
                       val groupID: String?)

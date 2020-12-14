@@ -24,7 +24,8 @@ object ChatReadService {
                         type = encryptedConversation[i].type,
                         groupID = encryptedConversation[i].groupID,
                         receiverID = encryptedConversation[i].receiverID,
-                        valid = encryptedConversation[i].valid
+                        valid = encryptedConversation[i].valid,
+                        read = encryptedConversation[i].read
                     ))
             }
             decryptedConversation

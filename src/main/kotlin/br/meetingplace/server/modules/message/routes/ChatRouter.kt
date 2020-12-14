@@ -29,11 +29,9 @@ fun Route.messageRouter() {
 
         post<RequestConversation>("/get/conversation") {
             val log = call.log
-            println("---------------------------------------------------------------------------------------")
-            println(it)
             if(log != null){
                 val chats = ChatReadService.readConversation(requester = log.userID, subjectID = it.subjectID, isGroup = it.isGroup, decryption = AES, messageDAO = MessageDAO)
-                println(chats)
+
                 call.respond(chats)
             }
 

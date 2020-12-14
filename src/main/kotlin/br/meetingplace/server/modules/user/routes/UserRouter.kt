@@ -93,6 +93,18 @@ fun Route.userRouter() {
                 else call.respond(HttpStatusCode.Unauthorized)
 
             }
+            get("/followers"){
+                val log = call.log
+                if(log != null)
+                    call.respond(UserSocialDAO.readAll(userID = log.userID, following = false))
+                else call.respond(HttpStatusCode.Unauthorized)
+            }
+            get("/following"){
+                val log = call.log
+                if(log != null)
+                    call.respond(UserSocialDAO.readAll(userID = log.userID, following = true))
+                else call.respond(HttpStatusCode.Unauthorized)
+            }
             post<RequestSocial>(UserPaths.FOLLOW) {
                 val log = call.log
                 println("FOLLOW requested")
