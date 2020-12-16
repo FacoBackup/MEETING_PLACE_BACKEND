@@ -1,6 +1,5 @@
 package br.meetingplace.server.modules.topic.dao
 
-import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
 import br.meetingplace.server.modules.topic.dto.response.TopicDTO
 import br.meetingplace.server.modules.topic.entities.Topic
 import io.ktor.http.*

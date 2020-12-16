@@ -1,13 +1,9 @@
 package br.meetingplace.server.modules.community.routes
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
-import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
-import br.meetingplace.server.modules.community.dto.requests.RequestApproval
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunity
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
-import br.meetingplace.server.modules.community.services.validation.CommunityValidationService
 import br.meetingplace.server.modules.community.services.factory.CommunityFactoryService
-import br.meetingplace.server.modules.group.dao.GroupDAO
 import br.meetingplace.server.modules.user.dao.user.UserDAO
 import br.meetingplace.server.server.AuthLog.log
 import io.ktor.application.*
@@ -38,13 +34,6 @@ fun Route.communityRouter() {
             val log = call.log
             if(log != null)
                 call.respond(CommunityFactoryService.create(requester = log.userID,it, CommunityDAO, UserDAO))
-            else call.respond(HttpStatusCode.Unauthorized)
-        }
-        patch(CommunityPaths.GROUP) {
-            val data = call.receive<RequestApproval>()
-            val log = call.log
-            if(log != null)
-                call.respond(CommunityValidationService.approveGroup(requester = log.userID,data, CommunityMemberDAO, GroupDAO))
             else call.respond(HttpStatusCode.Unauthorized)
         }
     }

@@ -10,10 +10,7 @@ import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
 import br.meetingplace.server.modules.topic.services.delete.TopicDeleteService
 import br.meetingplace.server.modules.topic.services.factory.TopicFactoryService
 import br.meetingplace.server.modules.topic.services.opinion.TopicOpinionService
-import br.meetingplace.server.modules.user.dao.social.UserSocialDAO
 import br.meetingplace.server.modules.user.dao.user.UserDAO
-import br.meetingplace.server.modules.user.dto.requests.RequestUser
-import br.meetingplace.server.modules.user.services.social.UserSocialService
 import br.meetingplace.server.server.AuthLog.log
 import io.ktor.application.*
 import io.ktor.http.*

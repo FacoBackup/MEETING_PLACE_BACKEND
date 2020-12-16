@@ -2,9 +2,8 @@ package br.meetingplace.server.server
 
 import br.meetingplace.server.modules.authentication.dao.AccessLogDAO
 import br.meetingplace.server.modules.authentication.routes.authentication
-import br.meetingplace.server.modules.message.routes.messageRouter
 import br.meetingplace.server.modules.community.routes.communityRouter
-import br.meetingplace.server.modules.group.routes.groupRouter
+import br.meetingplace.server.modules.conversation.routes.conversationRouter
 import br.meetingplace.server.modules.topic.routes.topicRouter
 import br.meetingplace.server.modules.user.routes.userRouter
 import br.meetingplace.server.settings.jwt.JWTSettings
@@ -14,8 +13,6 @@ import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.gson.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Application.module(){
@@ -23,7 +20,6 @@ fun Application.module(){
         header(HttpHeaders.Authorization)
         header(HttpHeaders.AccessControlAllowOrigin)
         header(HttpHeaders.ContentType)
-        //header(HttpHeaders.)
         anyHost()
         method(HttpMethod.Get)
         method(HttpMethod.Put)
@@ -34,14 +30,6 @@ fun Application.module(){
         allowCredentials = true
         allowSameOrigin = true
         allowNonSimpleContentTypes = true
-
-//        intercept(ApplicationCallPipeline.Setup){
-//            if(call.request.htt == HttpHeaders.AccessControlAllowOrigin){
-//
-//            }
-//            else
-//                println("here")
-//        }
     }
     install(ContentNegotiation) {
         gson {
@@ -63,17 +51,14 @@ fun Application.module(){
         }
     }
     install(Routing){
-
         authenticate(optional = true){
             userRouter()
             authentication()
         }
         authenticate(optional = false){
-
             topicRouter()
             communityRouter()
-            groupRouter()
-            messageRouter()
+            conversationRouter()
         }
     }
 }

@@ -2,9 +2,6 @@ package br.meetingplace.server.modules.user.routes
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
-import br.meetingplace.server.modules.message.dao.MessageDAO
-import br.meetingplace.server.modules.message.dao.opinions.MessageOpinionDAO
-import br.meetingplace.server.modules.message.services.opinion.MessageOpinionService
 import br.meetingplace.server.modules.user.dao.social.UserSocialDAO
 import br.meetingplace.server.modules.user.dao.user.UserDAO
 import br.meetingplace.server.modules.user.dto.requests.RequestProfileUpdate
