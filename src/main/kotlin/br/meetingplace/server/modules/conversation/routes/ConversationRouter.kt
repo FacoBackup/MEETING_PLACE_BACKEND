@@ -36,10 +36,7 @@ fun Route.conversationRouter() {
             val log = call.log
             if(log != null){
                 val result = ConversationDAO.readPrivateConversation(userID = log.userID, secondUserID = it.userID)
-                if(result != null)
-                    call.respond(result)
-                else
-                    call.respond(HttpStatusCode.NotFound)
+                call.respond(result)
             }
             else call.respond(HttpStatusCode.Unauthorized)
         }

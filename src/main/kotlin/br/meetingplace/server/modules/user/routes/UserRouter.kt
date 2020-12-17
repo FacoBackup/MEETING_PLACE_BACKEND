@@ -29,8 +29,7 @@ fun Route.userRouter() {
         patch(UserPaths.USER + "/search") {
             val data = call.receive<RequestUser>()
             val user = UserDAO.read(data.userID)
-            println("Get user profile REQUESTED")
-            println("data: $data")
+
             if (user == null)
                 call.respond(HttpStatusCode.NotFound)
             else

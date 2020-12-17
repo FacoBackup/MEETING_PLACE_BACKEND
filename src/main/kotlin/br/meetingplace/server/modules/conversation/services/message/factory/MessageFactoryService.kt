@@ -32,6 +32,7 @@ object MessageFactoryService {
                     false->{
                         when(!data.conversationID.isNullOrBlank() && conversationDAO.check(conversationID = data.conversationID)){
                             true->{ //already exists a conversation
+                                println("EXISTS ------------------------------------------------")
                                 val encryptedMessage = encryption.encrypt(myKey = key, data.message)
                                 val encryptedImageURL = data.imageURL?.let { encryption.encrypt(myKey = key, it) }
                                 if(encryptedMessage.isNullOrBlank())
@@ -40,15 +41,15 @@ object MessageFactoryService {
                                     messageDAO.create(message = encryptedMessage, imageURL = encryptedImageURL,from = requester,conversationID = data.conversationID)
                             }
                             false->{
-
                                 if(data.receiverID != null && userDAO.check(data.receiverID)){
                                     val encryptedMessage = encryption.encrypt(myKey = key, data.message)
                                     val encryptedImageURL = data.imageURL?.let { encryption.encrypt(myKey = key, it) }
-                                    val conversationID = conversationDAO.create(data = RequestConversationCreation(name=requester+data.receiverID, imageURL = null, about = null, isGroup = false))
+                                    val id = requester + data.receiverID
+                                    conversationDAO.create(data = RequestConversationCreation(name=id, imageURL = null, about = null, isGroup = false), id = id)
 
-                                    if(conversationID != null) {
-                                        conversationMemberDAO.create(userID = data.receiverID, conversationID = conversationID, true)
-                                        conversationMemberDAO.create(userID = requester, conversationID = conversationID, admin = true)
+                                    if(conversationDAO.check(id)) {
+                                        conversationMemberDAO.create(userID = data.receiverID, conversationID = id, true)
+                                        conversationMemberDAO.create(userID = requester, conversationID = id, admin = true)
                                         if (encryptedMessage.isNullOrBlank())
                                             return HttpStatusCode.InternalServerError
                                         else
@@ -56,7 +57,7 @@ object MessageFactoryService {
                                                 message = encryptedMessage,
                                                 imageURL = encryptedImageURL,
                                                 from = requester,
-                                                conversationID = conversationID
+                                                conversationID = id
                                             )
                                     }
                                     else HttpStatusCode.FailedDependency

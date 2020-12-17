@@ -7,6 +7,6 @@ data class UserDTO (val email: String,
                     val birthDate: String?,
                     val imageURL: String?,
                     val about: String?,
-                    val cityOfBirth: String,
+                    val cityOfBirth: String?,
                     val phoneNumber: String?,
-                    val nationality: String)
+                    val nationality: String?)

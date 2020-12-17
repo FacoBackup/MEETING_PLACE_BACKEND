@@ -10,11 +10,10 @@ object UserFactoryService{
 
     fun create(data: RequestUserCreation, userDAO: UI): HttpStatusCode {
         return try{
-            if(userDAO.readAllByAttribute(name = data.userName, null,
+            if(userDAO.readAllByAttribute(null, null,
                 phoneNumber = data.phoneNumber,null,null).isEmpty() &&
-                userDAO.read(data.email) == null)
+                !userDAO.check(data.email))
                     userDAO.create(data)
-
             else
                 HttpStatusCode.InternalServerError
         }catch (e: PSQLException){

@@ -10,7 +10,7 @@ object Message: Table("messages"){
     val imageURL = varchar("image_url", 256).nullable()
     val id = varchar("message_id", 36)
     val creatorID = varchar("creator_id", 36).references(User.email, onDelete = ReferenceOption.CASCADE)
-    val conversationID = varchar("conversation_id", 36).references(Conversation.id, onDelete = ReferenceOption.CASCADE).nullable()
+    val conversationID = varchar("conversation_id", 256).references(Conversation.id, onDelete = ReferenceOption.CASCADE).nullable()
     val type = short("message_type")
     val valid = integer("valid_until")
     val read = bool("read")

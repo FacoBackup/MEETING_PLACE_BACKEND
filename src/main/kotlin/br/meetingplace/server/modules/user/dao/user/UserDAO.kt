@@ -8,20 +8,22 @@ import br.meetingplace.server.modules.user.entities.User
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import org.postgresql.util.PSQLException
+import java.text.DateFormat
 
 object UserDAO: UI {
     override fun create(data: RequestUserCreation): HttpStatusCode {
         return try {
             transaction {
                User.insert {
-                   it[email] = data.email
+                   it[email] = data.email.toLowerCase()
                    it[password] = hashString(encryption = "SHA-1",data.password)
                    it[userName] = data.userName
                    it[gender] = data.gender
                    it[nationality] = data.nationality
-                   it[birth] = DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime(data.birthDate)
+                   it[birth] = DateTimeFormat.forPattern("dd-MM-yyyy").parseDateTime(data.birthDate)
                    it[imageURL] = null
                    it[about] = null
                    it[admin] = data.admin
@@ -182,7 +184,7 @@ object UserDAO: UI {
     private fun mapUser(it: ResultRow): UserDTO {
         return UserDTO(email = it[User.email], name = it[User.userName],
             gender = it[User.gender], admin = it[User.admin],
-            birthDate = it[User.birth].toString(), imageURL = it[User.imageURL],
+            birthDate = (it[User.birth].toString()).replaceAfter("T", "").removeSuffix("T"), imageURL = it[User.imageURL],
             about = it[User.about], cityOfBirth = it[User.cityOfBirth],
             phoneNumber = it[User.phoneNumber], nationality = it[User.nationality])
     }

@@ -13,12 +13,12 @@ import java.util.*
 
 object ConversationDAO: CI {
 
-    override fun create(data: RequestConversationCreation): String? {
+    override fun create(data: RequestConversationCreation, id: String): HttpStatusCode {
         return try {
-            val conversationID =UUID.randomUUID().toString()
+            println("Eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeerro")
             transaction {
                 Conversation.insert {
-                    it[id] = conversationID
+                    it[this.id] = id
                     it[creationDate] = DateTime.now()
                     it[imageURL] = data.imageURL
                     it[about] = data.about
@@ -26,11 +26,12 @@ object ConversationDAO: CI {
                     it[isGroup] = data.isGroup
                 }
             }
-            conversationID
+            HttpStatusCode.Created
         }catch (normal: Exception){
-            null
+            HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            null
+
+            HttpStatusCode.InternalServerError
         }
     }
 
@@ -58,19 +59,19 @@ object ConversationDAO: CI {
             HttpStatusCode.InternalServerError
         }
     }
-    override fun readPrivateConversation(userID: String, secondUserID: String): ConversationDTO? {
+    override fun readPrivateConversation(userID: String, secondUserID: String): List<ConversationDTO> {
         return try {
             transaction {
-                (Conversation innerJoin ConversationMember).select {
+                Conversation.select {
                     (Conversation.isGroup eq false) and
-                    (ConversationMember.userID eq userID) and
-                    (ConversationMember.userID eq secondUserID)
-                }.map { mapConversation(it) }.firstOrNull()
+                    ((Conversation.id eq (userID + secondUserID)) or
+                    (Conversation.id eq secondUserID))
+                }.map { mapConversation(it) }
             }
         }catch (normal: Exception){
-            null
+            listOf()
         }catch (psql: PSQLException){
-            null
+            listOf()
         }
     }
     override fun read(conversationID: String): ConversationDTO? {
@@ -105,7 +106,12 @@ object ConversationDAO: CI {
         }
     }
     private fun mapConversation(it: ResultRow): ConversationDTO {
-        return ConversationDTO( id = it[Conversation.id], name = it[Conversation.name], imageURL = it[Conversation.imageURL], creationDate = it[Conversation.creationDate].toString("dd-MM-yyyy"), about = it[Conversation.about], isGroup = it[Conversation.isGroup])
+        return ConversationDTO( id = it[Conversation.id],
+            name = it[Conversation.name],
+            imageURL = it[Conversation.imageURL],
+            creationDate = it[Conversation.creationDate].toString("dd-MM-yyyy"),
+            about = it[Conversation.about],
+            isGroup = it[Conversation.isGroup])
     }
 
 }
