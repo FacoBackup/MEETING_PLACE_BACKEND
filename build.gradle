@@ -1,11 +1,11 @@
 plugins {
     id 'java'
-	id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
     id 'org.jetbrains.kotlin.jvm' version "$ktor_version"
     id 'application'
 }
-group 'br.meetingplace.server'
-version 'alpha 2.0'
+group 'meetingplace.server'
+version 'beta 1.0'
 
 repositories {
     jcenter()
@@ -30,7 +30,7 @@ dependencies {
     //testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-mainClassName = 'br.meetingplace.server.MainKt'
+mainClassName = 'server.server.MainKt'
 task stage{
     dependsOn installDist
 }

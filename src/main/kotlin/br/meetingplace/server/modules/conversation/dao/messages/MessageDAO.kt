@@ -10,7 +10,7 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 object MessageDAO: MI{
-    override fun create(message: String, imageURL: String?, to: String, from: String): HttpStatusCode {
+    override fun create(message: String, imageURL: String?, conversationID: String, from: String): HttpStatusCode {
         return try {
             transaction {
                 Message.insert {
@@ -21,7 +21,7 @@ object MessageDAO: MI{
                     it[this.imageURL] = imageURL
                     it[type] = 0
                     it[read] = false
-                    it[conversationID] = to
+                    it[this.conversationID] = conversationID
                     it[creationDate] = DateTime.now()
                     it[received] = false
                 }

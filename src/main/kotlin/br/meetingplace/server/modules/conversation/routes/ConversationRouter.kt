@@ -22,6 +22,7 @@ import br.meetingplace.server.modules.conversation.services.message.quote.Messag
 import br.meetingplace.server.modules.conversation.services.message.share.MessageShareService
 import br.meetingplace.server.modules.conversation.services.read.ConversationReadService
 import br.meetingplace.server.modules.user.dao.user.UserDAO
+import br.meetingplace.server.modules.user.dto.requests.RequestUser
 import br.meetingplace.server.server.AuthLog.log
 import io.ktor.application.*
 import io.ktor.http.*
@@ -31,7 +32,19 @@ import io.ktor.routing.*
 
 fun Route.conversationRouter() {
     route("/api") {
-        get("/conversations"){
+        post<RequestUser>("/private/conversation"){
+            val log = call.log
+            if(log != null){
+                val result = ConversationDAO.readPrivateConversation(userID = log.userID, secondUserID = it.userID)
+                if(result != null)
+                    call.respond(result)
+                else
+                    call.respond(HttpStatusCode.NotFound)
+            }
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
+
+        get("/conversation/all"){
             val log = call.log
             if(log != null)
                 call.respond(ConversationReadService.readConversation(log.userID, conversationMemberDAO = ConversationMemberDAO, conversationDAO = ConversationDAO, userDAO = UserDAO))
@@ -98,7 +111,6 @@ fun Route.conversationRouter() {
 
                 call.respond(chats)
             }
-
             else call.respond(HttpStatusCode.Unauthorized)
         }
 

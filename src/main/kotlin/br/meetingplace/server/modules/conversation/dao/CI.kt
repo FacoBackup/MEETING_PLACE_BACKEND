@@ -5,6 +5,7 @@ import br.meetingplace.server.modules.conversation.dto.response.ConversationDTO
 import io.ktor.http.*
 
 interface CI {
+    fun readPrivateConversation(userID: String, secondUserID: String): ConversationDTO?
     fun create(data: RequestConversationCreation): String?
     fun read(conversationID: String): ConversationDTO?
     fun check(conversationID: String): Boolean

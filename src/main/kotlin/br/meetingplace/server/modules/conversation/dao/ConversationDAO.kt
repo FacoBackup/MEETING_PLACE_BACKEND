@@ -3,6 +3,7 @@ package br.meetingplace.server.modules.conversation.dao
 import br.meetingplace.server.modules.conversation.dto.requests.RequestConversationCreation
 import br.meetingplace.server.modules.conversation.dto.response.ConversationDTO
 import br.meetingplace.server.modules.conversation.entities.Conversation
+import br.meetingplace.server.modules.conversation.entities.ConversationMember
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -57,7 +58,21 @@ object ConversationDAO: CI {
             HttpStatusCode.InternalServerError
         }
     }
-
+    override fun readPrivateConversation(userID: String, secondUserID: String): ConversationDTO? {
+        return try {
+            transaction {
+                (Conversation innerJoin ConversationMember).select {
+                    (Conversation.isGroup eq false) and
+                    (ConversationMember.userID eq userID) and
+                    (ConversationMember.userID eq secondUserID)
+                }.map { mapConversation(it) }.firstOrNull()
+            }
+        }catch (normal: Exception){
+            null
+        }catch (psql: PSQLException){
+            null
+        }
+    }
     override fun read(conversationID: String): ConversationDTO? {
         return try {
             transaction {
