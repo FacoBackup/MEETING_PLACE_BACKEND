@@ -15,7 +15,7 @@ object ConversationDAO: CI {
 
     override fun create(data: RequestConversationCreation, id: String): HttpStatusCode {
         return try {
-            println("Eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeerro")
+
             transaction {
                 Conversation.insert {
                     it[this.id] = id
@@ -59,21 +59,7 @@ object ConversationDAO: CI {
             HttpStatusCode.InternalServerError
         }
     }
-    override fun readPrivateConversation(userID: String, secondUserID: String): List<ConversationDTO> {
-        return try {
-            transaction {
-                Conversation.select {
-                    (Conversation.isGroup eq false) and
-                    ((Conversation.id eq (userID + secondUserID)) or
-                    (Conversation.id eq secondUserID))
-                }.map { mapConversation(it) }
-            }
-        }catch (normal: Exception){
-            listOf()
-        }catch (psql: PSQLException){
-            listOf()
-        }
-    }
+
     override fun read(conversationID: String): ConversationDTO? {
         return try {
             transaction {

@@ -35,7 +35,13 @@ fun Route.userRouter() {
             else
                 call.respond(user)
         }
-
+        get(UserPaths.USER +"/all") {
+            val user = UserDAO.readAll()
+            if (user.isEmpty())
+                call.respond(HttpStatusCode.NotFound)
+            else
+                call.respond(user)
+        }
         authenticate {
             patch("/follower"){
                 val data = call.receive<RequestUser>()
@@ -46,13 +52,7 @@ fun Route.userRouter() {
 
                 else call.respond(false)
             }
-            get(UserPaths.USER +"/all") {
-                val user = UserDAO.readAll()
-                if (user.isEmpty())
-                    call.respond(HttpStatusCode.NotFound)
-                else
-                    call.respond(user)
-            }
+
             get(UserPaths.USER) {
                 val log = call.log
                 if(log != null){

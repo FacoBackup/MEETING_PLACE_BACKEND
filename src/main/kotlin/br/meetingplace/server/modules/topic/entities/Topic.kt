@@ -14,7 +14,7 @@ object Topic: Table("topics") {
     var body= varchar("body", 1024)
     var approved = bool("approved")
     val footer= varchar("footer", 128)
-    val creatorID = varchar("creator_id",36).references(User.email)
+    val creatorID = varchar("creator_id",320).references(User.email)
     val mainTopicID = varchar("main_topic_id",36).references(id, onDelete = ReferenceOption.CASCADE).nullable()
     val creationDate = datetime("date_of_creation")
     val communityID = varchar("community_id", 36).references(Community.id).nullable()

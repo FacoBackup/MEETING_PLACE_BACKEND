@@ -4,10 +4,10 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.datetime
 
 object Conversation: Table("conversation"){
-    val id= varchar("id", 256)
-    var name= varchar("name", 256)
-    var about= varchar("about", 256).nullable()
-    var imageURL = varchar("image_url", 256).nullable()
+    val id= varchar("id", 640)
+    val name= varchar("name", 128)
+    val about= varchar("about", 512).nullable()
+    val imageURL = varchar("image_url", 256).nullable()
     val creationDate = datetime("created_in")
     val isGroup = bool("is_group")
 

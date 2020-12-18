@@ -23,7 +23,7 @@ object MessageDAO: MI{
                     it[read] = false
                     it[this.conversationID] = conversationID
                     it[creationDate] = DateTime.now()
-                    it[received] = false
+                    it[delivered] = false
                 }
             }
             HttpStatusCode.Created
@@ -78,10 +78,10 @@ object MessageDAO: MI{
         return try {
             val conversation  = mutableListOf<MessageDTO>()
             transaction {
-                Message.update({(Message.valid eq 0) and (Message.read eq false) and (Message.creatorID eq conversationID)}){
+                Message.update({(Message.valid eq 0) and (Message.read eq false) and (Message.creatorID neq userID)}){
                     it[valid] = System.currentTimeMillis().toInt() + 86400000 //24hours + current time
                     it[read] = true
-                    it[received] = true
+                    it[delivered] = true
                 }
             }
             transaction {
@@ -109,7 +109,7 @@ object MessageDAO: MI{
             valid = it[Message.valid],
             creatorID = it[Message.creatorID],
             type =  it[Message.type],
-            received= it[Message.received],
+            received= it[Message.delivered],
             conversationID = it[Message.conversationID],
             read = it[Message.read],
             creationDate = it[Message.creationDate].toString())

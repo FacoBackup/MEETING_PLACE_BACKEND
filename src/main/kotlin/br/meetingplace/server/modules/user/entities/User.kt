@@ -4,16 +4,16 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.date
 
 object User: Table("users"){
-    val email = varchar("user_id", 128)
+    val email = varchar("user_id", 320)
     val userName = varchar("user_name", 64)
     val birth = date("date_of_birth")
-    val password = varchar("password", 64)
-    val gender = varchar("user_gender", 64)
-    val nationality = varchar("user_nationality", 128).nullable()
-    val about = varchar("user_about", 64).nullable()
+    val password = varchar("password", 512)
+    val gender = varchar("user_gender", 32)
+    val nationality = varchar("user_nationality", 256).nullable()
+    val about = varchar("user_about", 512).nullable()
     val imageURL = varchar("user_image_url", 256).nullable()
-    val phoneNumber = varchar("user_number", 32)
-    val cityOfBirth = varchar("city_of_birth", 128).nullable()
+    val phoneNumber = varchar("user_number", 32).nullable()
+    val cityOfBirth = varchar("city_of_birth", 256).nullable()
     val admin = bool("is_admin")
     override val primaryKey = PrimaryKey(email)
 }

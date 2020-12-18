@@ -3,10 +3,7 @@ package br.meetingplace.server.settings.db
 import br.meetingplace.server.modules.authentication.entities.AccessLog
 import br.meetingplace.server.modules.community.entities.Community
 import br.meetingplace.server.modules.community.entities.CommunityMember
-import br.meetingplace.server.modules.conversation.entities.Conversation
-import br.meetingplace.server.modules.conversation.entities.ConversationMember
-import br.meetingplace.server.modules.conversation.entities.Message
-import br.meetingplace.server.modules.conversation.entities.MessageOpinion
+import br.meetingplace.server.modules.conversation.entities.*
 import br.meetingplace.server.modules.topic.entities.Topic
 import br.meetingplace.server.modules.topic.entities.TopicOpinion
 import br.meetingplace.server.modules.user.entities.Social
@@ -42,7 +39,8 @@ object DBSettings {
                     Community,
                     CommunityMember,
                     Topic,
-                    TopicOpinion
+                    TopicOpinion,
+                    ConversationOwners
                 )
             }
         }catch (e: Exception){

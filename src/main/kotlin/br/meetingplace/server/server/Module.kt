@@ -3,7 +3,9 @@ package br.meetingplace.server.server
 import br.meetingplace.server.modules.authentication.dao.AccessLogDAO
 import br.meetingplace.server.modules.authentication.routes.authentication
 import br.meetingplace.server.modules.community.routes.communityRouter
-import br.meetingplace.server.modules.conversation.routes.conversationRouter
+import br.meetingplace.server.modules.conversation.routes.groupConversationRouter
+import br.meetingplace.server.modules.conversation.routes.messageRouter
+import br.meetingplace.server.modules.conversation.routes.userConversationRouter
 import br.meetingplace.server.modules.topic.routes.topicRouter
 import br.meetingplace.server.modules.user.routes.userRouter
 import br.meetingplace.server.settings.jwt.JWTSettings
@@ -58,7 +60,9 @@ fun Application.module(){
         authenticate(optional = false){
             topicRouter()
             communityRouter()
-            conversationRouter()
+            userConversationRouter()
+            messageRouter()
+            groupConversationRouter()
         }
     }
 }

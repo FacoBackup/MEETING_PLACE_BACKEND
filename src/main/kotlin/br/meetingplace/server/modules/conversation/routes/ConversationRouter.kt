@@ -12,6 +12,7 @@ import br.meetingplace.server.modules.conversation.services.member.ConversationM
 import br.meetingplace.server.modules.conversation.services.message.read.MessageReadService
 import br.meetingplace.server.modules.conversation.dao.messages.MessageDAO
 import br.meetingplace.server.modules.conversation.dao.messages.opinions.MessageOpinionDAO
+import br.meetingplace.server.modules.conversation.dao.owners.ConversationOwnersDAO
 import br.meetingplace.server.modules.conversation.dto.requests.RequestConversationMessage
 import br.meetingplace.server.modules.conversation.dto.requests.RequestMessage
 import br.meetingplace.server.modules.conversation.dto.requests.RequestMessageCreation
@@ -30,147 +31,50 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-fun Route.conversationRouter() {
+fun Route.userConversationRouter() {
     route("/api") {
-        post<RequestUser>("/private/conversation"){
-            val log = call.log
-            if(log != null){
-                val result = ConversationDAO.readPrivateConversation(userID = log.userID, secondUserID = it.userID)
-                call.respond(result)
-            }
-            else call.respond(HttpStatusCode.Unauthorized)
-        }
-
         get("/conversation/all"){
             val log = call.log
             if(log != null)
-                call.respond(ConversationReadService.readConversation(log.userID, conversationMemberDAO = ConversationMemberDAO, conversationDAO = ConversationDAO, userDAO = UserDAO))
+                call.respond(ConversationReadService.readConversation(log.userID, conversationMemberDAO = ConversationMemberDAO, conversationDAO = ConversationDAO, userDAO = UserDAO, conversationOwnerDAO = ConversationOwnersDAO))
             else call.respond(HttpStatusCode.Unauthorized)
         }
-
-        post<RequestConversationCreation>("/group") {
-            val log = call.log
-            if(log != null)
-                call.respond(ConversationFactoryService.create(
-                    requester = log.userID,
-                    data = it,
-                    conversationDAO = ConversationDAO,
-                    userDAO =UserDAO,
-                    conversationMemberDAO = ConversationMemberDAO))
-            else call.respond(HttpStatusCode.Unauthorized)
-
-        }
-        delete("/group") {
-            val data = call.receive<RequestConversation>()
-            val log = call.log
-            if(log != null)
-                call.respond(ConversationDeleteService.delete(
-                    requester = log.userID,
-                    data,
-                    ConversationMemberDAO,ConversationDAO))
-            else call.respond(HttpStatusCode.Unauthorized)
-
-        }
-        patch("/group/member") {
-            val data = call.receive<RequestConversationMember>()
-            val log = call.log
-            if(log != null)
-                call.respond(ConversationMemberService.addMember(
-                    requester = log.userID,
-                    data =data,
-                    conversationMemberDAO = ConversationMemberDAO,
-                    conversationDAO = ConversationDAO
-                ))
-            else call.respond(HttpStatusCode.Unauthorized)
-
-        }
-        delete("/group/member") {
-            val data = call.receive<RequestConversationMember>()
-            val log = call.log
-            if(log != null)
-                call.respond(ConversationMemberService.removeMember(requester = log.userID,
-                    data,
-                    conversationMemberDAO = ConversationMemberDAO,
-                    conversationDAO = ConversationDAO
-                ))
-            else call.respond(HttpStatusCode.Unauthorized)
-
-        }
-
-        post<RequestConversation>("/get/conversation") {
+        post<RequestUser>("/get/conversation/user") {
             val log = call.log
             if(log != null){
-                val chats = MessageReadService.readConversationMessages(requester = log.userID,
-                    conversationID = it.conversationID,
+                val owners = ConversationOwnersDAO.read(userID = log.userID, secondUserID = it.userID)
+                if(owners != null) {
+                    val conversation = ConversationDAO.read(conversationID = owners.conversationID)
+                    if (conversation != null)
+                        call.respond(conversation)
+                }
+                else
+                    call.respond(HttpStatusCode.NoContent)
+            }
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
+        post<RequestUser>("/get/conversation/user/messages") {
+            val log = call.log
+            if(log != null){
+                val chats = MessageReadService.readUserMessages(requester = log.userID,
+                    userID = it.userID,
                     decryption = AES,
                     messageDAO = MessageDAO,
-                    conversationMemberDAO = ConversationMemberDAO)
+                    conversationOwnerDAO = ConversationOwnersDAO)
 
                 call.respond(chats)
             }
             else call.respond(HttpStatusCode.Unauthorized)
         }
 
-        post<RequestMessageCreation>("/message") {
+
+        post<RequestMessageCreation>("/message/user") {
             val log = call.log
             println(it)
             if(log != null)
-                call.respond(MessageFactoryService.createMessage(requester = log.userID, it, ConversationMemberDAO, UserDAO, ConversationDAO, MessageDAO, AES))
-            else call.respond(HttpStatusCode.Unauthorized)
-
-        }
-        delete("/message") {
-            val data = call.receive<RequestMessage>()
-            val log = call.log
-            if(log != null)
-                call.respond(MessageDeleteService.deleteMessage(requester = log.userID,data, MessageDAO))
-            else call.respond(HttpStatusCode.Unauthorized)
-
-        }
-        put("/message/like") {
-            val data = call.receive<RequestMessage>()
-            val log = call.log
-            if(log != null)
-                call.respond(
-                    MessageOpinionService.likeMessage(
-                    requester = log.userID,
-                    data,
-                    UserDAO,
-                    MessageDAO,
-                    MessageOpinionDAO,
-                    conversationMemberDAO = ConversationMemberDAO
-                ))
-            else call.respond(HttpStatusCode.Unauthorized)
-
-        }
-        put("/message/dislike") {
-            val data = call.receive<RequestMessage>()
-            val log = call.log
-            if(log != null)
-                call.respond(
-                    MessageOpinionService.dislikeMessage(requester = log.userID,
-                    data,
-                    UserDAO,
-                    MessageDAO,
-                    messageOpinionsDAO = MessageOpinionDAO,
-                    conversationMemberDAO = ConversationMemberDAO
-                ))
+                call.respond(MessageFactoryService.createUserMessage(requester = log.userID, it, conversationOwnerDAO = ConversationOwnersDAO, UserDAO, ConversationDAO, MessageDAO, AES))
             else call.respond(HttpStatusCode.Unauthorized)
         }
-        post<RequestConversationMessage>("/message/quote") {
 
-            val log = call.log
-            if(log != null)
-                call.respond(MessageQuoteService.quoteMessage(it))
-            else call.respond(HttpStatusCode.Unauthorized)
-
-        }
-        post<RequestConversationMessage>("/message/share") {
-            val log = call.log
-            if(log != null)
-                call.respond(MessageShareService.shareMessage(it))
-            else call.respond(HttpStatusCode.Unauthorized)
-
-        }
     }
 }

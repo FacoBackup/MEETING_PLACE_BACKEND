@@ -13,7 +13,8 @@ object UserFactoryService{
             if(userDAO.readAllByAttribute(null, null,
                 phoneNumber = data.phoneNumber,null,null).isEmpty() &&
                 !userDAO.check(data.email))
-                    userDAO.create(data)
+                userDAO.create(data)
+
             else
                 HttpStatusCode.InternalServerError
         }catch (e: PSQLException){
