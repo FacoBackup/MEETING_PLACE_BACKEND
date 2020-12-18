@@ -58,6 +58,7 @@ fun Route.authentication(){
         authenticate {
             post("/logout"){
                 val log = call.log
+                println("SIGNOUT HERE")
                 if(log != null)
                     call.respond(AuthenticationService.logout(userDAO = UserDAO,
                         authenticationDAO = AccessLogDAO,
