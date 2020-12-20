@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.conversation.services.message.opinion
 
-import br.meetingplace.server.modules.conversation.dao.member.CMI
+import br.meetingplace.server.modules.conversation.dao.conversation.member.CMI
 import br.meetingplace.server.modules.conversation.dao.messages.MessageDAO
 import br.meetingplace.server.modules.conversation.dao.messages.opinions.MessageOpinionDAO
 import br.meetingplace.server.modules.conversation.dto.requests.RequestMessage

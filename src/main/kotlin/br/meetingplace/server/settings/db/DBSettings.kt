@@ -32,15 +32,15 @@ object DBSettings {
                     User,
                     Social,
                     AccessLog,
-                    Conversation,
-                    ConversationMember,
-                    Message,
-                    MessageOpinion,
+                    ConversationEntity,
+                    ConversationMemberEntity,
+                    MessageEntity,
+                    MessageOpinionEntity,
                     Community,
                     CommunityMember,
                     Topic,
                     TopicOpinion,
-                    ConversationOwners
+                    ConversationOwnersEntity
                 )
             }
         }catch (e: Exception){

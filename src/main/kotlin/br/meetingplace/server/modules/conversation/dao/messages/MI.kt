@@ -1,10 +1,10 @@
 package br.meetingplace.server.modules.conversation.dao.messages
 
-import br.meetingplace.server.modules.conversation.dto.response.MessageDTO
+import br.meetingplace.server.modules.conversation.dto.response.messages.MessageDTO
 import io.ktor.http.*
 
 interface MI {
-    fun create(message: String, imageURL: String?, conversationID: String, from: String): HttpStatusCode
+    fun create(message: String, imageURL: String?, conversationID: String, creator: String, messageID: String): HttpStatusCode
     fun read(messageID: String): MessageDTO?
     fun check(messageID: String): Boolean
     fun readAllConversation(userID: String, conversationID: String): List<MessageDTO>

@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.conversation.routes
 
-import br.meetingplace.server.modules.conversation.dao.member.ConversationMemberDAO
+import br.meetingplace.server.modules.conversation.dao.conversation.member.ConversationMemberDAO
 import br.meetingplace.server.modules.conversation.dao.messages.MessageDAO
 import br.meetingplace.server.modules.conversation.dao.messages.opinions.MessageOpinionDAO
 import br.meetingplace.server.modules.conversation.dto.requests.RequestConversationMessage

@@ -1,16 +1,17 @@
 package br.meetingplace.server.modules.conversation.routes
 
 import br.meetingplace.server.methods.AES
-import br.meetingplace.server.modules.conversation.dao.ConversationDAO
-import br.meetingplace.server.modules.conversation.dao.member.ConversationMemberDAO
+import br.meetingplace.server.modules.conversation.dao.conversation.ConversationDAO
+import br.meetingplace.server.modules.conversation.dao.conversation.member.ConversationMemberDAO
 import br.meetingplace.server.modules.conversation.dao.messages.MessageDAO
+import br.meetingplace.server.modules.conversation.dao.messages.status.MessageStatusDAO
 import br.meetingplace.server.modules.conversation.dto.requests.RequestConversation
 import br.meetingplace.server.modules.conversation.dto.requests.RequestConversationCreation
 import br.meetingplace.server.modules.conversation.dto.requests.RequestConversationMember
 import br.meetingplace.server.modules.conversation.dto.requests.RequestMessageCreation
-import br.meetingplace.server.modules.conversation.services.delete.ConversationDeleteService
-import br.meetingplace.server.modules.conversation.services.factory.ConversationFactoryService
-import br.meetingplace.server.modules.conversation.services.member.ConversationMemberService
+import br.meetingplace.server.modules.conversation.services.conversation.delete.ConversationDeleteService
+import br.meetingplace.server.modules.conversation.services.conversation.factory.ConversationFactoryService
+import br.meetingplace.server.modules.conversation.services.conversation.member.ConversationMemberService
 import br.meetingplace.server.modules.conversation.services.message.factory.MessageFactoryService
 import br.meetingplace.server.modules.conversation.services.message.read.MessageReadService
 import br.meetingplace.server.modules.user.dao.user.UserDAO
@@ -87,10 +88,10 @@ fun Route.groupConversationRouter(){
             }
             else call.respond(HttpStatusCode.Unauthorized)
         }
-        post<RequestConversation>("/get/conversation/group/messages") {
+        post<RequestConversation>("/get/all/group/messages") {
             val log = call.log
             if(log != null){
-                val chats = MessageReadService.readGroupMessages(requester = log.userID,
+                val chats = MessageReadService.readNewGroupMessages(requester = log.userID,
                     conversationID = it.conversationID,
                     decryption = AES,
                     messageDAO = MessageDAO,
@@ -104,7 +105,15 @@ fun Route.groupConversationRouter(){
             val log = call.log
             println(it)
             if(log != null)
-                call.respond(MessageFactoryService.createGroupMessage(requester = log.userID, it, ConversationMemberDAO, UserDAO, ConversationDAO, MessageDAO, AES))
+                call.respond(MessageFactoryService.createGroupMessage(requester = log.userID,
+                    it,
+                    conversationMemberDAO = ConversationMemberDAO,
+                    userDAO = UserDAO,
+                    conversationDAO = ConversationDAO,
+                    messageDAO = MessageDAO,
+                    encryption = AES,
+                    messageStatusDAO = MessageStatusDAO
+                ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
 

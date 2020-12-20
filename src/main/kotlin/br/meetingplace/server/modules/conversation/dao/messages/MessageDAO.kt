@@ -1,29 +1,25 @@
 package br.meetingplace.server.modules.conversation.dao.messages
 
-import br.meetingplace.server.modules.conversation.dto.response.MessageDTO
-import br.meetingplace.server.modules.conversation.entities.Message
+import br.meetingplace.server.modules.conversation.dto.response.messages.MessageDTO
+import br.meetingplace.server.modules.conversation.entities.MessageEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
 import org.postgresql.util.PSQLException
-import java.util.*
 
 object MessageDAO: MI{
-    override fun create(message: String, imageURL: String?, conversationID: String, from: String): HttpStatusCode {
+    override fun create(message: String, imageURL: String?, conversationID: String, creator: String, messageID: String): HttpStatusCode {
         return try {
             transaction {
-                Message.insert {
-                    it[id] = UUID.randomUUID().toString()
+                MessageEntity.insert {
+                    it[this.id] = messageID
                     it[valid] = 0
                     it[content] = message
-                    it[creatorID] = from
+                    it[this.creatorID] = creator
                     it[this.imageURL] = imageURL
                     it[type] = 0
-                    it[read] = false
                     it[this.conversationID] = conversationID
-                    it[creationDate] = DateTime.now()
-                    it[delivered] = false
+                    it[creationDate] = System.currentTimeMillis()
                 }
             }
             HttpStatusCode.Created
@@ -37,8 +33,8 @@ object MessageDAO: MI{
     override fun delete(messageID: String): HttpStatusCode {
         return try {
             transaction {
-                Message.deleteWhere {
-                    Message.id eq messageID
+                MessageEntity.deleteWhere {
+                    MessageEntity.id eq messageID
                 }
             }
             HttpStatusCode.OK
@@ -51,8 +47,8 @@ object MessageDAO: MI{
     override fun check(messageID: String): Boolean {
         return try {
             !transaction {
-                Message.select {
-                    Message.id eq messageID
+                MessageEntity.select {
+                    MessageEntity.id eq messageID
                 }.empty()
             }
         }catch (normal: Exception){
@@ -64,8 +60,8 @@ object MessageDAO: MI{
     override fun read(messageID: String): MessageDTO? {
         return try {
             transaction {
-                Message.select {
-                    Message.id eq messageID
+                MessageEntity.select {
+                    MessageEntity.id eq messageID
                 }.map { mapMessage(it) }.firstOrNull()
             }
         }catch (normal: Exception){
@@ -77,21 +73,21 @@ object MessageDAO: MI{
     override fun readAllConversation(userID: String, conversationID: String): List<MessageDTO> {
         return try {
             val conversation  = mutableListOf<MessageDTO>()
+//            transaction {
+//                Message.update({(Message.valid eq 0) and (Message.read eq false) and (Message.creatorID neq userID)}){
+//                    it[valid] = System.currentTimeMillis() + 86400000 //24hours + current time
+//                    it[read] = true
+//
+//                }
+//            }
             transaction {
-                Message.update({(Message.valid eq 0) and (Message.read eq false) and (Message.creatorID neq userID)}){
-                    it[valid] = System.currentTimeMillis().toInt() + 86400000 //24hours + current time
-                    it[read] = true
-                    it[delivered] = true
-                }
-            }
-            transaction {
-                Message.deleteWhere {
-                    ((Message.valid.less(System.currentTimeMillis().toInt())) and (Message.valid neq 0))   or (Message.valid eq System.currentTimeMillis().toInt())
+                MessageEntity.deleteWhere {
+                    ((MessageEntity.valid.less(System.currentTimeMillis().toInt())) and (MessageEntity.valid neq 0))   or (MessageEntity.valid eq System.currentTimeMillis())
                 }
             }
             conversation.addAll(transaction {
-                Message.select {
-                    Message.conversationID eq conversationID
+                MessageEntity.select {
+                    MessageEntity.conversationID eq conversationID
                 }.map { mapMessage(it) }
             })
             return conversation
@@ -103,15 +99,13 @@ object MessageDAO: MI{
     }
     private fun mapMessage(it: ResultRow): MessageDTO {
         return MessageDTO(
-            content = it[Message.content],
-            imageURL = it[Message.imageURL],
-            id = it[Message.id],
-            valid = it[Message.valid],
-            creatorID = it[Message.creatorID],
-            type =  it[Message.type],
-            received= it[Message.delivered],
-            conversationID = it[Message.conversationID],
-            read = it[Message.read],
-            creationDate = it[Message.creationDate].toString())
+            content = it[MessageEntity.content],
+            imageURL = it[MessageEntity.imageURL],
+            id = it[MessageEntity.id],
+            valid = it[MessageEntity.valid],
+            creatorID = it[MessageEntity.creatorID],
+            type =  it[MessageEntity.type],
+            conversationID = it[MessageEntity.conversationID],
+            creationDate = it[MessageEntity.creationDate])
     }
 }

@@ -1,14 +1,22 @@
 package br.meetingplace.server.modules.conversation.services.message.read
 
 import br.meetingplace.server.methods.AESInterface
-import br.meetingplace.server.modules.conversation.dao.member.CMI
+import br.meetingplace.server.modules.conversation.dao.conversation.member.CMI
 import br.meetingplace.server.modules.conversation.key.AESMessageKey
 import br.meetingplace.server.modules.conversation.dao.messages.MI
-import br.meetingplace.server.modules.conversation.dao.owners.COI
-import br.meetingplace.server.modules.conversation.dto.response.MessageDTO
+import br.meetingplace.server.modules.conversation.dao.conversation.owners.COI
+import br.meetingplace.server.modules.conversation.dto.response.messages.MessageDTO
 
 object MessageReadService {
-    fun readGroupMessages(requester: String, conversationID: String, messageDAO: MI, decryption: AESInterface, conversationMemberDAO: CMI): List<MessageDTO>{
+    fun readNewGroupMessages(requester: String, conversationID: String, messageDAO: MI, decryption: AESInterface, conversationMemberDAO: CMI): List<MessageDTO>{
+        TODO("NOT YET IMPLEMENTED")
+    //        return try {
+//
+//        }catch (e: Exception){
+//            listOf()
+//        }
+    }
+    fun readGroupAllMessages(requester: String, conversationID: String, messageDAO: MI, decryption: AESInterface, conversationMemberDAO: CMI): List<MessageDTO>{
         return try {
             val encryptedConversation: List<MessageDTO> =
                 if(conversationMemberDAO.check(conversationID = conversationID, userID = requester))
@@ -29,9 +37,7 @@ object MessageReadService {
                         creatorID = encryptedConversation[i].creatorID,
                         type = encryptedConversation[i].type,
                         conversationID = encryptedConversation[i].conversationID,
-                        received = encryptedConversation[i].received,
                         valid = encryptedConversation[i].valid,
-                        read = encryptedConversation[i].read,
                         creationDate = encryptedConversation[i].creationDate
                     )
                     )
@@ -41,7 +47,16 @@ object MessageReadService {
             listOf()
         }
     }
-    fun readUserMessages(requester: String, userID: String, messageDAO: MI, decryption: AESInterface, conversationOwnerDAO: COI): List<MessageDTO>{
+    fun readNewUserMessages(requester: String, userID: String, messageDAO: MI, decryption: AESInterface, conversationOwnerDAO: COI): List<MessageDTO>{
+        TODO("NOT YET IMPLEMENTED")
+    //        return try {
+//            val conversation = conversationOwnerDAO.read(userID = requester, secondUserID = userID)
+//
+//        }catch (e: Exception){
+//            listOf()
+//        }
+    }
+    fun readUserAllMessages(requester: String, userID: String, messageDAO: MI, decryption: AESInterface, conversationOwnerDAO: COI): List<MessageDTO>{
         return try {
             val conversation = conversationOwnerDAO.read(userID = requester, secondUserID = userID)
             val encryptedConversation: List<MessageDTO> =
@@ -63,9 +78,7 @@ object MessageReadService {
                             creatorID = encryptedConversation[i].creatorID,
                             type = encryptedConversation[i].type,
                             conversationID = encryptedConversation[i].conversationID,
-                            received = encryptedConversation[i].received,
                             valid = encryptedConversation[i].valid,
-                            read = encryptedConversation[i].read,
                             creationDate = encryptedConversation[i].creationDate
                         )
                     )

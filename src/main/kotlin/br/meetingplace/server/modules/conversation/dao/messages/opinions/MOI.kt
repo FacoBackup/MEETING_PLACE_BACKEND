@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.conversation.dao.messages.opinions
 
-import br.meetingplace.server.modules.conversation.dto.response.MessageOpinionsDTO
+import br.meetingplace.server.modules.conversation.dto.response.messages.MessageOpinionsDTO
 import io.ktor.http.*
 
 interface MOI {

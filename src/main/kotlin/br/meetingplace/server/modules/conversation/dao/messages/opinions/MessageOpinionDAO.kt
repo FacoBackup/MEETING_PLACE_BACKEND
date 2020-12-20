@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.conversation.dao.messages.opinions
 
-import br.meetingplace.server.modules.conversation.dto.response.MessageOpinionsDTO
-import br.meetingplace.server.modules.conversation.entities.MessageOpinion
+import br.meetingplace.server.modules.conversation.dto.response.messages.MessageOpinionsDTO
+import br.meetingplace.server.modules.conversation.entities.MessageOpinionEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -11,7 +11,7 @@ object MessageOpinionDAO:MOI {
     override fun create(messageID: String, userID: String, liked: Boolean): HttpStatusCode {
         return try {
             transaction {
-                MessageOpinion.insert {
+                MessageOpinionEntity.insert {
                     it[this.messageID] = messageID
                     it[this.userID] = userID
                     it[this.liked] = liked
@@ -28,9 +28,9 @@ object MessageOpinionDAO:MOI {
     override fun delete(messageID: String, userID: String): HttpStatusCode {
         return try {
             transaction {
-                MessageOpinion.deleteWhere {
-                    (MessageOpinion.messageID eq messageID) and
-                    (MessageOpinion.userID eq userID)
+                MessageOpinionEntity.deleteWhere {
+                    (MessageOpinionEntity.messageID eq messageID) and
+                    (MessageOpinionEntity.userID eq userID)
                 }
             }
             HttpStatusCode.OK
@@ -44,8 +44,8 @@ object MessageOpinionDAO:MOI {
     override fun read(messageID: String, userID: String): MessageOpinionsDTO? {
         return try {
             transaction {
-                MessageOpinion.select {
-                (MessageOpinion.messageID eq messageID)  and (MessageOpinion.userID eq userID)
+                MessageOpinionEntity.select {
+                (MessageOpinionEntity.messageID eq messageID)  and (MessageOpinionEntity.userID eq userID)
                 }.map { mapMessageOpinions(it) }.firstOrNull()
             }
         }
@@ -59,7 +59,7 @@ object MessageOpinionDAO:MOI {
     override fun update(messageID: String, userID: String, liked: Boolean): HttpStatusCode {
        return try {
            transaction {
-               MessageOpinion.update({ (MessageOpinion.messageID eq messageID) and (MessageOpinion.userID eq userID) }){
+               MessageOpinionEntity.update({ (MessageOpinionEntity.messageID eq messageID) and (MessageOpinionEntity.userID eq userID) }){
                     it[this.liked] = liked
                }
            }
@@ -72,8 +72,8 @@ object MessageOpinionDAO:MOI {
     }
 
     private fun mapMessageOpinions(it: ResultRow): MessageOpinionsDTO {
-        return MessageOpinionsDTO(liked = it[MessageOpinion.liked],
-                                  messageID = it[MessageOpinion.messageID],
-                                  userID = it[MessageOpinion.userID])
+        return MessageOpinionsDTO(liked = it[MessageOpinionEntity.liked],
+                                  messageID = it[MessageOpinionEntity.messageID],
+                                  userID = it[MessageOpinionEntity.userID])
     }
 }
