@@ -42,7 +42,8 @@ object MessageReadService {
                             type = encryptedMessages[i].type,
                             conversationID = encryptedMessages[i].conversationID,
                             valid = encryptedMessages[i].valid,
-                            creationDate = encryptedMessages[i].creationDate
+                            creationDate = encryptedMessages[i].creationDate,
+                            read = messageStatusDAO.seenByEveryoneByMessage(conversationID = encryptedMessages[i].conversationID, messageID = encryptedMessages[i].id)
                         )
                     )
 
@@ -68,7 +69,6 @@ object MessageReadService {
             val conversation = conversationOwnerDAO.read(userID = requester, secondUserID = userID)
 
             if(conversation != null && userDAO.check(requester) && userDAO.check(userID)) {
-
                 unseenMessages = messageStatusDAO.readUnseen(conversationID = conversation.conversationID, userID = requester)
                 val decryptedMessages = mutableListOf<MessageDTO>()
 
@@ -88,7 +88,8 @@ object MessageReadService {
                                     type = encryptedMessage.type,
                                     conversationID = encryptedMessage.conversationID,
                                     valid = encryptedMessage.valid,
-                                    creationDate = encryptedMessage.creationDate
+                                    creationDate = encryptedMessage.creationDate,
+                                    read = messageStatusDAO.seenByEveryoneByMessage(conversationID = encryptedMessage.conversationID, messageID = encryptedMessage.id)
                                 )
                             )
                             messageStatusDAO.update(conversationID = conversation.conversationID,
@@ -100,7 +101,8 @@ object MessageReadService {
                         }
                     }
                 }
-
+                println("DONE")
+                println(unseenMessages)
                 decryptedMessages //RETURN
             }
             else
@@ -132,7 +134,8 @@ object MessageReadService {
                             type = encryptedMessages[i].type,
                             conversationID = encryptedMessages[i].conversationID,
                             valid = encryptedMessages[i].valid,
-                            creationDate = encryptedMessages[i].creationDate
+                            creationDate = encryptedMessages[i].creationDate,
+                            read = messageStatusDAO.seenByEveryoneByMessage(conversationID = encryptedMessages[i].conversationID, messageID = encryptedMessages[i].id)
                         )
                     )
                 messageStatusDAO.update(

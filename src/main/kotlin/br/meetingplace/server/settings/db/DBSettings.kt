@@ -36,6 +36,7 @@ object DBSettings {
                     ConversationMemberEntity,
                     MessageEntity,
                     MessageOpinionEntity,
+                    MessageStatusEntity,
                     Community,
                     CommunityMember,
                     Topic,

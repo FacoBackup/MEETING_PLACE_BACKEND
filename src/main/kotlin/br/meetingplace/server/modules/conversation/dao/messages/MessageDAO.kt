@@ -127,6 +127,8 @@ object MessageDAO: MI{
             creatorID = it[MessageEntity.creatorID],
             type =  it[MessageEntity.type],
             conversationID = it[MessageEntity.conversationID],
-            creationDate = it[MessageEntity.creationDate])
+            creationDate = it[MessageEntity.creationDate],
+            read = false
+        )
     }
 }

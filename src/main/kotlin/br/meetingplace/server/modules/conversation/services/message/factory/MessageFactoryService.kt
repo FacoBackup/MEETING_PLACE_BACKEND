@@ -33,7 +33,7 @@ object MessageFactoryService {
                         messageID = UUID.randomUUID().toString()
                         conversationMembers = conversationMemberDAO.readAllByConversation(conversationID = data.conversationID)
                         for(i in conversationMembers.indices){
-                            messageStatusDAO.create(conversationID = data.conversationID, userID = conversationMembers[i].userID, messageID = messageID, seen = false)
+                            messageStatusDAO.create(conversationID = data.conversationID, userID = conversationMembers[i].userID, messageID = messageID)
                         }
                         messageDAO.create(
                             message = encryptedMessage,
@@ -65,8 +65,8 @@ object MessageFactoryService {
                             return HttpStatusCode.InternalServerError
                         else{
                             messageID = UUID.randomUUID().toString()
-                            messageStatusDAO.create(conversationID = conversation.conversationID, userID = requester, seen = false, messageID = messageID)
-                            messageStatusDAO.create(conversationID = conversation.conversationID, userID = data.receiverID, seen = false, messageID = messageID)
+                            messageStatusDAO.create(conversationID = conversation.conversationID, userID = requester, messageID = messageID)
+                            messageStatusDAO.create(conversationID = conversation.conversationID, userID = data.receiverID, messageID = messageID)
                             messageDAO.create(
                                 message = encryptedMessage,
                                 imageURL = encryptedImageURL,
@@ -103,8 +103,8 @@ object MessageFactoryService {
                                         conversationID = id,
                                         messageID = messageID
                                     )
-                                    messageStatusDAO.create(conversationID = id, userID = requester, seen = false, messageID = messageID)
-                                    messageStatusDAO.create(conversationID = id, userID = data.receiverID, seen = false, messageID = messageID)
+                                    messageStatusDAO.create(conversationID = id, userID = requester, messageID = messageID)
+                                    messageStatusDAO.create(conversationID = id, userID = data.receiverID, messageID = messageID)
                                 }
 
                             }

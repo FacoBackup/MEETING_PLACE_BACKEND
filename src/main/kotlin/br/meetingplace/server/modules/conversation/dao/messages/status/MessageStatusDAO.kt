@@ -10,14 +10,14 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object MessageStatusDAO: MSI {
-    override fun create(conversationID: String, userID: String, messageID: String, seen: Boolean): HttpStatusCode {
+    override fun create(conversationID: String, userID: String, messageID: String): HttpStatusCode {
         return try{
             transaction {
                 MessageStatusEntity.insert {
                     it[this.conversationID] = conversationID
                     it[this.userID] = userID
                     it[this.messageID] = messageID
-                    it[this.seen] = seen
+                    it[this.seen] = false
                 }
             }
             HttpStatusCode.Created
@@ -33,7 +33,7 @@ object MessageStatusDAO: MSI {
             transaction {
                 MessageStatusEntity.select {
                     (MessageStatusEntity.conversationID eq conversationID) and
-                    (MessageStatusEntity.seen eq true) and (MessageStatusEntity.messageID eq messageID)
+                    (MessageStatusEntity.seen eq false) and (MessageStatusEntity.messageID eq messageID)
                 }.map{ mapMessageStatus(it) }.firstOrNull()
             } == null
 
@@ -48,7 +48,7 @@ object MessageStatusDAO: MSI {
             transaction {
                 MessageStatusEntity.select {
                     (MessageStatusEntity.conversationID eq conversationID) and
-                    (MessageStatusEntity.userID eq userID)
+                    (MessageStatusEntity.userID eq userID) and (MessageStatusEntity.seen eq false)
                 }.map{ mapMessageStatus(it) }
             }
         } catch (e: Exception) {
@@ -80,7 +80,7 @@ object MessageStatusDAO: MSI {
             conversationID = it[MessageStatusEntity.conversationID],
             userID = it[MessageStatusEntity.userID],
             messageID = it[MessageStatusEntity.messageID],
-            seen = it[seen]
+            seen = it[MessageStatusEntity.seen]
         )
     }
 }

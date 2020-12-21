@@ -7,4 +7,6 @@ data class MessageDTO(val content: String,
                       val conversationID: String,
                       val type: Short,
                       val valid: Long,
-                      val creationDate: Long)
+                      val creationDate: Long,
+                      val read: Boolean
+                        )
