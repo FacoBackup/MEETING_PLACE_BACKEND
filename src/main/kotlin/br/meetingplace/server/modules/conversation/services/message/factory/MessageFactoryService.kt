@@ -3,12 +3,12 @@ package br.meetingplace.server.modules.conversation.services.message.factory
 import br.meetingplace.server.methods.AESInterface
 import br.meetingplace.server.modules.conversation.dao.conversation.CI
 import br.meetingplace.server.modules.conversation.dao.conversation.member.CMI
-import br.meetingplace.server.modules.conversation.dto.requests.RequestConversationCreation
+import br.meetingplace.server.modules.conversation.dto.requests.conversation.RequestConversationCreation
 import br.meetingplace.server.modules.conversation.key.AESMessageKey
 import br.meetingplace.server.modules.conversation.dao.messages.MI
 import br.meetingplace.server.modules.conversation.dao.conversation.owners.COI
 import br.meetingplace.server.modules.conversation.dao.messages.status.MSI
-import br.meetingplace.server.modules.conversation.dto.requests.RequestMessageCreation
+import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestMessageCreation
 import br.meetingplace.server.modules.conversation.dto.response.conversation.ConversationMemberDTO
 import br.meetingplace.server.modules.user.dao.user.UI
 import io.ktor.http.*
@@ -18,7 +18,7 @@ import java.util.*
 object MessageFactoryService {
     private const val key = AESMessageKey.key
 
-    fun createGroupMessage(requester: String, data: RequestMessageCreation, messageStatusDAO: MSI,conversationMemberDAO: CMI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface): HttpStatusCode {
+    fun createGroupMessage(requester: String, data: RequestMessageCreation, messageStatusDAO: MSI, conversationMemberDAO: CMI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface): HttpStatusCode {
         return try {
             lateinit var messageID: String
             lateinit var conversationMembers: List<ConversationMemberDTO>
@@ -51,7 +51,7 @@ object MessageFactoryService {
         }
     }
 
-    fun createUserMessage(requester: String, data: RequestMessageCreation,messageStatusDAO: MSI, conversationOwnerDAO: COI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface):HttpStatusCode{
+    fun createUserMessage(requester: String, data: RequestMessageCreation, messageStatusDAO: MSI, conversationOwnerDAO: COI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface):HttpStatusCode{
 
         return try{
             lateinit var messageID: String

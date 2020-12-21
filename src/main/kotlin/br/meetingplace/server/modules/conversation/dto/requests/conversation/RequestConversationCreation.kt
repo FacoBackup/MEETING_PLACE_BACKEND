@@ -1,4 +1,4 @@
-package br.meetingplace.server.modules.conversation.dto.requests
+package br.meetingplace.server.modules.conversation.dto.requests.conversation
 
 data class RequestConversationCreation(val name: String,
                                        val imageURL: String?,

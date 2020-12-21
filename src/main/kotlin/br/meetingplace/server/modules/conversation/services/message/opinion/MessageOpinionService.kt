@@ -3,7 +3,7 @@ package br.meetingplace.server.modules.conversation.services.message.opinion
 import br.meetingplace.server.modules.conversation.dao.conversation.member.CMI
 import br.meetingplace.server.modules.conversation.dao.messages.MessageDAO
 import br.meetingplace.server.modules.conversation.dao.messages.opinions.MessageOpinionDAO
-import br.meetingplace.server.modules.conversation.dto.requests.RequestMessage
+import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestMessage
 import br.meetingplace.server.modules.user.dao.user.UserDAO
 import io.ktor.http.*
 

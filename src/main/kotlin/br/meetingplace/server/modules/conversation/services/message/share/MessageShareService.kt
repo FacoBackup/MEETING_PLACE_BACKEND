@@ -1,9 +1,9 @@
 package br.meetingplace.server.modules.conversation.services.message.share
 
-import br.meetingplace.server.modules.conversation.dto.requests.RequestConversationMessage
+import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestShareMessage
 
 object MessageShareService {
-    fun shareMessage(data: RequestConversationMessage) {
+    fun shareMessage(data: RequestShareMessage) {
         TODO("NOT YET IMPLEMENTED")
 //        val user = userDB.select(data.login.email)
 //        if (user != null) {

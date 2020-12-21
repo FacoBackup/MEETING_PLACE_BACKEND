@@ -1,6 +1,6 @@
-package br.meetingplace.server.modules.conversation.dto.requests
+package br.meetingplace.server.modules.conversation.dto.requests.messages
 
-data class RequestConversationMessage(
+data class RequestShareMessage(
         val message: String,
         val imageURL: String?,
         val messageID: String,

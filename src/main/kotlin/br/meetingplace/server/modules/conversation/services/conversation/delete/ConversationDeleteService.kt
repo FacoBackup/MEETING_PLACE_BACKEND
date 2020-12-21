@@ -2,7 +2,7 @@ package br.meetingplace.server.modules.conversation.services.conversation.delete
 
 import br.meetingplace.server.modules.conversation.dao.conversation.CI
 import br.meetingplace.server.modules.conversation.dao.conversation.member.CMI
-import br.meetingplace.server.modules.conversation.dto.requests.RequestConversation
+import br.meetingplace.server.modules.conversation.dto.requests.conversation.RequestConversation
 import io.ktor.http.*
 
 object ConversationDeleteService{

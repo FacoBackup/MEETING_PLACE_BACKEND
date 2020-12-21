@@ -2,7 +2,7 @@ package br.meetingplace.server.modules.conversation.services.conversation.member
 
 import br.meetingplace.server.modules.conversation.dao.conversation.CI
 import br.meetingplace.server.modules.conversation.dao.conversation.member.CMI
-import br.meetingplace.server.modules.conversation.dto.requests.RequestConversationMember
+import br.meetingplace.server.modules.conversation.dto.requests.conversation.RequestConversationMember
 import io.ktor.http.*
 
 object ConversationMemberService {

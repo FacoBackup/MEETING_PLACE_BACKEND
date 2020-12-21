@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.conversation.dao.conversation
 
-import br.meetingplace.server.modules.conversation.dto.requests.RequestConversationCreation
+import br.meetingplace.server.modules.conversation.dto.requests.conversation.RequestConversationCreation
 import br.meetingplace.server.modules.conversation.dto.response.conversation.ConversationDTO
 import br.meetingplace.server.modules.conversation.entities.ConversationEntity
 import io.ktor.http.*

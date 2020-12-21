@@ -7,7 +7,7 @@ import br.meetingplace.server.modules.conversation.services.message.read.Message
 import br.meetingplace.server.modules.conversation.dao.messages.MessageDAO
 import br.meetingplace.server.modules.conversation.dao.conversation.owners.ConversationOwnersDAO
 import br.meetingplace.server.modules.conversation.dao.messages.status.MessageStatusDAO
-import br.meetingplace.server.modules.conversation.dto.requests.RequestMessageCreation
+import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestMessageCreation
 import br.meetingplace.server.modules.conversation.services.message.factory.MessageFactoryService
 import br.meetingplace.server.modules.conversation.services.conversation.read.ConversationReadService
 import br.meetingplace.server.modules.user.dao.user.UserDAO
@@ -48,17 +48,33 @@ fun Route.userConversationRouter() {
                     userID = it.userID,
                     decryption = AES,
                     messageDAO = MessageDAO,
-                    conversationOwnerDAO = ConversationOwnersDAO)
+                    conversationOwnerDAO = ConversationOwnersDAO,
+                    messageStatusDAO = MessageStatusDAO)
 
                 call.respond(chats)
             }
             else call.respond(HttpStatusCode.Unauthorized)
         }
-
+        post<RequestUser>("/get/new/user/messages") {
+            val log = call.log
+            if(log != null){
+                val messages = MessageReadService.readNewUserMessages(
+                    requester = log.userID,
+                    userID = it.userID,
+                    decryption = AES,
+                    messageDAO = MessageDAO,
+                    conversationOwnerDAO = ConversationOwnersDAO,
+                    messageStatusDAO = MessageStatusDAO,
+                    userDAO = UserDAO
+                )
+                call.respond(messages)
+            }
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
 
         post<RequestMessageCreation>("/message/user") {
             val log = call.log
-            println(it)
+
             if(log != null)
                 call.respond(MessageFactoryService.createUserMessage(requester = log.userID,
                     it,

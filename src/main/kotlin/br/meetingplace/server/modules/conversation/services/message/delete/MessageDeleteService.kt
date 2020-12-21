@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.conversation.services.message.delete
 
 import br.meetingplace.server.modules.conversation.dao.messages.MI
-import br.meetingplace.server.modules.conversation.dto.requests.RequestMessage
+import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestMessage
 import io.ktor.http.*
 
 object MessageDeleteService {
