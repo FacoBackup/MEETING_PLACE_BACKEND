@@ -28,6 +28,21 @@ object MessageStatusDAO: MSI {
         }
     }
 
+    override fun seenByEveryoneByMessage(messageID: String, conversationID: String): Boolean {
+        return try {
+            transaction {
+                MessageStatusEntity.select {
+                    (MessageStatusEntity.conversationID eq conversationID) and
+                    (MessageStatusEntity.seen eq true) and (MessageStatusEntity.messageID eq messageID)
+                }.map{ mapMessageStatus(it) }.firstOrNull()
+            } == null
+
+        } catch (e: Exception) {
+            false
+        } catch (psql: PSQLException) {
+            false
+        }
+    }
     override fun readUnseen(conversationID: String, userID: String): List<MessageStatusDTO> {
         return try {
             transaction {

@@ -50,8 +50,11 @@ object MessageReadService {
                         conversationID = encryptedMessages[i].conversationID,
                         userID = requester,
                         messageID = encryptedMessages[i].id)
-                }
 
+                    if(messageStatusDAO.seenByEveryoneByMessage(messageID = encryptedMessages[i].id, conversationID = encryptedMessages[i].conversationID)){
+                        messageDAO.update(encryptedMessages[i].id)
+                    }
+                }
             }
             decryptedConversation
         }catch (e: Exception){
@@ -91,6 +94,9 @@ object MessageReadService {
                             messageStatusDAO.update(conversationID = conversation.conversationID,
                                 userID = requester,
                                 messageID = encryptedMessage.id)
+                            if(messageStatusDAO.seenByEveryoneByMessage(messageID = encryptedMessage.id, conversationID = encryptedMessage.conversationID)){
+                                messageDAO.update(encryptedMessage.id)
+                            }
                         }
                     }
                 }
@@ -133,6 +139,10 @@ object MessageReadService {
                     conversationID = encryptedMessages[i].conversationID,
                     userID = requester,
                     messageID = encryptedMessages[i].id)
+
+                if(messageStatusDAO.seenByEveryoneByMessage(messageID = encryptedMessages[i].id, conversationID = encryptedMessages[i].conversationID)){
+                    messageDAO.update(encryptedMessages[i].id)
+                }
             }
             decryptedConversation
         }catch (e: Exception){

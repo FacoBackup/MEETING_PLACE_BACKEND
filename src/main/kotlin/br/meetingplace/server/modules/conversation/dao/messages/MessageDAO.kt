@@ -30,6 +30,22 @@ object MessageDAO: MI{
         }
     }
 
+    override fun update(messageID: String): HttpStatusCode {
+        return try {
+            transaction {
+                MessageEntity.update( {
+                    MessageEntity.id eq messageID
+                }){
+                    it[valid] = System.currentTimeMillis()
+                }
+            }
+            HttpStatusCode.OK
+        }catch (normal: Exception){
+            HttpStatusCode.InternalServerError
+        }catch (psql: PSQLException){
+            HttpStatusCode.InternalServerError
+        }
+    }
     override fun delete(messageID: String): HttpStatusCode {
         return try {
             transaction {
@@ -59,6 +75,11 @@ object MessageDAO: MI{
     }
     override fun read(messageID: String): MessageDTO? {
         return try {
+            transaction {
+                MessageEntity.deleteWhere {
+                    ((MessageEntity.valid.less(System.currentTimeMillis().toInt())) and (MessageEntity.valid neq 0))   or (MessageEntity.valid eq System.currentTimeMillis())
+                }
+            }
             transaction {
                 MessageEntity.select {
                     MessageEntity.id eq messageID

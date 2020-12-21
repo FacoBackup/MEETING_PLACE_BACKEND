@@ -9,4 +9,5 @@ interface MI {
     fun check(messageID: String): Boolean
     fun readAllConversation(userID: String, conversationID: String): List<MessageDTO>
     fun delete(messageID: String): HttpStatusCode
+    fun update(messageID: String): HttpStatusCode
 }
