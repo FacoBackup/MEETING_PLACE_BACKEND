@@ -32,15 +32,18 @@ object MessageFactoryService {
                     else{
                         messageID = UUID.randomUUID().toString()
                         conversationMembers = conversationMemberDAO.readAllByConversation(conversationID = data.conversationID)
-                        for(i in conversationMembers.indices){
-                            messageStatusDAO.create(conversationID = data.conversationID, userID = conversationMembers[i].userID, messageID = messageID)
-                        }
-                        messageDAO.create(
+
+                        val response = messageDAO.create(
                             message = encryptedMessage,
                             imageURL = encryptedImageURL,
                             creator = requester,
                             conversationID = data.conversationID,
                             messageID = messageID)
+
+                        for(i in conversationMembers.indices){
+                            messageStatusDAO.create(conversationID = data.conversationID, userID = conversationMembers[i].userID, messageID = messageID)
+                        }
+                        response
                     }
                 }
                 else HttpStatusCode.FailedDependency
@@ -65,14 +68,17 @@ object MessageFactoryService {
                             return HttpStatusCode.InternalServerError
                         else{
                             messageID = UUID.randomUUID().toString()
-                            messageStatusDAO.create(conversationID = conversation.conversationID, userID = requester, messageID = messageID)
-                            messageStatusDAO.create(conversationID = conversation.conversationID, userID = data.receiverID, messageID = messageID)
-                            messageDAO.create(
+
+                            val response = messageDAO.create(
                                 message = encryptedMessage,
                                 imageURL = encryptedImageURL,
                                 creator = requester,
                                 conversationID = conversation.conversationID,
                                 messageID = messageID)
+
+                            messageStatusDAO.create(conversationID = conversation.conversationID, userID = requester, messageID = messageID)
+                            messageStatusDAO.create(conversationID = conversation.conversationID, userID = data.receiverID, messageID = messageID)
+                            response
                         }
 
                     }
@@ -96,7 +102,7 @@ object MessageFactoryService {
                                     return HttpStatusCode.InternalServerError
                                 else{
                                     messageID = UUID.randomUUID().toString()
-                                    messageDAO.create(
+                                    val response = messageDAO.create(
                                         message = encryptedMessage,
                                         imageURL = encryptedImageURL,
                                         creator = requester,
@@ -105,6 +111,7 @@ object MessageFactoryService {
                                     )
                                     messageStatusDAO.create(conversationID = id, userID = requester, messageID = messageID)
                                     messageStatusDAO.create(conversationID = id, userID = data.receiverID, messageID = messageID)
+                                    response
                                 }
 
                             }
