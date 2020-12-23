@@ -8,7 +8,7 @@ import org.postgresql.util.PSQLException
 
 object UserFactoryService{
 
-    fun create(data: RequestUserCreation, userDAO: UI): HttpStatusCode {
+    suspend fun create(data: RequestUserCreation, userDAO: UI): HttpStatusCode {
         return try{
             if(userDAO.readAllByAttribute(null, null,
                 phoneNumber = data.phoneNumber,null,null).isEmpty() &&

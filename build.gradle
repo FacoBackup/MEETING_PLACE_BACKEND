@@ -26,6 +26,7 @@ dependencies {
     compile("org.postgresql:postgresql:42.2.2")
     compile 'org.jetbrains.exposed:exposed-jodatime:0.24.1'
     //testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
 }
 
 mainClassName = 'server.server.MainKt'

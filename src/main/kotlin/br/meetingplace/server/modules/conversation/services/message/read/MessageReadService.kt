@@ -20,7 +20,7 @@ object MessageReadService {
 //            listOf()
 //        }
     }
-    fun readGroupAllMessages(requester: String, conversationID: String,messageStatusDAO: MSI,messageDAO: MI, decryption: AESInterface, conversationMemberDAO: CMI): List<MessageDTO>{
+    suspend fun readGroupAllMessages(requester: String, conversationID: String,messageStatusDAO: MSI,messageDAO: MI, decryption: AESInterface, conversationMemberDAO: CMI): List<MessageDTO>{
         return try {
             val encryptedMessages: List<MessageDTO> =
                 if(conversationMemberDAO.check(conversationID = conversationID, userID = requester))
@@ -62,7 +62,7 @@ object MessageReadService {
             listOf()
         }
     }
-    fun readNewUserMessages(requester: String,userDAO: UI, userID: String,messageStatusDAO: MSI, messageDAO: MI, decryption: AESInterface, conversationOwnerDAO: COI): List<MessageDTO>{
+    suspend fun readNewUserMessages(requester: String,userDAO: UI, userID: String,messageStatusDAO: MSI, messageDAO: MI, decryption: AESInterface, conversationOwnerDAO: COI): List<MessageDTO>{
 
         return try {
             lateinit var unseenMessages: List<MessageStatusDTO>
@@ -109,7 +109,7 @@ object MessageReadService {
             listOf()
         }
     }
-    fun readUserAllMessages(requester: String, userID: String,messageStatusDAO: MSI, messageDAO: MI, decryption: AESInterface, conversationOwnerDAO: COI): List<MessageDTO>{
+    suspend fun readUserAllMessages(requester: String, userID: String,messageStatusDAO: MSI, messageDAO: MI, decryption: AESInterface, conversationOwnerDAO: COI): List<MessageDTO>{
         return try {
             val conversation = conversationOwnerDAO.read(userID = requester, secondUserID = userID)
             val encryptedMessages: List<MessageDTO> =

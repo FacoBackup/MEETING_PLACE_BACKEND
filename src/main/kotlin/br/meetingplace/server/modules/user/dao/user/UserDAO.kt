@@ -14,7 +14,7 @@ import org.postgresql.util.PSQLException
 import java.text.DateFormat
 
 object UserDAO: UI {
-    override fun create(data: RequestUserCreation): HttpStatusCode {
+    override suspend fun create(data: RequestUserCreation): HttpStatusCode {
         return try {
             transaction {
                User.insert {
@@ -39,7 +39,7 @@ object UserDAO: UI {
         }
     }
 
-    override fun delete(userID: String): HttpStatusCode {
+    override suspend fun delete(userID: String): HttpStatusCode {
         return try {
             transaction {
                 User.deleteWhere { User.email eq userID }
@@ -52,7 +52,7 @@ object UserDAO: UI {
         }
     }
 
-    override fun read(userID: String): UserDTO? {
+    override suspend fun read(userID: String): UserDTO? {
         return try {
             transaction {
                 User.select {
@@ -65,7 +65,7 @@ object UserDAO: UI {
             null
         }
     }
-    override fun readAuthUser(userID: String): UserAuthDTO? {
+    override suspend fun readAuthUser(userID: String): UserAuthDTO? {
         return try {
             transaction {
                 User.select {
@@ -78,7 +78,7 @@ object UserDAO: UI {
             null
         }
     }
-    override fun readAll(): List<UserDTO>{
+    override suspend fun readAll(): List<UserDTO>{
         return try {
             transaction {
                 User.selectAll().map { mapUser(it) }
@@ -90,7 +90,7 @@ object UserDAO: UI {
         }
     }
 
-    override fun check(userID: String): Boolean {
+    override suspend fun check(userID: String): Boolean {
         return try {
             return !transaction {
                 User.select { User.email eq userID }.empty()
@@ -101,7 +101,7 @@ object UserDAO: UI {
             false
         }
     }
-    override fun readAllByAttribute(
+    override suspend  fun readAllByAttribute(
         name: String?,
         birthDate: String?,
         phoneNumber: String?,
@@ -145,7 +145,7 @@ object UserDAO: UI {
         }
     }
 
-    override fun update(
+    override suspend fun update(
         userID: String,
         name: String?,
         imageURL: String?,

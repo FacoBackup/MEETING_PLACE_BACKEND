@@ -11,7 +11,7 @@ import io.ktor.http.*
 
 object TopicFactoryService {
     private const val key = AESTopicKey.key
-    fun create(requester: String, data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
+    suspend fun create(requester: String, data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
         return try {
             val user = userDAO.read(requester)
             when (data.communityID.isNullOrBlank()) {
@@ -58,7 +58,7 @@ object TopicFactoryService {
         }
     }
 
-    fun createComment(requester: String,data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
+    suspend fun createComment(requester: String,data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
         return try {
             val user = userDAO.read(requester)
             when (data.communityID.isNullOrBlank()) {

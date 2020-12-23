@@ -6,7 +6,7 @@ import io.ktor.http.*
 
 object UserDeleteService {
 
-    fun delete(requester: String, data: RequestUser, userDAO: UI): HttpStatusCode {
+    suspend fun delete(requester: String, data: RequestUser, userDAO: UI): HttpStatusCode {
         return try{
             val userRequester = userDAO.read(requester)
             if( userRequester != null && userRequester.admin)

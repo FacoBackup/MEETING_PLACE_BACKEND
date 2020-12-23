@@ -8,7 +8,7 @@ import br.meetingplace.server.modules.user.dao.user.UserDAO
 import io.ktor.http.*
 
 object MessageOpinionService {
-    fun dislikeMessage(requester: String, data: RequestMessage, userDAO: UserDAO, messageDAO: MessageDAO, messageOpinionsDAO: MessageOpinionDAO, conversationMemberDAO: CMI): HttpStatusCode {
+    suspend fun dislikeMessage(requester: String, data: RequestMessage, userDAO: UserDAO, messageDAO: MessageDAO, messageOpinionsDAO: MessageOpinionDAO, conversationMemberDAO: CMI): HttpStatusCode {
         return try {
             if(messageDAO.check(data.messageID) && userDAO.check(requester)  && conversationMemberDAO.check(conversationID = data.conversationID, userID = requester)){
                 when(messageOpinionsDAO.read(data.messageID, userID = requester) == null){
@@ -26,7 +26,7 @@ object MessageOpinionService {
         }
     }
 
-    fun likeMessage(requester: String, data: RequestMessage, userDAO: UserDAO, messageDAO: MessageDAO, messageOpinionsDAO: MessageOpinionDAO, conversationMemberDAO: CMI): HttpStatusCode {
+    suspend fun likeMessage(requester: String, data: RequestMessage, userDAO: UserDAO, messageDAO: MessageDAO, messageOpinionsDAO: MessageOpinionDAO, conversationMemberDAO: CMI): HttpStatusCode {
         return try {
             if(messageDAO.check(data.messageID) && userDAO.check(requester)  && conversationMemberDAO.check(conversationID = data.conversationID, userID = requester)){
                 when(messageOpinionsDAO.read(data.messageID, userID = requester) == null){

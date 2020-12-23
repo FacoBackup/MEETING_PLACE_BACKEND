@@ -9,7 +9,7 @@ import java.util.*
 
 object ConversationFactoryService {
 
-    fun create(requester: String, conversationMemberDAO: CMI, data: RequestConversationCreation, conversationDAO: CI, userDAO: UI) : HttpStatusCode {
+    suspend fun create(requester: String, conversationMemberDAO: CMI, data: RequestConversationCreation, conversationDAO: CI, userDAO: UI) : HttpStatusCode {
         return try {
             if (userDAO.check(requester)){
                 val id = UUID.randomUUID().toString()

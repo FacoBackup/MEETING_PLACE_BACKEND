@@ -7,7 +7,7 @@ import br.meetingplace.server.modules.conversation.dto.response.conversation.Con
 import br.meetingplace.server.modules.user.dao.user.UI
 
 object ConversationReadService {
-    fun readConversation(requester: String, conversationMemberDAO: CMI, conversationDAO: CI, userDAO: UI, conversationOwnerDAO: COI): List<ConversationFullDTO> {
+    suspend fun readConversation(requester: String, conversationMemberDAO: CMI, conversationDAO: CI, userDAO: UI, conversationOwnerDAO: COI): List<ConversationFullDTO> {
         return try {
             val conversations = mutableListOf<ConversationFullDTO>()
             if(userDAO.check(requester)){

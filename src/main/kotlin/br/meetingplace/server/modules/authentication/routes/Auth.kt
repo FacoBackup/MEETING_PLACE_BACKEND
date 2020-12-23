@@ -35,7 +35,7 @@ fun Route.authentication(){
         }
         put("/login") {
             val data = call.receive<RequestLog>()
-            val token = AuthenticationService.login(data, UserDAO, AccessLogDAO)
+            val token = AuthenticationService.signIn(data, UserDAO, AccessLogDAO)
             if(token.isNullOrBlank())
                 call.respond(HttpStatusCode.Unauthorized)
             else
@@ -60,7 +60,7 @@ fun Route.authentication(){
                 val log = call.log
                 println("SIGNOUT HERE")
                 if(log != null)
-                    call.respond(AuthenticationService.logout(userDAO = UserDAO,
+                    call.respond(AuthenticationService.signOut(userDAO = UserDAO,
                         authenticationDAO = AccessLogDAO,
                         requester = log.userID,
                         ip = log.ipAddress))

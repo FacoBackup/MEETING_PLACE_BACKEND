@@ -10,7 +10,7 @@ import io.ktor.http.*
 
 object UserSocialService {
 
-    fun follow(requester: String,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI, communityDAO: CI, userDAO: UI): HttpStatusCode {
+    suspend fun follow(requester: String,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI, communityDAO: CI, userDAO: UI): HttpStatusCode {
         return try {
             when(data.community){
                 true-> {
@@ -29,7 +29,7 @@ object UserSocialService {
         }
     }
 
-    fun unfollow(requester: String,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI): HttpStatusCode {
+    suspend fun unfollow(requester: String,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI): HttpStatusCode {
         return try {
             when(data.community){
                 true-> communityMemberDAO.delete(data.subjectID, userID = requester)

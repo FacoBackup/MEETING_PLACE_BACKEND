@@ -7,7 +7,7 @@ import org.postgresql.util.PSQLException
 
 object UserUpdateService {
 
-    fun updateProfile(requester: String,data: RequestProfileUpdate, userDAO: UI) : HttpStatusCode {
+    suspend fun updateProfile(requester: String,data: RequestProfileUpdate, userDAO: UI) : HttpStatusCode {
         return try {
             userDAO.update(
                 requester,

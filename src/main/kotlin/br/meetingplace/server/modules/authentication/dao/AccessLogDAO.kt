@@ -10,7 +10,7 @@ import org.postgresql.util.PSQLException
 
 
 object AccessLogDAO: ALI {
-    override fun create(userID: String, ip: String): HttpStatusCode {
+    override suspend fun create(userID: String, ip: String): HttpStatusCode {
         return try {
             transaction {
                 AccessLog.insert {
@@ -28,7 +28,7 @@ object AccessLogDAO: ALI {
         }
     }
 
-    override fun delete(userID: String, ip: String): HttpStatusCode {
+    override suspend fun delete(userID: String, ip: String): HttpStatusCode {
         return try {
             transaction {
                 AccessLog.deleteWhere { (AccessLog.ip eq ip) and (AccessLog.userID eq userID)}
@@ -41,7 +41,7 @@ object AccessLogDAO: ALI {
         }
     }
 
-    override fun read(userID: String, ip: String): AccessLogDTO? {
+    override suspend fun read(userID: String, ip: String): AccessLogDTO? {
         return try {
             transaction {
                 AccessLog.select {

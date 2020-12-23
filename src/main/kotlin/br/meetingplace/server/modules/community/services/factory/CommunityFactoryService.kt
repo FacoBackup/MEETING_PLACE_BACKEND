@@ -7,7 +7,7 @@ import io.ktor.http.*
 
 object CommunityFactoryService {
 
-    fun create(requester: String,data: RequestCommunityCreation, communityDAO: CI, userDAO: UI): HttpStatusCode {
+    suspend fun create(requester: String,data: RequestCommunityCreation, communityDAO: CI, userDAO: UI): HttpStatusCode {
         return try {
             if(userDAO.read(requester) != null)
                 communityDAO.create(data)

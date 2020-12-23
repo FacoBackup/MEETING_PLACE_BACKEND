@@ -4,7 +4,7 @@ import br.meetingplace.server.modules.authentication.dto.response.AccessLogDTO
 import io.ktor.http.*
 
 interface ALI {
-    fun read(userID: String, ip: String): AccessLogDTO?
-    fun create(userID: String, ip: String): HttpStatusCode
-    fun delete(userID: String, ip: String): HttpStatusCode
+    suspend fun read(userID: String, ip: String): AccessLogDTO?
+    suspend fun create(userID: String, ip: String): HttpStatusCode
+    suspend fun delete(userID: String, ip: String): HttpStatusCode
 }

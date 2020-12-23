@@ -9,7 +9,7 @@ import io.ktor.http.*
 
 object TopicOpinionService{
 
-    fun dislike(requester: String,data: RequestTopic, userDAO: UI, topicDAO: TI, topicOpinionDAO: TOI): HttpStatusCode {
+    suspend fun dislike(requester: String,data: RequestTopic, userDAO: UI, topicDAO: TI, topicOpinionDAO: TOI): HttpStatusCode {
         return try {
             return if (userDAO.check(requester) && topicDAO.check(data.topicID))
                  when (checkLikeDislike(topicOpinion = topicOpinionDAO.read(data.topicID, userID = requester))) {
@@ -24,7 +24,7 @@ object TopicOpinionService{
         }
     }
 
-    fun like(requester: String,data: RequestTopic, userDAO: UI, topicDAO: TI, topicOpinionDAO: TOI): HttpStatusCode {
+    suspend fun like(requester: String,data: RequestTopic, userDAO: UI, topicDAO: TI, topicOpinionDAO: TOI): HttpStatusCode {
         return try {
             return if (userDAO.check(requester) && topicDAO.check(data.topicID))
                 when (checkLikeDislike(topicOpinion = topicOpinionDAO.read(data.topicID, userID = requester))) {

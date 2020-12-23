@@ -18,7 +18,7 @@ import java.util.*
 object MessageFactoryService {
     private const val key = AESMessageKey.key
 
-    fun createGroupMessage(requester: String, data: RequestMessageCreation, messageStatusDAO: MSI, conversationMemberDAO: CMI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface): HttpStatusCode {
+    suspend fun createGroupMessage(requester: String, data: RequestMessageCreation, messageStatusDAO: MSI, conversationMemberDAO: CMI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface): HttpStatusCode {
         return try {
             lateinit var messageID: String
             lateinit var conversationMembers: List<ConversationMemberDTO>
@@ -54,7 +54,7 @@ object MessageFactoryService {
         }
     }
 
-    fun createUserMessage(requester: String, data: RequestMessageCreation, messageStatusDAO: MSI, conversationOwnerDAO: COI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface):HttpStatusCode{
+    suspend fun createUserMessage(requester: String, data: RequestMessageCreation, messageStatusDAO: MSI, conversationOwnerDAO: COI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface):HttpStatusCode{
 
         return try{
             lateinit var messageID: String
