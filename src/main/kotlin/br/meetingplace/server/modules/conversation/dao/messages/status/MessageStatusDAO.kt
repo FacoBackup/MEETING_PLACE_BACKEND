@@ -33,7 +33,7 @@ object MessageStatusDAO: MSI {
             transaction {
                 MessageStatusEntity.select {
                     (MessageStatusEntity.conversationID eq conversationID) and
-                    (MessageStatusEntity.seen eq false) and (MessageStatusEntity.messageID eq messageID)
+                    (MessageStatusEntity.seen eq true) and (MessageStatusEntity.messageID eq messageID)
                 }.map{ mapMessageStatus(it) }.firstOrNull()
             } == null
 
