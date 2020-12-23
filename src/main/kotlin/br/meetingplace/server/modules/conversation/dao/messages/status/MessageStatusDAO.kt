@@ -1,11 +1,9 @@
 package br.meetingplace.server.modules.conversation.dao.messages.status
 
 import br.meetingplace.server.modules.conversation.dto.response.messages.MessageStatusDTO
-import br.meetingplace.server.modules.conversation.entities.MessageStatusEntity
-import br.meetingplace.server.modules.conversation.entities.MessageStatusEntity.seen
+import br.meetingplace.server.modules.conversation.entities.messages.MessageStatusEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
@@ -33,7 +31,7 @@ object MessageStatusDAO: MSI {
             transaction {
                 MessageStatusEntity.select {
                     (MessageStatusEntity.conversationID eq conversationID) and
-                    (MessageStatusEntity.seen eq true) and (MessageStatusEntity.messageID eq messageID)
+                    (MessageStatusEntity.seen eq false) and (MessageStatusEntity.messageID eq messageID)
                 }.map{ mapMessageStatus(it) }.firstOrNull()
             } == null
 

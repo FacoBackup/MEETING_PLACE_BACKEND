@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.conversation.dao.messages
 
 import br.meetingplace.server.modules.conversation.dto.response.messages.MessageDTO
-import br.meetingplace.server.modules.conversation.entities.MessageEntity
+import br.meetingplace.server.modules.conversation.entities.messages.MessageEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -20,6 +20,7 @@ object MessageDAO: MI{
                     it[type] = 0
                     it[this.conversationID] = conversationID
                     it[creationDate] = System.currentTimeMillis()
+                    it[this.seenByEveryone] = false
                 }
             }
             HttpStatusCode.Created
@@ -37,6 +38,7 @@ object MessageDAO: MI{
                     MessageEntity.id eq messageID
                 }){
                     it[valid] = System.currentTimeMillis()
+                    it[this.seenByEveryone] = true
                 }
             }
             HttpStatusCode.OK
@@ -94,13 +96,6 @@ object MessageDAO: MI{
     override fun readAllConversation(userID: String, conversationID: String): List<MessageDTO> {
         return try {
             val conversation  = mutableListOf<MessageDTO>()
-//            transaction {
-//                Message.update({(Message.valid eq 0) and (Message.read eq false) and (Message.creatorID neq userID)}){
-//                    it[valid] = System.currentTimeMillis() + 86400000 //24hours + current time
-//                    it[read] = true
-//
-//                }
-//            }
             transaction {
                 MessageEntity.deleteWhere {
                     ((MessageEntity.valid.less(System.currentTimeMillis().toInt())) and (MessageEntity.valid neq 0))   or (MessageEntity.valid eq System.currentTimeMillis())
@@ -128,7 +123,7 @@ object MessageDAO: MI{
             type =  it[MessageEntity.type],
             conversationID = it[MessageEntity.conversationID],
             creationDate = it[MessageEntity.creationDate],
-            read = false
+            seenByEveryone = it[MessageEntity.seenByEveryone]
         )
     }
 }

@@ -8,5 +8,5 @@ data class MessageDTO(val content: String,
                       val type: Short,
                       val valid: Long,
                       val creationDate: Long,
-                      val read: Boolean
+                      val seenByEveryone: Boolean
                         )

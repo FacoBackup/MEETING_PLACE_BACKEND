@@ -3,7 +3,12 @@ package br.meetingplace.server.settings.db
 import br.meetingplace.server.modules.authentication.entities.AccessLog
 import br.meetingplace.server.modules.community.entities.Community
 import br.meetingplace.server.modules.community.entities.CommunityMember
-import br.meetingplace.server.modules.conversation.entities.*
+import br.meetingplace.server.modules.conversation.entities.conversation.ConversationEntity
+import br.meetingplace.server.modules.conversation.entities.conversation.ConversationMemberEntity
+import br.meetingplace.server.modules.conversation.entities.conversation.ConversationOwnersEntity
+import br.meetingplace.server.modules.conversation.entities.messages.MessageEntity
+import br.meetingplace.server.modules.conversation.entities.messages.MessageOpinionEntity
+import br.meetingplace.server.modules.conversation.entities.messages.MessageStatusEntity
 import br.meetingplace.server.modules.topic.entities.Topic
 import br.meetingplace.server.modules.topic.entities.TopicOpinion
 import br.meetingplace.server.modules.user.entities.Social

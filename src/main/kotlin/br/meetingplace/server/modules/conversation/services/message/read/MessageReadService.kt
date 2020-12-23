@@ -43,7 +43,7 @@ object MessageReadService {
                             conversationID = encryptedMessages[i].conversationID,
                             valid = encryptedMessages[i].valid,
                             creationDate = encryptedMessages[i].creationDate,
-                            read = messageStatusDAO.seenByEveryoneByMessage(conversationID = encryptedMessages[i].conversationID, messageID = encryptedMessages[i].id)
+                            seenByEveryone = encryptedMessages[i].seenByEveryone
                         )
                     )
 
@@ -89,7 +89,7 @@ object MessageReadService {
                                     conversationID = encryptedMessage.conversationID,
                                     valid = encryptedMessage.valid,
                                     creationDate = encryptedMessage.creationDate,
-                                    read = messageStatusDAO.seenByEveryoneByMessage(conversationID = encryptedMessage.conversationID, messageID = encryptedMessage.id)
+                                    seenByEveryone = encryptedMessage.seenByEveryone
                                 )
                             )
                             messageStatusDAO.update(conversationID = conversation.conversationID,
@@ -101,8 +101,6 @@ object MessageReadService {
                         }
                     }
                 }
-                println("DONE")
-                println(unseenMessages)
                 decryptedMessages //RETURN
             }
             else
@@ -135,7 +133,7 @@ object MessageReadService {
                             conversationID = encryptedMessages[i].conversationID,
                             valid = encryptedMessages[i].valid,
                             creationDate = encryptedMessages[i].creationDate,
-                            read = messageStatusDAO.seenByEveryoneByMessage(conversationID = encryptedMessages[i].conversationID, messageID = encryptedMessages[i].id)
+                            seenByEveryone = encryptedMessages[i].seenByEveryone
                         )
                     )
                 messageStatusDAO.update(

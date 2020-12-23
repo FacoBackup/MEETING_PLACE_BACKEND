@@ -2,7 +2,7 @@ package br.meetingplace.server.modules.conversation.dao.conversation
 
 import br.meetingplace.server.modules.conversation.dto.requests.conversation.RequestConversationCreation
 import br.meetingplace.server.modules.conversation.dto.response.conversation.ConversationDTO
-import br.meetingplace.server.modules.conversation.entities.ConversationEntity
+import br.meetingplace.server.modules.conversation.entities.conversation.ConversationEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -73,7 +73,7 @@ object ConversationDAO: CI {
     override fun update(conversationID: String, name: String?, about: String?, imageURL: String?): HttpStatusCode {
         return try {
             transaction {
-                ConversationEntity.update({ConversationEntity.id eq conversationID}) {
+                ConversationEntity.update({ ConversationEntity.id eq conversationID}) {
                     if(!name.isNullOrBlank())
                         it[this.name] = name
                     if(!about.isNullOrBlank())

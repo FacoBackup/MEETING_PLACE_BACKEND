@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.conversation.dao.conversation.member
 
 import br.meetingplace.server.modules.conversation.dto.response.conversation.ConversationMemberDTO
-import br.meetingplace.server.modules.conversation.entities.ConversationMemberEntity
+import br.meetingplace.server.modules.conversation.entities.conversation.ConversationMemberEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
