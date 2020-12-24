@@ -8,7 +8,7 @@ object UserDeleteService {
 
     suspend fun delete(requester: String, data: RequestUser, userDAO: UI): HttpStatusCode {
         return try{
-            val userRequester = userDAO.read(requester)
+            val userRequester = userDAO.readByID(requester)
             if( userRequester != null && userRequester.admin)
                 userDAO.delete(data.userID)
             else

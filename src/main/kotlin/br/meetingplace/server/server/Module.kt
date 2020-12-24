@@ -39,6 +39,9 @@ fun Application.module(){
             setPrettyPrinting()
         }
     }
+//    install(CallLogging){
+//
+//    }
     install(Authentication){
         jwt {
             verifier(JWTSettings.jwtVerifier)

@@ -9,7 +9,7 @@ object CommunityFactoryService {
 
     suspend fun create(requester: String,data: RequestCommunityCreation, communityDAO: CI, userDAO: UI): HttpStatusCode {
         return try {
-            if(userDAO.read(requester) != null)
+            if(userDAO.readByID(requester) != null)
                 communityDAO.create(data)
             else HttpStatusCode.NoContent
         }catch (e: Exception){

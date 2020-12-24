@@ -28,13 +28,14 @@ fun Route.userRouter() {
         }
         patch(UserPaths.USER + "/search") {
             val data = call.receive<RequestUser>()
-            val user = UserDAO.read(data.userID)
+            val user = UserDAO.readByID(data.userID)
 
             if (user == null)
                 call.respond(HttpStatusCode.NotFound)
             else
                 call.respond(user)
         }
+
         get(UserPaths.USER +"/all") {
             val user = UserDAO.readAll()
             if (user.isEmpty())
@@ -52,11 +53,19 @@ fun Route.userRouter() {
 
                 else call.respond(false)
             }
+            get("/user/name"){
+                val data = call.receive<RequestUser>()
+                val log = call.log
 
+                if(log != null)
+                    call.respond(UserDAO.readByName(name = data.userID))
+
+                else call.respond(HttpStatusCode.Unauthorized)
+            }
             get(UserPaths.USER) {
                 val log = call.log
                 if(log != null){
-                    val user = UserDAO.read(log.userID)
+                    val user = UserDAO.readByID(log.userID)
                     if (user == null)
                         call.respond(HttpStatusCode.NotFound)
                     else

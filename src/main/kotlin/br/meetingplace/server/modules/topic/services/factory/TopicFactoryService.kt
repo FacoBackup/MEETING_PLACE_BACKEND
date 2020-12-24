@@ -13,7 +13,7 @@ object TopicFactoryService {
     private const val key = AESTopicKey.key
     suspend fun create(requester: String, data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
         return try {
-            val user = userDAO.read(requester)
+            val user = userDAO.readByID(requester)
             when (data.communityID.isNullOrBlank()) {
                 true -> {
                     return if (user != null && data.mainTopicID.isNullOrBlank()) {
@@ -60,7 +60,7 @@ object TopicFactoryService {
 
     suspend fun createComment(requester: String,data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
         return try {
-            val user = userDAO.read(requester)
+            val user = userDAO.readByID(requester)
             when (data.communityID.isNullOrBlank()) {
                 true -> {
                     return if (user != null && !data.mainTopicID.isNullOrBlank() && topicDAO.check(data.mainTopicID)) {

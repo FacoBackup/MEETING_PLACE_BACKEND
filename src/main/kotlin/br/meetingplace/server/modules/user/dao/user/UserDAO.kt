@@ -52,7 +52,7 @@ object UserDAO: UI {
         }
     }
 
-    override suspend fun read(userID: String): UserDTO? {
+    override suspend fun readByID(userID: String): UserDTO? {
         return try {
             transaction {
                 User.select {
@@ -63,6 +63,20 @@ object UserDAO: UI {
             null
         }catch (psql: PSQLException){
             null
+        }
+    }
+
+    override suspend fun readByName(name: String): List<UserDTO> {
+        return try {
+            transaction {
+                User.select{
+                    User.userName like "$name%"
+                }.map { mapUser(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
         }
     }
     override suspend fun readAuthUser(userID: String): UserAuthDTO? {
