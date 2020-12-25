@@ -4,6 +4,7 @@ import br.meetingplace.server.methods.hashString
 import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
 import br.meetingplace.server.modules.user.dto.response.UserAuthDTO
 import br.meetingplace.server.modules.user.dto.response.UserDTO
+import br.meetingplace.server.modules.user.dto.response.UserSocialDTO
 import br.meetingplace.server.modules.user.entities.User
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
@@ -14,6 +15,7 @@ import org.postgresql.util.PSQLException
 import java.text.DateFormat
 
 object UserDAO: UI {
+
     override suspend fun create(data: RequestUserCreation): HttpStatusCode {
         return try {
             transaction {
@@ -23,7 +25,7 @@ object UserDAO: UI {
                    it[userName] = data.userName
                    it[gender] = data.gender
                    it[nationality] = data.nationality
-                   it[birth] = DateTimeFormat.forPattern("dd-MM-yyyy").parseDateTime(data.birthDate)
+                   it[birth] = data.birthDate
                    it[imageURL] = null
                    it[about] = null
                    it[admin] = data.admin
@@ -51,7 +53,19 @@ object UserDAO: UI {
             HttpStatusCode.InternalServerError
         }
     }
-
+    override suspend fun readSocialByID(userID: String): UserSocialDTO? {
+        return try {
+            transaction {
+                User.select {
+                    User.email eq userID
+                }.map { mapUserSocial(it) }.firstOrNull()
+            }
+        }catch (normal: Exception){
+            null
+        }catch (psql: PSQLException){
+            null
+        }
+    }
     override suspend fun readByID(userID: String): UserDTO? {
         return try {
             transaction {
@@ -115,9 +129,11 @@ object UserDAO: UI {
             false
         }
     }
-    override suspend  fun readAllByAttribute(
+
+
+    override suspend fun readAllByAttribute(
         name: String?,
-        birthDate: String?,
+        birthDate: Long?,
         phoneNumber: String?,
         nationality: String?,
         city: String?
@@ -129,9 +145,9 @@ object UserDAO: UI {
                     User.userName eq name
                 }.map { mapUser(it) }.first()
             })
-            if(!birthDate.isNullOrBlank()) users.addAll(transaction {
+            if(birthDate != null) users.addAll(transaction {
                 User.select {
-                    User.birth eq DateTimeFormat.forPattern("dd-MM-yyyy").parseDateTime(birthDate)
+                    User.birth eq birthDate
                 }.map { mapUser(it) }
             })
             if(!phoneNumber.isNullOrBlank()) users.addAll(transaction {
@@ -194,6 +210,14 @@ object UserDAO: UI {
     }
     private fun mapUserAuth (it: ResultRow): UserAuthDTO{
         return UserAuthDTO(userID = it[User.email], password = it[User.password])
+    }
+    private fun mapUserSocial(it: ResultRow): UserSocialDTO{
+        return UserSocialDTO(
+            email = it[User.email],
+            name = it[User.userName],
+            bornDate= it[User.birth],
+            imageURL = it[User.imageURL])
+
     }
     private fun mapUser(it: ResultRow): UserDTO {
         return UserDTO(email = it[User.email], name = it[User.userName],

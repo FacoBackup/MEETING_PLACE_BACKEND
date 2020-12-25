@@ -9,7 +9,7 @@ import org.postgresql.util.PSQLException
 
 object UserSocialDAO:SI {
 
-    override fun create(userID: String, followedID: String): HttpStatusCode {
+    override suspend fun create(userID: String, followedID: String): HttpStatusCode {
         return try {
             transaction {
                 Social.insert{
@@ -25,7 +25,7 @@ object UserSocialDAO:SI {
         }
     }
 
-    override fun delete(userID: String, followedID: String): HttpStatusCode {
+    override suspend fun delete(userID: String, followedID: String): HttpStatusCode {
         return try {
             transaction {
                 Social.deleteWhere {
@@ -41,7 +41,7 @@ object UserSocialDAO:SI {
         }
     }
 
-    override fun check(followedID: String, userID: String): Boolean {
+    override suspend fun check(followedID: String, userID: String): Boolean {
         return try {
             return !transaction {
                 Social.select {
@@ -55,7 +55,7 @@ object UserSocialDAO:SI {
         }
     }
 
-    override fun readAll(userID: String, following: Boolean): List<SocialDTO> {
+    override  suspend fun readAll(userID: String, following: Boolean): List<SocialDTO> {
         return try {
             when(following){
                 true-> transaction {

@@ -44,12 +44,11 @@ fun Route.userRouter() {
                 call.respond(user)
         }
         authenticate {
-            patch("/follower"){
-                val data = call.receive<RequestUser>()
+
+            get("/follower"){
                 val log = call.log
-                println(data.userID)
                 if(log != null)
-                    call.respond(UserSocialDAO.check(followedID = data.userID, userID = log.userID))
+                    call.respond(UserSocialService.readFollowers(log.userID, UserSocialDAO, UserDAO))
 
                 else call.respond(false)
             }

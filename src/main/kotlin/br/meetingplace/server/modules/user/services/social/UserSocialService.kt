@@ -6,10 +6,30 @@ import br.meetingplace.server.modules.community.dto.MemberType
 import br.meetingplace.server.modules.user.dao.social.SI
 import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.modules.user.dto.requests.RequestSocial
+import br.meetingplace.server.modules.user.dto.response.UserDTO
+import br.meetingplace.server.modules.user.dto.response.UserSocialDTO
 import io.ktor.http.*
 
 object UserSocialService {
+    suspend fun readFollowers(requester: String, userSocialDAO: SI, userDAO: UI): List<UserSocialDTO>{
+        return try {
+            if(userDAO.check(requester)){
+                val followers = userSocialDAO.readAll(userID = requester, following = false)
+                val userFollowers = mutableListOf<UserSocialDTO>()
+                for(i in followers.indices){
+                    val follower = userDAO.readSocialByID(if(followers[i].followedID != requester) followers[i].followedID else followers[i].followerID )
+                    if(follower != null)
+                        userFollowers.add(follower)
+                }
+                userFollowers
+            }
+            else
+                listOf()
+        }catch (e: Exception){
+            listOf()
+        }
 
+    }
     suspend fun follow(requester: String,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI, communityDAO: CI, userDAO: UI): HttpStatusCode {
         return try {
             when(data.community){
