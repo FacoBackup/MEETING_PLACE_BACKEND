@@ -11,7 +11,7 @@ interface UI {
     suspend fun readAllByAttribute(name: String?, birthDate: Long?, phoneNumber: String?, nationality: String?, city: String?): List<UserDTO>
     suspend fun check(userID: String): Boolean
     suspend fun readByID(userID: String): UserDTO?
-    suspend fun readByName(name: String): List<UserDTO>
+    suspend fun readByName(name: String, requester: String): List<UserDTO>
     suspend fun readAll(): List<UserDTO>
     suspend fun readSocialByID(userID: String): UserSocialDTO?
     suspend fun readAuthUser(userID: String): UserAuthDTO?

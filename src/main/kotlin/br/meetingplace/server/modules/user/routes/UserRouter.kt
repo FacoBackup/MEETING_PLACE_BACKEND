@@ -11,6 +11,7 @@ import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
 import br.meetingplace.server.modules.user.services.delete.UserDeleteService
 import br.meetingplace.server.modules.user.services.factory.UserFactoryService
 import br.meetingplace.server.modules.user.services.profile.UserUpdateService
+import br.meetingplace.server.modules.user.services.search.UserSearchService
 import br.meetingplace.server.modules.user.services.social.UserSocialService
 import br.meetingplace.server.server.AuthLog.log
 import io.ktor.application.*
@@ -44,21 +45,37 @@ fun Route.userRouter() {
                 call.respond(user)
         }
         authenticate {
-
-            get("/follower"){
+            patch("/verify/follower"){
+                val data = call.receive<RequestUser>()
+                val log = call.log
+                if(log != null)
+                    call.respond(UserSocialDAO.check(followedID = log.userID, userID = data.userID))
+                else call.respond(false)
+            }
+            patch("/verify/following"){
+                val data = call.receive<RequestUser>()
+                val log = call.log
+                if(log != null)
+                    call.respond(UserSocialDAO.check(followedID = data.userID, userID = log.userID))
+                else call.respond(false)
+            }
+            get("/followers"){
                 val log = call.log
                 if(log != null)
                     call.respond(UserSocialService.readFollowers(log.userID, UserSocialDAO, UserDAO))
-
-                else call.respond(false)
+                else call.respond(HttpStatusCode.Unauthorized)
             }
-            get("/user/name"){
+            get("/following"){
+                val log = call.log
+                if(log != null)
+                    call.respond(UserSocialService.readFollowing(log.userID, UserSocialDAO, UserDAO))
+                else call.respond(HttpStatusCode.Unauthorized)
+            }
+            patch("/search/user"){
                 val data = call.receive<RequestUser>()
                 val log = call.log
-
                 if(log != null)
-                    call.respond(UserDAO.readByName(name = data.userID))
-
+                    call.respond(UserSearchService.searchUser(requester = log.userID, userID = data.userID, UserDAO, UserSocialDAO))
                 else call.respond(HttpStatusCode.Unauthorized)
             }
             get(UserPaths.USER) {
@@ -97,18 +114,7 @@ fun Route.userRouter() {
                 else call.respond(HttpStatusCode.Unauthorized)
 
             }
-            get("/followers"){
-                val log = call.log
-                if(log != null)
-                    call.respond(UserSocialDAO.readAll(userID = log.userID, following = false))
-                else call.respond(HttpStatusCode.Unauthorized)
-            }
-            get("/following"){
-                val log = call.log
-                if(log != null)
-                    call.respond(UserSocialDAO.readAll(userID = log.userID, following = true))
-                else call.respond(HttpStatusCode.Unauthorized)
-            }
+
             post<RequestSocial>(UserPaths.FOLLOW) {
                 val log = call.log
                 println("FOLLOW requested")

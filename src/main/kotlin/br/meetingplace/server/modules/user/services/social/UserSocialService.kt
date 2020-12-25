@@ -30,6 +30,25 @@ object UserSocialService {
         }
 
     }
+    suspend fun readFollowing(requester: String, userSocialDAO: SI, userDAO: UI): List<UserSocialDTO>{
+        return try {
+            if(userDAO.check(requester)){
+                val following = userSocialDAO.readAll(userID = requester, following = true)
+                val userFollowing = mutableListOf<UserSocialDTO>()
+                for(i in following.indices){
+                    val followed = userDAO.readSocialByID(if(following[i].followerID != requester) following[i].followerID else following[i].followedID )
+                    if(followed != null)
+                        userFollowing.add(followed)
+                }
+                userFollowing
+            }
+            else
+                listOf()
+        }catch (e: Exception){
+            listOf()
+        }
+
+    }
     suspend fun follow(requester: String,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI, communityDAO: CI, userDAO: UI): HttpStatusCode {
         return try {
             when(data.community){

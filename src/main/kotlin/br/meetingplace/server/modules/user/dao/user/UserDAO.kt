@@ -80,13 +80,20 @@ object UserDAO: UI {
         }
     }
 
-    override suspend fun readByName(name: String): List<UserDTO> {
+    override suspend fun readByName(name: String, requester: String): List<UserDTO> {
+        println("_-------------------------------------------------------------")
+        println(name)
         return try {
-            transaction {
-                User.select{
-                    User.userName like "$name%"
-                }.map { mapUser(it) }
+            if(name.isNotBlank()){
+                transaction {
+                    User.select{
+                        (User.userName like "$name%") and
+                                (User.email neq requester)
+                    }.map { mapUser(it) }
+                }
             }
+            else
+                listOf()
         }catch (normal: Exception){
             listOf()
         }catch (psql: PSQLException){
