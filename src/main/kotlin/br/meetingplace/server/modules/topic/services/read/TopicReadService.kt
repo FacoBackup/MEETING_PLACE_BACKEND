@@ -82,45 +82,41 @@ object TopicReadService {
     }
     suspend fun readUserTopics(requester: String, userID: String,userDAO: UI, topicDAO: TI, userSocialDAO: SI, decryption: AESInterface, topicVisualizationDAO: TVI, timePeriod: Long):List<TopicDTO>{
         return try{
-             if(userDAO.check(userID))
-                 return when(timePeriod <= 0){
-                    true->{
-                        val topics = topicDAO.readByUser(userID)
-                        val decryptedTopics = mutableListOf<TopicDTO>()
+            if(userDAO.check(userID)){
+                 val topics = when(timePeriod <= 0){
+                     true-> topicDAO.readByUser(userID)
+                     false-> topicDAO.readByTimePeriod(userID, timePeriod)
+                 }
+                 val decryptedTopics = mutableListOf<TopicDTO>()
 
-                        for(j in topics.indices) {
-                            if (!topicVisualizationDAO.check(topicID = topics[j].id, userID = requester)) {
-                                val header = decryption.decrypt(myKey = key, data = topics[j].header)
-                                val body = decryption.decrypt(myKey = key, data = topics[j].body)
-                                val imageURL = topics[j].imageURL?.let { decryption.decrypt(myKey = key, data = it) }
-                                if (!header.isNullOrBlank() && !body.isNullOrBlank())
-                                    decryptedTopics.add(
-                                        TopicDTO(
-                                            creationDate = topics[j].creationDate,
-                                            creatorID = topics[j].creatorID,
-                                            approved = topics[j].approved,
-                                            header = header,
-                                            body = body,
-                                            imageURL = imageURL,
-                                            id = topics[j].id,
-                                            communityID = topics[j].communityID,
-                                            mainTopicID = topics[j].mainTopicID
-                                        )
-                                    )
-                                topicVisualizationDAO.create(topicID = topics[j].id, userID = requester)
-                            }
-                            if(userID == requester && !topicVisualizationDAO.check(topicID = topics[j].id, userID = requester))
-                                topicVisualizationDAO.create(topicID = topics[j].id, userID = requester)
-                        }
+                 for(j in topics.indices) {
+                     if (!topicVisualizationDAO.check(topicID = topics[j].id, userID = requester)) {
+                         val header = decryption.decrypt(myKey = key, data = topics[j].header)
+                         val body = decryption.decrypt(myKey = key, data = topics[j].body)
+                         val imageURL = topics[j].imageURL?.let { decryption.decrypt(myKey = key, data = it) }
+                         if (!header.isNullOrBlank() && !body.isNullOrBlank())
+                             decryptedTopics.add(
+                                 TopicDTO(
+                                     creationDate = topics[j].creationDate,
+                                     creatorID = topics[j].creatorID,
+                                     approved = topics[j].approved,
+                                     header = header,
+                                     body = body,
+                                     imageURL = imageURL,
+                                     id = topics[j].id,
+                                     communityID = topics[j].communityID,
+                                     mainTopicID = topics[j].mainTopicID
+                                 )
+                             )
+                         topicVisualizationDAO.create(topicID = topics[j].id, userID = requester)
+                     }
+                     if(userID != requester && !topicVisualizationDAO.check(topicID = topics[j].id, userID = requester))
+                         topicVisualizationDAO.create(topicID = topics[j].id, userID = requester)
+                 }
 
-                        decryptedTopics
-                    }
+                 decryptedTopics
 
-                    false-> {
-                        topicDAO.readByTimePeriod(userID, timePeriod)
-                        //TODO
-                    }
-                }
+             }
             else
                 listOf()
         }catch(e: Exception){
