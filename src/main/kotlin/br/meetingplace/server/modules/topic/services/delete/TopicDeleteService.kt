@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.topic.services.delete
 
-import br.meetingplace.server.modules.topic.dao.TI
+import br.meetingplace.server.modules.topic.dao.topic.TI
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopic
 import io.ktor.http.*
 

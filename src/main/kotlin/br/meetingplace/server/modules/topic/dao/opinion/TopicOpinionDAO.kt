@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.topic.dao.opinion
 
 import br.meetingplace.server.modules.topic.dto.response.TopicOpinionDTO
-import br.meetingplace.server.modules.topic.entities.TopicOpinion
+import br.meetingplace.server.modules.topic.entities.TopicOpinionEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -12,7 +12,7 @@ object TopicOpinionDAO:TOI {
     override fun create(topicID: String, userID: String, liked: Boolean): HttpStatusCode {
         return try {
             transaction {
-                TopicOpinion.insert {
+                TopicOpinionEntity.insert {
                     it[this.topicID]  = topicID
                     it[this.userID] = userID
                     it[this.liked] = liked
@@ -29,9 +29,9 @@ object TopicOpinionDAO:TOI {
     override fun delete(topicID: String, userID: String): HttpStatusCode {
         return try {
             transaction {
-                TopicOpinion.deleteWhere {
-                    (TopicOpinion.topicID eq topicID) and
-                    (TopicOpinion.userID eq userID)
+                TopicOpinionEntity.deleteWhere {
+                    (TopicOpinionEntity.topicID eq topicID) and
+                    (TopicOpinionEntity.userID eq userID)
                 }
             }
             HttpStatusCode.OK
@@ -45,9 +45,9 @@ object TopicOpinionDAO:TOI {
     override fun read(topicID: String, userID: String): TopicOpinionDTO? {
         return try {
             transaction {
-                TopicOpinion.select {
-                    (TopicOpinion.topicID eq topicID) and
-                    (TopicOpinion.userID eq userID)
+                TopicOpinionEntity.select {
+                    (TopicOpinionEntity.topicID eq topicID) and
+                    (TopicOpinionEntity.userID eq userID)
                 }.map { mapTopicOpinions(it) }.firstOrNull()
             }
         }catch (normal: Exception){
@@ -59,8 +59,8 @@ object TopicOpinionDAO:TOI {
     override fun readAll(topicID: String): List<TopicOpinionDTO> {
         return try {
             transaction {
-                TopicOpinion.select {
-                    TopicOpinion.topicID eq topicID
+                TopicOpinionEntity.select {
+                    TopicOpinionEntity.topicID eq topicID
                 }.map { mapTopicOpinions(it) }
             }
         }catch (normal: Exception){
@@ -73,9 +73,9 @@ object TopicOpinionDAO:TOI {
     override fun update(topicID: String, userID: String, liked: Boolean): HttpStatusCode {
         return try {
             transaction {
-                TopicOpinion.update({
-                    (TopicOpinion.topicID eq topicID) and
-                 (TopicOpinion.userID eq userID)
+                TopicOpinionEntity.update({
+                    (TopicOpinionEntity.topicID eq topicID) and
+                 (TopicOpinionEntity.userID eq userID)
                 }){
                     it[this.liked] = liked
                 }
@@ -88,6 +88,6 @@ object TopicOpinionDAO:TOI {
         }
     }
     private fun mapTopicOpinions(it: ResultRow): TopicOpinionDTO {
-        return TopicOpinionDTO(liked =  it[TopicOpinion.liked], userID =  it[TopicOpinion.userID], topicID = it[TopicOpinion.topicID])
+        return TopicOpinionDTO(liked =  it[TopicOpinionEntity.liked], userID =  it[TopicOpinionEntity.userID], topicID = it[TopicOpinionEntity.topicID])
     }
 }

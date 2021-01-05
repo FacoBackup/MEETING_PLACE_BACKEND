@@ -3,7 +3,7 @@ package br.meetingplace.server.modules.user.entities
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.date
 
-object User: Table("users"){
+object UserEntity: Table("users"){
     val email = varchar("user_id", 320)
     val userName = varchar("user_name", 64)
     val birth = long("born_date")

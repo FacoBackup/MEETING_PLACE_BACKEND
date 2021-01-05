@@ -1,4 +1,4 @@
-package br.meetingplace.server.modules.topic.dao
+package br.meetingplace.server.modules.topic.dao.topic
 
 import br.meetingplace.server.modules.topic.dto.response.TopicDTO
 import io.ktor.http.*
@@ -16,6 +16,7 @@ interface TI {
     fun check(topicID: String): Boolean
     fun readByUser(userID: String): List<TopicDTO>
     fun readAllComments(topicID: String): List<TopicDTO>
+    fun readByTimePeriod(userID: String, until: Long): List<TopicDTO>
     fun update(topicID: String,
                approved: Boolean?,
                mainTopicID: String?,

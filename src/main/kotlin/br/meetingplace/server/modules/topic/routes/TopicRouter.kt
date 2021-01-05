@@ -3,7 +3,7 @@ package br.meetingplace.server.modules.topic.routes
 
 import br.meetingplace.server.methods.AES
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
-import br.meetingplace.server.modules.topic.dao.TopicDAO
+import br.meetingplace.server.modules.topic.dao.topic.TopicDAO
 import br.meetingplace.server.modules.topic.dao.opinion.TopicOpinionDAO
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopic
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
@@ -63,7 +63,8 @@ fun Route.topicRouter() {
         post<RequestTopicCreation>(TopicPaths.COMMENT) {
             val log = call.log
             if(log != null)
-                call.respond(TopicFactoryService.createComment(requester = log.userID, it,TopicDAO, UserDAO, CommunityMemberDAO, AES))
+                call.respond(TopicFactoryService.createComment(requester = log.userID, it,
+                    TopicDAO, UserDAO, CommunityMemberDAO, AES))
             else call.respond(HttpStatusCode.Unauthorized)
 
         }

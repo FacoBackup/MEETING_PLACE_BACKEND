@@ -1,6 +1,6 @@
 package br.meetingplace.server.modules.topic.services.opinion
 
-import br.meetingplace.server.modules.topic.dao.TI
+import br.meetingplace.server.modules.topic.dao.topic.TI
 import br.meetingplace.server.modules.topic.dao.opinion.TOI
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopic
 import br.meetingplace.server.modules.topic.dto.response.TopicOpinionDTO
@@ -9,7 +9,7 @@ import io.ktor.http.*
 
 object TopicOpinionService{
 
-    suspend fun dislike(requester: String,data: RequestTopic, userDAO: UI, topicDAO: TI, topicOpinionDAO: TOI): HttpStatusCode {
+    suspend fun dislike(requester: String, data: RequestTopic, userDAO: UI, topicDAO: TI, topicOpinionDAO: TOI): HttpStatusCode {
         return try {
             return if (userDAO.check(requester) && topicDAO.check(data.topicID))
                  when (checkLikeDislike(topicOpinion = topicOpinionDAO.read(data.topicID, userID = requester))) {
@@ -24,7 +24,7 @@ object TopicOpinionService{
         }
     }
 
-    suspend fun like(requester: String,data: RequestTopic, userDAO: UI, topicDAO: TI, topicOpinionDAO: TOI): HttpStatusCode {
+    suspend fun like(requester: String, data: RequestTopic, userDAO: UI, topicDAO: TI, topicOpinionDAO: TOI): HttpStatusCode {
         return try {
             return if (userDAO.check(requester) && topicDAO.check(data.topicID))
                 when (checkLikeDislike(topicOpinion = topicOpinionDAO.read(data.topicID, userID = requester))) {

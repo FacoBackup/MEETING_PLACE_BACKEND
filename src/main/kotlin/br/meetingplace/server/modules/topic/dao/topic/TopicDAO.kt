@@ -1,11 +1,10 @@
-package br.meetingplace.server.modules.topic.dao
+package br.meetingplace.server.modules.topic.dao.topic
 
 import br.meetingplace.server.modules.topic.dto.response.TopicDTO
-import br.meetingplace.server.modules.topic.entities.Topic
+import br.meetingplace.server.modules.topic.entities.TopicEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
 import org.postgresql.util.PSQLException
 import java.util.*
 
@@ -13,14 +12,29 @@ object TopicDAO: TI {
     override fun read(topicID: String): TopicDTO? {
         return try {
             transaction {
-                Topic.select {
-                    Topic.id eq topicID
+                TopicEntity.select {
+                    TopicEntity.id eq topicID
                 }.map { mapTopic(it) }.firstOrNull()
             }
         }catch (normal: Exception){
             null
         }catch (psql: PSQLException){
             null
+        }
+    }
+
+    override fun readByTimePeriod(userID: String, until: Long): List<TopicDTO> {
+        return try{
+            transaction {
+                TopicEntity.select{
+                    TopicEntity.creationDate.greaterEq(until) and
+                    (TopicEntity.creatorID eq userID)
+                }.map { mapTopic(it) }
+            }
+        }catch (e: Exception){
+            listOf()
+        }catch(psql: PSQLException){
+            listOf()
         }
     }
     override fun create(header: String,
@@ -33,17 +47,17 @@ object TopicDAO: TI {
                         userName: String): HttpStatusCode {
         return try {
             transaction {
-                Topic.insert {
+                TopicEntity.insert {
                     it[id] = UUID.randomUUID().toString()
                     it[this.header] = header
                     it[this.body] = body
                     it[this.imageURL] = imageURL
-                    it[Topic.approved] = approved
+                    it[TopicEntity.approved] = approved
                     it[footer] = userName
                     it[creatorID] = userID
                     it[this.mainTopicID] = mainTopicID
                     it[this.communityID] = communityID
-                    it[creationDate] = DateTime.now()
+                    it[creationDate] = System.currentTimeMillis()
                 }
             }
             HttpStatusCode.Created
@@ -57,8 +71,8 @@ object TopicDAO: TI {
     override fun delete(topicID: String):HttpStatusCode{
         return try {
             transaction {
-                Topic.deleteWhere {
-                    Topic.id eq topicID
+                TopicEntity.deleteWhere {
+                    TopicEntity.id eq topicID
                 }
             }
             HttpStatusCode.OK
@@ -72,8 +86,8 @@ object TopicDAO: TI {
     override fun check(topicID: String): Boolean {
         return try {
             return !transaction {
-                Topic.select {
-                    Topic.id eq topicID
+                TopicEntity.select {
+                    TopicEntity.id eq topicID
                 }.empty() }
         }catch (normal: Exception){
             false
@@ -84,10 +98,10 @@ object TopicDAO: TI {
     override fun readByUser(userID: String): List<TopicDTO> {
         return try {
             transaction {
-                Topic.select {
-                    (Topic.creatorID eq userID) and
-                    (Topic.approved eq true) and
-                    (Topic.mainTopicID eq null)
+                TopicEntity.select {
+                    (TopicEntity.creatorID eq userID) and
+                    (TopicEntity.approved eq true) and
+                    (TopicEntity.mainTopicID eq null)
                 }.map { mapTopic(it) }
             }
         }catch (normal: Exception){
@@ -99,8 +113,8 @@ object TopicDAO: TI {
     override fun readAllComments(topicID: String): List<TopicDTO> {
         return try {
             transaction {
-                Topic.select {
-                    Topic.mainTopicID eq topicID
+                TopicEntity.select {
+                    TopicEntity.mainTopicID eq topicID
                 }.map { mapTopic(it) }
             }
         }catch (normal: Exception){
@@ -129,10 +143,15 @@ object TopicDAO: TI {
 //        }
     }
     private fun mapTopic(it: ResultRow): TopicDTO {
-        return TopicDTO(id =  it[Topic.id], header =  it[Topic.header],
-            body =  it[Topic.body], approved =  it[Topic.approved],
-            footer =  it[Topic.footer], creatorID =  it[Topic.creatorID],
-            mainTopicID =  it[Topic.mainTopicID], creationDate =  it[Topic.creationDate].toString("dd-MM-yyyy"),
-            communityID = it[Topic.communityID], imageURL = it[Topic.imageURL])
+        return TopicDTO(
+            id =  it[TopicEntity.id],
+            header =  it[TopicEntity.header],
+            body =  it[TopicEntity.body],
+            approved =  it[TopicEntity.approved],
+            creatorID =  it[TopicEntity.creatorID],
+            mainTopicID =  it[TopicEntity.mainTopicID],
+            creationDate =  it[TopicEntity.creationDate],
+            communityID = it[TopicEntity.communityID],
+            imageURL = it[TopicEntity.imageURL])
     }
 }

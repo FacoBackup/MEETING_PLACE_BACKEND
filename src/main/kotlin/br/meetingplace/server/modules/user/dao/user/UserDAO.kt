@@ -5,21 +5,18 @@ import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
 import br.meetingplace.server.modules.user.dto.response.UserAuthDTO
 import br.meetingplace.server.modules.user.dto.response.UserDTO
 import br.meetingplace.server.modules.user.dto.response.UserSocialDTO
-import br.meetingplace.server.modules.user.entities.User
+import br.meetingplace.server.modules.user.entities.UserEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.LocalDate
-import org.joda.time.format.DateTimeFormat
 import org.postgresql.util.PSQLException
-import java.text.DateFormat
 
 object UserDAO: UI {
 
     override suspend fun create(data: RequestUserCreation): HttpStatusCode {
         return try {
             transaction {
-               User.insert {
+               UserEntity.insert {
                    it[email] = data.email.toLowerCase()
                    it[password] = hashString(encryption = "SHA-1",data.password)
                    it[userName] = data.userName
@@ -44,7 +41,7 @@ object UserDAO: UI {
     override suspend fun delete(userID: String): HttpStatusCode {
         return try {
             transaction {
-                User.deleteWhere { User.email eq userID }
+                UserEntity.deleteWhere { UserEntity.email eq userID }
             }
             HttpStatusCode.OK
         }catch (normal: Exception){
@@ -56,8 +53,8 @@ object UserDAO: UI {
     override suspend fun readSocialByID(userID: String): UserSocialDTO? {
         return try {
             transaction {
-                User.select {
-                    User.email eq userID
+                UserEntity.select {
+                    UserEntity.email eq userID
                 }.map { mapUserSocial(it) }.firstOrNull()
             }
         }catch (normal: Exception){
@@ -69,8 +66,8 @@ object UserDAO: UI {
     override suspend fun readByID(userID: String): UserDTO? {
         return try {
             transaction {
-                User.select {
-                    User.email eq userID
+                UserEntity.select {
+                    UserEntity.email eq userID
                 }.map { mapUser(it) }.firstOrNull()
             }
         }catch (normal: Exception){
@@ -86,9 +83,9 @@ object UserDAO: UI {
         return try {
             if(name.isNotBlank()){
                 transaction {
-                    User.select{
-                        (User.userName like "$name%") and
-                                (User.email neq requester)
+                    UserEntity.select{
+                        (UserEntity.userName like "$name%") and
+                                (UserEntity.email neq requester)
                     }.map { mapUser(it) }
                 }
             }
@@ -103,8 +100,8 @@ object UserDAO: UI {
     override suspend fun readAuthUser(userID: String): UserAuthDTO? {
         return try {
             transaction {
-                User.select {
-                    User.email eq userID
+                UserEntity.select {
+                    UserEntity.email eq userID
                 }.map { mapUserAuth(it) }.firstOrNull()
             }
         }catch (normal: Exception){
@@ -116,7 +113,7 @@ object UserDAO: UI {
     override suspend fun readAll(): List<UserDTO>{
         return try {
             transaction {
-                User.selectAll().map { mapUser(it) }
+                UserEntity.selectAll().map { mapUser(it) }
             }
         }catch (normal: Exception){
             listOf()
@@ -128,7 +125,7 @@ object UserDAO: UI {
     override suspend fun check(userID: String): Boolean {
         return try {
             return !transaction {
-                User.select { User.email eq userID }.empty()
+                UserEntity.select { UserEntity.email eq userID }.empty()
             }
         }catch (normal: Exception){
             false
@@ -148,29 +145,29 @@ object UserDAO: UI {
         return try {
             val users  = mutableListOf<UserDTO>()
             if(!name.isNullOrBlank()) users.add(transaction {
-                User.select {
-                    User.userName eq name
+                UserEntity.select {
+                    UserEntity.userName eq name
                 }.map { mapUser(it) }.first()
             })
             if(birthDate != null) users.addAll(transaction {
-                User.select {
-                    User.birth eq birthDate
+                UserEntity.select {
+                    UserEntity.birth eq birthDate
                 }.map { mapUser(it) }
             })
             if(!phoneNumber.isNullOrBlank()) users.addAll(transaction {
-                User.select {
-                    User.phoneNumber eq phoneNumber
+                UserEntity.select {
+                    UserEntity.phoneNumber eq phoneNumber
                 }.map { mapUser(it) }
             })
             if(!nationality.isNullOrBlank()) users.addAll(transaction {
-                User.select {
-                    User.nationality eq nationality
+                UserEntity.select {
+                    UserEntity.nationality eq nationality
                 }.map { mapUser(it) }
             })
 
             if(!city.isNullOrBlank()) users.addAll(transaction {
-                User.select {
-                    User.cityOfBirth eq city
+                UserEntity.select {
+                    UserEntity.cityOfBirth eq city
                 }.map { mapUser(it) }
             })
 
@@ -193,7 +190,7 @@ object UserDAO: UI {
     ): HttpStatusCode {
         return try {
             transaction {
-                User.update({User.email eq userID}){
+                UserEntity.update({UserEntity.email eq userID}){
                     if(!name.isNullOrBlank())
                         it[this.userName] = name
                     if(!about.isNullOrBlank())
@@ -216,22 +213,22 @@ object UserDAO: UI {
         }
     }
     private fun mapUserAuth (it: ResultRow): UserAuthDTO{
-        return UserAuthDTO(userID = it[User.email], password = it[User.password])
+        return UserAuthDTO(userID = it[UserEntity.email], password = it[UserEntity.password])
     }
     private fun mapUserSocial(it: ResultRow): UserSocialDTO{
         return UserSocialDTO(
-            email = it[User.email],
-            name = it[User.userName],
-            bornDate= it[User.birth],
-            imageURL = it[User.imageURL])
+            email = it[UserEntity.email],
+            name = it[UserEntity.userName],
+            bornDate= it[UserEntity.birth],
+            imageURL = it[UserEntity.imageURL])
 
     }
     private fun mapUser(it: ResultRow): UserDTO {
-        return UserDTO(email = it[User.email], name = it[User.userName],
-            gender = it[User.gender], admin = it[User.admin],
-            birthDate = (it[User.birth].toString()).replaceAfter("T", "").removeSuffix("T"), imageURL = it[User.imageURL],
-            about = it[User.about], cityOfBirth = it[User.cityOfBirth],
-            phoneNumber = it[User.phoneNumber], nationality = it[User.nationality])
+        return UserDTO(email = it[UserEntity.email], name = it[UserEntity.userName],
+            gender = it[UserEntity.gender], admin = it[UserEntity.admin],
+            birthDate = (it[UserEntity.birth].toString()).replaceAfter("T", "").removeSuffix("T"), imageURL = it[UserEntity.imageURL],
+            about = it[UserEntity.about], cityOfBirth = it[UserEntity.cityOfBirth],
+            phoneNumber = it[UserEntity.phoneNumber], nationality = it[UserEntity.nationality])
     }
 
 }
