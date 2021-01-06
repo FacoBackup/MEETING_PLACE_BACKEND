@@ -22,7 +22,7 @@ fun Route.communityRouter() {
 //            else
 //                call.respond(communities)
 //        }
-        get(CommunityPaths.COMMUNITY) {
+        patch("/get/community") {
             val data= call.receive<RequestCommunity>()
             val community = CommunityDAO.read(id = data.communityID)
             if(community == null)
@@ -30,7 +30,7 @@ fun Route.communityRouter() {
             else
                 call.respond(community)
         }
-        post<RequestCommunityCreation>(CommunityPaths.COMMUNITY) {
+        post<RequestCommunityCreation>("/community") {
             val log = call.log
             if(log != null)
                 call.respond(CommunityFactoryService.create(requester = log.userID,it, CommunityDAO, UserDAO))

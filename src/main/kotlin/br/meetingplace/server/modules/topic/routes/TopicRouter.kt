@@ -24,7 +24,7 @@ import io.ktor.routing.*
 fun Route.topicRouter() {
     route("/api") {
 
-        patch("/timeline/all") {
+        get("/timeline/all") {
             val log = call.log
             if(log != null)
                 call.respond(TopicReadService.readAllTimeline(requester = log.userID,
@@ -36,7 +36,7 @@ fun Route.topicRouter() {
             else call.respond(HttpStatusCode.Unauthorized)
         }
 
-        patch("/timeline/new") {
+        get("/timeline/new") {
             val log = call.log
             if(log != null)
                 call.respond(TopicReadService.readNewItemsTimeline(requester = log.userID,
