@@ -82,7 +82,7 @@ object UserDAO: UI {
             if(name.isNotBlank()){
                 transaction {
                     UserEntity.select{
-                        (UserEntity.userName.like(name)) and
+                        (UserEntity.userName like "$name%") and
                                 (UserEntity.email neq requester)
                     }.map { mapUser(it) }
                 }

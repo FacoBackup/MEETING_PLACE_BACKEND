@@ -53,7 +53,7 @@ object ConversationDAO: CI {
 
             conversations.addAll(transaction {
                 (ConversationEntity innerJoin ConversationOwnersEntity).select {
-                    ConversationEntity.name.like(input) and
+                    ConversationEntity.name like "%$input%" and
                     ((ConversationOwnersEntity.primaryUserID eq userID) or
                     (ConversationOwnersEntity.secondaryUserID eq userID)) and
                     (ConversationEntity.id eq ConversationOwnersEntity.conversationID)
@@ -62,7 +62,7 @@ object ConversationDAO: CI {
 
             conversations.addAll(transaction {
                 (ConversationEntity innerJoin ConversationMemberEntity).select {
-                    ConversationEntity.name.like(input) and
+                    ConversationEntity.name like "%$input%" and
                     (ConversationMemberEntity.userID eq userID)  and
                     (ConversationEntity.id eq ConversationMemberEntity.conversationID)
                 }.map { mapConversation(it) }
