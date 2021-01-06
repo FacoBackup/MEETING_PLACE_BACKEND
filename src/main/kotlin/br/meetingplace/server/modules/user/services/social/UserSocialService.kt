@@ -6,18 +6,17 @@ import br.meetingplace.server.modules.community.dto.MemberType
 import br.meetingplace.server.modules.user.dao.social.SI
 import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.modules.user.dto.requests.RequestSocial
-import br.meetingplace.server.modules.user.dto.response.UserDTO
-import br.meetingplace.server.modules.user.dto.response.UserSocialDTO
+import br.meetingplace.server.modules.user.dto.response.UserSimplifiedDTO
 import io.ktor.http.*
 
 object UserSocialService {
-    suspend fun readFollowers(requester: String, userSocialDAO: SI, userDAO: UI): List<UserSocialDTO>{
+    suspend fun readFollowers(requester: String, userSocialDAO: SI, userDAO: UI): List<UserSimplifiedDTO>{
         return try {
             if(userDAO.check(requester)){
                 val followers = userSocialDAO.readAll(userID = requester, following = false)
-                val userFollowers = mutableListOf<UserSocialDTO>()
+                val userFollowers = mutableListOf<UserSimplifiedDTO>()
                 for(i in followers.indices){
-                    val follower = userDAO.readSocialByID(if(followers[i].followedID != requester) followers[i].followedID else followers[i].followerID )
+                    val follower = userDAO.readSimplifiedUserByID(if(followers[i].followedID != requester) followers[i].followedID else followers[i].followerID )
                     if(follower != null)
                         userFollowers.add(follower)
                 }
@@ -30,13 +29,13 @@ object UserSocialService {
         }
 
     }
-    suspend fun readFollowing(requester: String, userSocialDAO: SI, userDAO: UI): List<UserSocialDTO>{
+    suspend fun readFollowing(requester: String, userSocialDAO: SI, userDAO: UI): List<UserSimplifiedDTO>{
         return try {
             if(userDAO.check(requester)){
                 val following = userSocialDAO.readAll(userID = requester, following = true)
-                val userFollowing = mutableListOf<UserSocialDTO>()
+                val userFollowing = mutableListOf<UserSimplifiedDTO>()
                 for(i in following.indices){
-                    val followed = userDAO.readSocialByID(if(following[i].followerID != requester) following[i].followerID else following[i].followedID )
+                    val followed = userDAO.readSimplifiedUserByID(if(following[i].followerID != requester) following[i].followerID else following[i].followedID )
                     if(followed != null)
                         userFollowing.add(followed)
                 }

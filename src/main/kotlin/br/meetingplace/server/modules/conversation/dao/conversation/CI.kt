@@ -10,4 +10,5 @@ interface CI {
     fun check(conversationID: String): Boolean
     fun update(conversationID: String, name: String?, about: String?, imageURL: String?): HttpStatusCode
     fun delete(conversationID: String): HttpStatusCode
+    fun readByName(input: String, userID: String):List<ConversationDTO>
 }

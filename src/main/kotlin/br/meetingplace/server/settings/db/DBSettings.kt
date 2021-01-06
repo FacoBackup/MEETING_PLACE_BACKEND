@@ -1,8 +1,8 @@
 package br.meetingplace.server.settings.db
 
-import br.meetingplace.server.modules.authentication.entities.AccessLog
-import br.meetingplace.server.modules.community.entities.Community
-import br.meetingplace.server.modules.community.entities.CommunityMember
+import br.meetingplace.server.modules.authentication.entities.AccessLogEntity
+import br.meetingplace.server.modules.community.entities.CommunityEntity
+import br.meetingplace.server.modules.community.entities.CommunityMemberEntity
 import br.meetingplace.server.modules.conversation.entities.conversation.ConversationEntity
 import br.meetingplace.server.modules.conversation.entities.conversation.ConversationMemberEntity
 import br.meetingplace.server.modules.conversation.entities.conversation.ConversationOwnersEntity
@@ -11,6 +11,7 @@ import br.meetingplace.server.modules.conversation.entities.messages.MessageOpin
 import br.meetingplace.server.modules.conversation.entities.messages.MessageStatusEntity
 import br.meetingplace.server.modules.topic.entities.TopicEntity
 import br.meetingplace.server.modules.topic.entities.TopicOpinionEntity
+import br.meetingplace.server.modules.topic.entities.TopicVisualizationEntity
 import br.meetingplace.server.modules.user.entities.UserSocialEntity
 import br.meetingplace.server.modules.user.entities.UserEntity
 import org.jetbrains.exposed.sql.Database
@@ -36,17 +37,18 @@ object DBSettings {
                 SchemaUtils.create(
                     UserEntity,
                     UserSocialEntity,
-                    AccessLog,
+                    AccessLogEntity,
                     ConversationEntity,
                     ConversationMemberEntity,
                     MessageEntity,
                     MessageOpinionEntity,
                     MessageStatusEntity,
-                    Community,
-                    CommunityMember,
+                    CommunityEntity,
+                    CommunityMemberEntity,
                     TopicEntity,
                     TopicOpinionEntity,
-                    ConversationOwnersEntity
+                    ConversationOwnersEntity,
+                    TopicVisualizationEntity
                 )
             }
         }catch (e: Exception){

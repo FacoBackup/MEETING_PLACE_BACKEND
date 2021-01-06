@@ -16,7 +16,9 @@ object UserUpdateService {
                 phoneNumber = data.phoneNumber,
                 name = data.name,
                 nationality = data.nationality,
-                city = data.city)
+                city = data.city,
+                backgroundImageURL = data.backgroundImageURL
+                )
 
         }catch (e: Exception){
             HttpStatusCode.InternalServerError

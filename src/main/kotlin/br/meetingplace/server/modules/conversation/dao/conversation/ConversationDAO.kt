@@ -3,6 +3,8 @@ package br.meetingplace.server.modules.conversation.dao.conversation
 import br.meetingplace.server.modules.conversation.dto.requests.conversation.RequestConversationCreation
 import br.meetingplace.server.modules.conversation.dto.response.conversation.ConversationDTO
 import br.meetingplace.server.modules.conversation.entities.conversation.ConversationEntity
+import br.meetingplace.server.modules.conversation.entities.conversation.ConversationMemberEntity
+import br.meetingplace.server.modules.conversation.entities.conversation.ConversationOwnersEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -45,6 +47,34 @@ object ConversationDAO: CI {
         }
     }
 
+    override fun readByName(input: String, userID: String): List<ConversationDTO> {
+        return try {
+            val conversations = mutableListOf<ConversationDTO>()
+
+            conversations.addAll(transaction {
+                (ConversationEntity innerJoin ConversationOwnersEntity).select {
+                    ConversationEntity.name.like(input) and
+                    ((ConversationOwnersEntity.primaryUserID eq userID) or
+                    (ConversationOwnersEntity.secondaryUserID eq userID)) and
+                    (ConversationEntity.id eq ConversationOwnersEntity.conversationID)
+                }.map { mapConversation(it) }
+            })
+
+            conversations.addAll(transaction {
+                (ConversationEntity innerJoin ConversationMemberEntity).select {
+                    ConversationEntity.name.like(input) and
+                    (ConversationMemberEntity.userID eq userID)  and
+                    (ConversationEntity.id eq ConversationMemberEntity.conversationID)
+                }.map { mapConversation(it) }
+            })
+
+            conversations
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
     override fun delete(conversationID: String): HttpStatusCode {
         return try {
             transaction {

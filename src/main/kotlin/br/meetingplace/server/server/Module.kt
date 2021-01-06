@@ -4,6 +4,7 @@ import br.meetingplace.server.modules.authentication.dao.AccessLogDAO
 import br.meetingplace.server.modules.authentication.dto.response.AccessLogDTO
 import br.meetingplace.server.modules.authentication.routes.authentication
 import br.meetingplace.server.modules.community.routes.communityRouter
+import br.meetingplace.server.modules.conversation.routes.conversationRouter
 import br.meetingplace.server.modules.conversation.routes.groupConversationRouter
 import br.meetingplace.server.modules.conversation.routes.messageRouter
 import br.meetingplace.server.modules.conversation.routes.userConversationRouter
@@ -63,6 +64,7 @@ fun Application.module(){
             authentication()
         }
         authenticate(optional = false){
+            conversationRouter()
             topicRouter()
             communityRouter()
             userConversationRouter()

@@ -1,7 +1,6 @@
 package br.meetingplace.server.modules.user.dao.social
 
 import br.meetingplace.server.modules.user.dto.response.SocialDTO
-import br.meetingplace.server.modules.user.dto.response.UserSocialDTO
 import io.ktor.http.*
 
 interface SI {

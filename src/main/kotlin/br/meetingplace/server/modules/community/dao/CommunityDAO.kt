@@ -2,7 +2,7 @@ package br.meetingplace.server.modules.community.dao
 
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
 import br.meetingplace.server.modules.community.dto.response.CommunityDTO
-import br.meetingplace.server.modules.community.entities.Community
+import br.meetingplace.server.modules.community.entities.CommunityEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -15,7 +15,7 @@ object CommunityDAO: CI {
     override fun create(data: RequestCommunityCreation):HttpStatusCode  {
         return try{
             transaction {
-                Community.insert {
+                CommunityEntity.insert {
                     it[name] = data.name
                     it[id] = UUID.randomUUID().toString()
                     it[imageURL] = data.imageURL
@@ -36,7 +36,7 @@ object CommunityDAO: CI {
     override fun check(id: String): Boolean {
         return try{
             !transaction {
-                Community.select { Community.id eq id }.empty()
+                CommunityEntity.select { CommunityEntity.id eq id }.empty()
             }
         }catch (normal: Exception){
             false
@@ -47,7 +47,7 @@ object CommunityDAO: CI {
     override fun delete(id: String): HttpStatusCode {
         return try{
             transaction {
-                Community.deleteWhere { Community.id eq id }
+                CommunityEntity.deleteWhere { CommunityEntity.id eq id }
             }
             HttpStatusCode.OK
         }catch (normal: Exception){
@@ -60,7 +60,7 @@ object CommunityDAO: CI {
     override fun read(id: String): CommunityDTO? {
         return try{
             transaction {
-                Community.select { Community.id eq id }.map { mapCommunityDTO(it) }.firstOrNull()
+                CommunityEntity.select { CommunityEntity.id eq id }.map { mapCommunityDTO(it) }.firstOrNull()
             }
         }catch (normal: Exception){
             null
@@ -72,7 +72,7 @@ object CommunityDAO: CI {
     override fun update(communityID: String, name: String?, about: String?, parentID: String?):HttpStatusCode {
         return try{
             transaction {
-                Community.update( { Community.id eq communityID } ){
+                CommunityEntity.update( { CommunityEntity.id eq communityID } ){
                     if(!name.isNullOrBlank())
                         it[this.name] = name
                     if(!about.isNullOrBlank())
@@ -90,10 +90,10 @@ object CommunityDAO: CI {
     }
 
     private fun mapCommunityDTO(it: ResultRow): CommunityDTO {
-        return CommunityDTO(name = it[Community.name], id = it[Community.id],
-                about = it[Community.imageURL], imageURL =  it[Community.imageURL],
-                creationDate = it[Community.creationDate].toString(), location = it[Community.location],
-                parentCommunityID = it[Community.parentCommunityID])
+        return CommunityDTO(name = it[CommunityEntity.name], id = it[CommunityEntity.id],
+                about = it[CommunityEntity.imageURL], imageURL =  it[CommunityEntity.imageURL],
+                creationDate = it[CommunityEntity.creationDate].toString(), location = it[CommunityEntity.location],
+                parentCommunityID = it[CommunityEntity.parentCommunityID])
     }
 
 }

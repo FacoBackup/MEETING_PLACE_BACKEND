@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.community.dao.member
 
 import br.meetingplace.server.modules.community.dto.response.CommunityMemberDTO
-import br.meetingplace.server.modules.community.entities.CommunityMember
+import br.meetingplace.server.modules.community.entities.CommunityMemberEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -11,7 +11,7 @@ object CommunityMemberDAO: CMI {
     override fun create(userID: String, communityID: String, role: String): HttpStatusCode {
         return try{
             transaction {
-                CommunityMember.insert {
+                CommunityMemberEntity.insert {
                     it[this.communityID] = communityID
                     it[this.userID] = userID
                     it[this.role] = role
@@ -28,7 +28,7 @@ object CommunityMemberDAO: CMI {
     override fun delete(communityID: String, userID: String): HttpStatusCode {
         return try{
             transaction {
-                CommunityMember.deleteWhere { (CommunityMember.communityID eq communityID) and (CommunityMember.userID eq userID) }
+                CommunityMemberEntity.deleteWhere { (CommunityMemberEntity.communityID eq communityID) and (CommunityMemberEntity.userID eq userID) }
             }
 
             HttpStatusCode.OK
@@ -42,7 +42,7 @@ object CommunityMemberDAO: CMI {
     override fun check(communityID: String, userID: String): HttpStatusCode {
         return try{
             if(transaction {
-                CommunityMember.select { (CommunityMember.communityID eq communityID) and (CommunityMember.userID eq userID) }.empty()
+                CommunityMemberEntity.select { (CommunityMemberEntity.communityID eq communityID) and (CommunityMemberEntity.userID eq userID) }.empty()
             }) HttpStatusCode.NotFound
             else HttpStatusCode.Found
         }catch (normal: Exception){
@@ -54,8 +54,8 @@ object CommunityMemberDAO: CMI {
     override fun read(communityID: String, userID: String): CommunityMemberDTO? {
         return try{
             return transaction {
-                CommunityMember.select { (CommunityMember.communityID eq communityID) and
-                        (CommunityMember.userID eq userID) }
+                CommunityMemberEntity.select { (CommunityMemberEntity.communityID eq communityID) and
+                        (CommunityMemberEntity.userID eq userID) }
                     .map { mapCommunityMemberDTO(it) }.firstOrNull()
             }
         }catch (normal: Exception){
@@ -68,7 +68,7 @@ object CommunityMemberDAO: CMI {
     override fun update(communityID: String, userID: String, role: String): HttpStatusCode {
         return try{
             transaction {
-                CommunityMember.update( {  (CommunityMember.communityID eq communityID) and (CommunityMember.userID eq userID) } ){
+                CommunityMemberEntity.update( {  (CommunityMemberEntity.communityID eq communityID) and (CommunityMemberEntity.userID eq userID) } ){
                     it[this.role] = role
                 }
             }
@@ -80,7 +80,7 @@ object CommunityMemberDAO: CMI {
         }
     }
     private fun mapCommunityMemberDTO(it: ResultRow): CommunityMemberDTO {
-        return CommunityMemberDTO(communityID = it[CommunityMember.communityID], role = it[CommunityMember.role],
-            userID = it[CommunityMember.userID])
+        return CommunityMemberDTO(communityID = it[CommunityMemberEntity.communityID], role = it[CommunityMemberEntity.role],
+            userID = it[CommunityMemberEntity.userID])
     }
 }

@@ -4,7 +4,7 @@ import br.meetingplace.server.methods.hashString
 import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
 import br.meetingplace.server.modules.user.dto.response.UserAuthDTO
 import br.meetingplace.server.modules.user.dto.response.UserDTO
-import br.meetingplace.server.modules.user.dto.response.UserSocialDTO
+import br.meetingplace.server.modules.user.dto.response.UserSimplifiedDTO
 import br.meetingplace.server.modules.user.entities.UserEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
@@ -50,12 +50,12 @@ object UserDAO: UI {
             HttpStatusCode.InternalServerError
         }
     }
-    override suspend fun readSocialByID(userID: String): UserSocialDTO? {
+    override suspend fun readSimplifiedUserByID(userID: String): UserSimplifiedDTO? {
         return try {
             transaction {
                 UserEntity.select {
                     UserEntity.email eq userID
-                }.map { mapUserSocial(it) }.firstOrNull()
+                }.map { mapSimplifiedUser(it) }.firstOrNull()
             }
         }catch (normal: Exception){
             null
@@ -78,13 +78,11 @@ object UserDAO: UI {
     }
 
     override suspend fun readByName(name: String, requester: String): List<UserDTO> {
-        println("_-------------------------------------------------------------")
-        println(name)
         return try {
             if(name.isNotBlank()){
                 transaction {
                     UserEntity.select{
-                        (UserEntity.userName like "$name%") and
+                        (UserEntity.userName.like(name)) and
                                 (UserEntity.email neq requester)
                     }.map { mapUser(it) }
                 }
@@ -186,7 +184,8 @@ object UserDAO: UI {
         about: String?,
         nationality: String?,
         phoneNumber: String?,
-        city: String?
+        city: String?,
+        backgroundImageURL: String?
     ): HttpStatusCode {
         return try {
             transaction {
@@ -203,6 +202,8 @@ object UserDAO: UI {
                         it[this.cityOfBirth] = city
                     if(!imageURL.isNullOrBlank())
                         it[this.imageURL] = imageURL
+                    if(!backgroundImageURL.isNullOrBlank())
+                        it[this.backgroundImageURL] = backgroundImageURL
                 }
             }
             HttpStatusCode.OK
@@ -215,20 +216,27 @@ object UserDAO: UI {
     private fun mapUserAuth (it: ResultRow): UserAuthDTO{
         return UserAuthDTO(userID = it[UserEntity.email], password = it[UserEntity.password])
     }
-    private fun mapUserSocial(it: ResultRow): UserSocialDTO{
-        return UserSocialDTO(
+    private fun mapSimplifiedUser(it: ResultRow): UserSimplifiedDTO{
+        return UserSimplifiedDTO(
             email = it[UserEntity.email],
             name = it[UserEntity.userName],
-            bornDate= it[UserEntity.birth],
-            imageURL = it[UserEntity.imageURL])
-
+            birthDate= it[UserEntity.birth],
+            imageURL = it[UserEntity.imageURL],
+            backgroundImageURL = it[UserEntity.backgroundImageURL])
     }
     private fun mapUser(it: ResultRow): UserDTO {
-        return UserDTO(email = it[UserEntity.email], name = it[UserEntity.userName],
-            gender = it[UserEntity.gender], admin = it[UserEntity.admin],
-            birthDate = (it[UserEntity.birth].toString()).replaceAfter("T", "").removeSuffix("T"), imageURL = it[UserEntity.imageURL],
-            about = it[UserEntity.about], cityOfBirth = it[UserEntity.cityOfBirth],
-            phoneNumber = it[UserEntity.phoneNumber], nationality = it[UserEntity.nationality])
+        return UserDTO(email = it[UserEntity.email],
+            name = it[UserEntity.userName],
+            gender = it[UserEntity.gender],
+            admin = it[UserEntity.admin],
+            birthDate = it[UserEntity.birth],
+            imageURL = it[UserEntity.imageURL],
+            about = it[UserEntity.about],
+            cityOfBirth = it[UserEntity.cityOfBirth],
+            phoneNumber = it[UserEntity.phoneNumber],
+            nationality = it[UserEntity.nationality],
+            backgroundImageURL = it[UserEntity.backgroundImageURL]
+            )
     }
 
 }

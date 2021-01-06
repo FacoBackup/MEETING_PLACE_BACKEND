@@ -2,7 +2,7 @@ package br.meetingplace.server.modules.authentication.routes
 
 import br.meetingplace.server.modules.authentication.dao.AccessLogDAO
 import br.meetingplace.server.modules.authentication.dto.requests.RequestLog
-import br.meetingplace.server.modules.authentication.entities.AccessLog
+import br.meetingplace.server.modules.authentication.entities.AccessLogEntity
 import br.meetingplace.server.modules.authentication.services.AuthenticationService
 import br.meetingplace.server.modules.user.dao.user.UserDAO
 import br.meetingplace.server.server.AuthLog.log
@@ -44,7 +44,7 @@ fun Route.authentication(){
         delete("/delete/logs"){
             try {
                 transaction {
-                    AccessLog.deleteAll()
+                    AccessLogEntity.deleteAll()
                 }
                 call.respond(HttpStatusCode.Accepted)
             }catch (e: PSQLException){
