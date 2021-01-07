@@ -28,7 +28,16 @@ fun Route.topicRouter() {
             val data = call.receive<RequestTopics>()
             val log = call.log
             if(log != null)
-                call.respond(TopicReadService.readSubjectTopics(requester = log.userID, subjectID= data.subjectID, community = data.community, topicDAO =  TopicDAO, topicVisualizationDAO = TopicVisualizationDAO, decryption = AES, timePeriod = 0))
+                call.respond(TopicReadService.readSubjectTopics(
+                    requester = log.userID,
+                    subjectID= data.subjectID,
+                    community = data.community,
+                    topicDAO =  TopicDAO,
+                    topicVisualizationDAO = TopicVisualizationDAO,
+                    decryption = AES,
+                    timePeriod = 0,
+                    userDAO = UserDAO
+                ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
         get("/timeline/all") {
@@ -39,7 +48,9 @@ fun Route.topicRouter() {
                     userSocialDAO = UserSocialDAO,
                     decryption = AES,
                     topicDAO = TopicDAO,
-                    topicVisualizationDAO = TopicVisualizationDAO))
+                    topicVisualizationDAO = TopicVisualizationDAO,
+                    userDAO = UserDAO
+                    ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
 
@@ -51,7 +62,9 @@ fun Route.topicRouter() {
                     userSocialDAO = UserSocialDAO,
                     decryption = AES,
                     topicDAO = TopicDAO,
-                    topicVisualizationDAO = TopicVisualizationDAO))
+                    topicVisualizationDAO = TopicVisualizationDAO,
+                    userDAO = UserDAO
+                ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
 
