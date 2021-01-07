@@ -48,7 +48,7 @@ object TopicFactoryService {
                             communityID = member.communityID,
                             userID = requester,
                             mainTopicID = null,
-                            approved = member.role == MemberType.DIRECTOR.toString() || member.role == MemberType.LEADER.toString(),
+                            approved = member.role == MemberType.MODERATOR.toString(),
                             userName = user.name)
                     } else HttpStatusCode.FailedDependency
                 }
@@ -97,7 +97,7 @@ object TopicFactoryService {
                             communityID = member.communityID,
                             userID = requester,
                             mainTopicID = data.mainTopicID,
-                            approved = member.role == MemberType.DIRECTOR.toString() || member.role == MemberType.LEADER.toString(),
+                            approved = member.role == MemberType.MODERATOR.toString(),
                             userName = user.name)
                     } else HttpStatusCode.FailedDependency
                 }

@@ -7,13 +7,12 @@ import br.meetingplace.server.modules.community.dto.requests.RequestCommunityUpd
 import io.ktor.http.*
 
 object CommunityUpdateService {
-    fun updateCommunity(requester: String,data: RequestCommunityUpdate, community: CI, member: CMI): HttpStatusCode {
+    suspend  fun updateCommunity(requester: String,data: RequestCommunityUpdate, community: CI, member: CMI): HttpStatusCode {
         return try {
             val memberData = member.read(communityID = data.communityID, userID = requester)
 
             if(memberData != null &&
-              (memberData.role == MemberType.LEADER.toString() ||
-               memberData.role == MemberType.DIRECTOR.toString() ||
+              (memberData.role == MemberType.MODERATOR.toString() ||
                memberData.role == MemberType.MEMBER.toString())){
 
                community.update(communityID = data.communityID, name = data.name, about = data.about, parentID = data.parentCommunityID)

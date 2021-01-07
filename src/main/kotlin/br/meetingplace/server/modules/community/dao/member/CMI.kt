@@ -5,9 +5,10 @@ import br.meetingplace.server.modules.community.dto.response.CommunityMemberDTO
 import io.ktor.http.*
 
 interface CMI {
-    fun create(userID: String, communityID: String, role: String): HttpStatusCode
-    fun read(communityID: String, userID: String): CommunityMemberDTO?
-    fun check(communityID: String, userID: String): HttpStatusCode
-    fun update(communityID: String, userID: String, role: String): HttpStatusCode
-    fun delete(communityID: String, userID: String): HttpStatusCode
+    suspend fun create(userID: String, communityID: String, role: String): HttpStatusCode
+    suspend fun read(communityID: String, userID: String): CommunityMemberDTO?
+    suspend fun readByUser(userID: String): List<CommunityMemberDTO>
+    suspend fun check(communityID: String, userID: String): HttpStatusCode
+    suspend fun update(communityID: String, userID: String, role: String): HttpStatusCode
+    suspend fun delete(communityID: String, userID: String): HttpStatusCode
 }

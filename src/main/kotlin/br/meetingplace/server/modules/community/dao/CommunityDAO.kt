@@ -12,16 +12,15 @@ import java.util.*
 
 object CommunityDAO: CI {
 
-    override fun create(data: RequestCommunityCreation):HttpStatusCode  {
+    override suspend fun create(data: RequestCommunityCreation):HttpStatusCode  {
         return try{
             transaction {
                 CommunityEntity.insert {
                     it[name] = data.name
                     it[id] = UUID.randomUUID().toString()
                     it[imageURL] = data.imageURL
-                    it[creationDate] =  DateTime.now()
+                    it[creationDate] =  System.currentTimeMillis()
                     it[about] = data.about
-                    it[location] = data.location
                     it[parentCommunityID]= data.parentCommunityID
                 }
             }
@@ -33,7 +32,7 @@ object CommunityDAO: CI {
         }
     }
 
-    override fun check(id: String): Boolean {
+    override suspend fun check(id: String): Boolean {
         return try{
             !transaction {
                 CommunityEntity.select { CommunityEntity.id eq id }.empty()
@@ -44,7 +43,7 @@ object CommunityDAO: CI {
             false
         }
     }
-    override fun delete(id: String): HttpStatusCode {
+    override suspend fun delete(id: String): HttpStatusCode {
         return try{
             transaction {
                 CommunityEntity.deleteWhere { CommunityEntity.id eq id }
@@ -57,7 +56,7 @@ object CommunityDAO: CI {
         }
     }
 
-    override fun read(id: String): CommunityDTO? {
+    override suspend fun read(id: String): CommunityDTO? {
         return try{
             transaction {
                 CommunityEntity.select { CommunityEntity.id eq id }.map { mapCommunityDTO(it) }.firstOrNull()
@@ -69,7 +68,34 @@ object CommunityDAO: CI {
         }
     }
 
-    override fun update(communityID: String, name: String?, about: String?, parentID: String?):HttpStatusCode {
+    override suspend fun readByExactName(name: String): CommunityDTO? {
+        return try{
+            transaction {
+                CommunityEntity.select{
+                    CommunityEntity.name eq name
+                }.map { mapCommunityDTO(it) }.firstOrNull()
+            }
+        }catch (normal: Exception){
+            null
+        }catch (psql: PSQLException){
+         null
+        }
+    }
+
+    override suspend fun readByName(name: String): List<CommunityDTO> {
+        return try{
+            transaction {
+                CommunityEntity.select{
+                    CommunityEntity.name like "%$name%"
+                }.map { mapCommunityDTO(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
+    override suspend fun update(communityID: String, name: String?, about: String?, parentID: String?):HttpStatusCode {
         return try{
             transaction {
                 CommunityEntity.update( { CommunityEntity.id eq communityID } ){
@@ -77,7 +103,7 @@ object CommunityDAO: CI {
                         it[this.name] = name
                     if(!about.isNullOrBlank())
                         it[this.about] = about
-                    if(!parentID.isNullOrBlank() && read(parentID) != null)
+                    if(!parentID.isNullOrBlank())
                         it[parentCommunityID] = parentID
                 }
             }
@@ -90,10 +116,13 @@ object CommunityDAO: CI {
     }
 
     private fun mapCommunityDTO(it: ResultRow): CommunityDTO {
-        return CommunityDTO(name = it[CommunityEntity.name], id = it[CommunityEntity.id],
-                about = it[CommunityEntity.imageURL], imageURL =  it[CommunityEntity.imageURL],
-                creationDate = it[CommunityEntity.creationDate].toString(), location = it[CommunityEntity.location],
-                parentCommunityID = it[CommunityEntity.parentCommunityID])
+        return CommunityDTO(
+            name = it[CommunityEntity.name],
+            id = it[CommunityEntity.id],
+            about = it[CommunityEntity.imageURL],
+            imageURL =  it[CommunityEntity.imageURL],
+            creationDate = it[CommunityEntity.creationDate],
+            parentCommunityID = it[CommunityEntity.parentCommunityID])
     }
 
 }

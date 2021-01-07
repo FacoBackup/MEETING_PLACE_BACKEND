@@ -8,7 +8,20 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object CommunityMemberDAO: CMI {
-    override fun create(userID: String, communityID: String, role: String): HttpStatusCode {
+    override suspend fun readByUser(userID: String): List<CommunityMemberDTO> {
+        return try{
+            transaction {
+                CommunityMemberEntity.select {
+                    CommunityMemberEntity.userID eq userID
+                }.map { mapCommunityMemberDTO(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
+    override suspend fun create(userID: String, communityID: String, role: String): HttpStatusCode {
         return try{
             transaction {
                 CommunityMemberEntity.insert {
@@ -25,7 +38,7 @@ object CommunityMemberDAO: CMI {
         }
     }
 
-    override fun delete(communityID: String, userID: String): HttpStatusCode {
+    override suspend fun delete(communityID: String, userID: String): HttpStatusCode {
         return try{
             transaction {
                 CommunityMemberEntity.deleteWhere { (CommunityMemberEntity.communityID eq communityID) and (CommunityMemberEntity.userID eq userID) }
@@ -39,7 +52,7 @@ object CommunityMemberDAO: CMI {
         }
     }
 
-    override fun check(communityID: String, userID: String): HttpStatusCode {
+    override suspend fun check(communityID: String, userID: String): HttpStatusCode {
         return try{
             if(transaction {
                 CommunityMemberEntity.select { (CommunityMemberEntity.communityID eq communityID) and (CommunityMemberEntity.userID eq userID) }.empty()
@@ -51,7 +64,7 @@ object CommunityMemberDAO: CMI {
             HttpStatusCode.InternalServerError
         }
     }
-    override fun read(communityID: String, userID: String): CommunityMemberDTO? {
+    override suspend fun read(communityID: String, userID: String): CommunityMemberDTO? {
         return try{
             return transaction {
                 CommunityMemberEntity.select { (CommunityMemberEntity.communityID eq communityID) and
@@ -65,7 +78,7 @@ object CommunityMemberDAO: CMI {
         }
     }
 
-    override fun update(communityID: String, userID: String, role: String): HttpStatusCode {
+    override suspend fun update(communityID: String, userID: String, role: String): HttpStatusCode {
         return try{
             transaction {
                 CommunityMemberEntity.update( {  (CommunityMemberEntity.communityID eq communityID) and (CommunityMemberEntity.userID eq userID) } ){

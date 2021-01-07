@@ -10,8 +10,7 @@ object CommunityEntity: Table("communities"){
     var name = varchar("community_name", 256)
     var about = varchar("community_about", 512).nullable()
     var imageURL= varchar("community_image_url", 256).nullable()
-    val creationDate = datetime("date_of_creation")
-    var location = varchar("location",128)
+    val creationDate = long("creation_date")
     var parentCommunityID = varchar("parent_community_id", 36).references(id, onDelete = ReferenceOption.SET_NULL).nullable()
     override val primaryKey = PrimaryKey(id)
 }
