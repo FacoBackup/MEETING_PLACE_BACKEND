@@ -59,16 +59,18 @@ fun Route.userRouter() {
                     call.respond(UserSocialDAO.check(followedID = data.userID, userID = log.userID))
                 else call.respond(false)
             }
-            get("/followers"){
+            patch("/get/followers"){
                 val log = call.log
+                val data = call.receive<RequestUser>()
                 if(log != null)
-                    call.respond(UserSocialService.readFollowers(log.userID, UserSocialDAO, UserDAO))
+                    call.respond(UserSocialService.readFollowers(data.userID, UserSocialDAO, UserDAO))
                 else call.respond(HttpStatusCode.Unauthorized)
             }
-            get("/following"){
+            patch("/get/following"){
                 val log = call.log
+                val data = call.receive<RequestUser>()
                 if(log != null)
-                    call.respond(UserSocialService.readFollowing(log.userID, UserSocialDAO, UserDAO))
+                    call.respond(UserSocialService.readFollowing(data.userID, UserSocialDAO, UserDAO))
                 else call.respond(HttpStatusCode.Unauthorized)
             }
             patch("/search/user"){

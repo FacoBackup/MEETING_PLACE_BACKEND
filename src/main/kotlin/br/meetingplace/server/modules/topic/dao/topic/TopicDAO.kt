@@ -9,7 +9,7 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 object TopicDAO: TI {
-    override fun read(topicID: String): TopicDTO? {
+    override suspend fun read(topicID: String): TopicDTO? {
         return try {
             transaction {
                 TopicEntity.select {
@@ -23,12 +23,21 @@ object TopicDAO: TI {
         }
     }
 
-    override fun readByTimePeriod(userID: String, until: Long): List<TopicDTO> {
+    override suspend fun readByTimePeriod(subjectID: String, until: Long, community: Boolean): List<TopicDTO> {
         return try{
             transaction {
                 TopicEntity.select{
-                    TopicEntity.creationDate.greaterEq(until) and
-                    (TopicEntity.creatorID eq userID)
+                    when(community){
+                        true->{
+                            TopicEntity.creationDate.greaterEq(until) and
+                            (TopicEntity.communityID eq subjectID)
+                        }
+                        false->{
+                            TopicEntity.creationDate.greaterEq(until) and
+                            (TopicEntity.creatorID eq subjectID)
+                        }
+                    }
+
                 }.map { mapTopic(it) }
             }
         }catch (e: Exception){
@@ -37,7 +46,7 @@ object TopicDAO: TI {
             listOf()
         }
     }
-    override fun create(header: String,
+    override suspend fun create(header: String,
                         body: String,
                         imageURL: String?,
                         communityID: String?,
@@ -68,7 +77,7 @@ object TopicDAO: TI {
         }
     }
 
-    override fun delete(topicID: String):HttpStatusCode{
+    override suspend fun delete(topicID: String):HttpStatusCode{
         return try {
             transaction {
                 TopicEntity.deleteWhere {
@@ -83,7 +92,7 @@ object TopicDAO: TI {
         }
     }
 
-    override fun check(topicID: String): Boolean {
+    override suspend fun check(topicID: String): Boolean {
         return try {
             return !transaction {
                 TopicEntity.select {
@@ -95,13 +104,23 @@ object TopicDAO: TI {
             false
         }
     }
-    override fun readByUser(userID: String): List<TopicDTO> {
+    override suspend fun readBySubject(subjectID: String, community: Boolean): List<TopicDTO> {
         return try {
             transaction {
                 TopicEntity.select {
-                    (TopicEntity.creatorID eq userID) and
-                    (TopicEntity.approved eq true) and
-                    (TopicEntity.mainTopicID eq null)
+                    when(community){
+                        true->{
+                            (TopicEntity.communityID eq subjectID) and
+                            (TopicEntity.approved eq true) and
+                            (TopicEntity.mainTopicID eq null)
+                        }
+                        false->{
+                            (TopicEntity.creatorID eq subjectID) and
+                            (TopicEntity.approved eq true) and
+                            (TopicEntity.mainTopicID eq null)
+                        }
+                    }
+
                 }.map { mapTopic(it) }
             }
         }catch (normal: Exception){
@@ -110,7 +129,7 @@ object TopicDAO: TI {
             listOf()
         }
     }
-    override fun readAllComments(topicID: String): List<TopicDTO> {
+    override suspend fun readAllComments(topicID: String): List<TopicDTO> {
         return try {
             transaction {
                 TopicEntity.select {
@@ -123,7 +142,7 @@ object TopicDAO: TI {
             listOf()
         }
     }
-    override fun update(
+    override suspend fun update(
         topicID: String,
         approved: Boolean?,
         mainTopicID: String?,
