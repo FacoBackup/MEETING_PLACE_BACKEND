@@ -27,7 +27,7 @@ fun Route.userRouter() {
         post<RequestUserCreation>(UserPaths.USER) {
             call.respond(UserFactoryService.create(it, UserDAO))
         }
-        patch(UserPaths.USER + "/search") {
+        patch("/get/profile") {
             val data = call.receive<RequestUser>()
             val user = UserDAO.readByID(data.userID)
 
