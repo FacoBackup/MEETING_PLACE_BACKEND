@@ -13,6 +13,7 @@ interface CI {
                        backgroundImageURL: String?,
                        about: String?,
                        parentID: String?):HttpStatusCode
+    suspend fun readParentCommunities(communityID: String): List<CommunityDTO>
     suspend fun check(id: String):Boolean
     suspend fun readByName(name: String): List<CommunityDTO>
     suspend fun readByExactName (name: String):  CommunityDTO?

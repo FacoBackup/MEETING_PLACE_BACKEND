@@ -2,7 +2,6 @@ package br.meetingplace.server.modules.community.services.read
 
 import br.meetingplace.server.modules.community.dao.CI
 import br.meetingplace.server.modules.community.dao.member.CMI
-import br.meetingplace.server.modules.community.dto.response.CommunityDTO
 import br.meetingplace.server.modules.community.dto.response.CommunityInfoDTO
 import br.meetingplace.server.modules.community.dto.response.CommunityRelatedUsersDTO
 import br.meetingplace.server.modules.community.dto.response.RelatedCommunitiesDTO
@@ -59,17 +58,34 @@ object CommunityReadService {
             listOf()
         }
     }
-    suspend fun readUsersRelatedToCommunity(communityID: String, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
+    suspend fun readUsersRelatedToCommunity(communityID: String,communityDAO: CI, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
         return try {
-            val members = communityMemberDAO.readByCommunity(communityID)
+            val membersMainCommunity = communityMemberDAO.readByCommunity(communityID)
             val response = mutableListOf<CommunityRelatedUsersDTO>()
-            for(i in members.indices){
-                val communityMember = communityMemberDAO.read(communityID = communityID, userID = members[i].userID)
-                val user = userDAO.readByID(members[i].userID)
+            val parentCommunities = communityDAO.readParentCommunities(communityID)
+
+            for(j in parentCommunities.indices){
+                val members = communityMemberDAO.readByCommunity(parentCommunities[j].id)
+                for(i in members.indices){
+                    val communityMember = communityMemberDAO.read(communityID = parentCommunities[j].id, userID = members[i].userID)
+                    val user = userDAO.readByID(members[i].userID)
+                    if(communityMember != null && user != null)
+                        response.add(CommunityRelatedUsersDTO(
+                            userName = user.name,
+                            userID = members[i].userID,
+                            communityID = parentCommunities[j].id,
+                            role = communityMember.role,
+                            userImageURL = user.imageURL
+                        ))
+                }
+            }
+            for(i in membersMainCommunity.indices){
+                val communityMember = communityMemberDAO.read(communityID = communityID, userID = membersMainCommunity[i].userID)
+                val user = userDAO.readByID(membersMainCommunity[i].userID)
                 if(communityMember != null && user != null)
                     response.add(CommunityRelatedUsersDTO(
                         userName = user.name,
-                        userID = members[i].userID,
+                        userID = membersMainCommunity[i].userID,
                         communityID = communityID,
                         role = communityMember.role,
                         userImageURL = user.imageURL

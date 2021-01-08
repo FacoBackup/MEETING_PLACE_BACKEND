@@ -33,6 +33,19 @@ object CommunityDAO: CI {
         }
     }
 
+    override suspend fun readParentCommunities(communityID: String): List<CommunityDTO> {
+        return try{
+            transaction {
+                CommunityEntity.select{
+                    CommunityEntity.parentCommunityID eq communityID
+                }.map { mapCommunityDTO(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
     override suspend fun check(id: String): Boolean {
         return try{
             !transaction {
@@ -79,7 +92,7 @@ object CommunityDAO: CI {
         }catch (normal: Exception){
             null
         }catch (psql: PSQLException){
-         null
+            null
         }
     }
 
