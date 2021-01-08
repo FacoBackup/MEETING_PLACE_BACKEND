@@ -16,6 +16,18 @@ import io.ktor.routing.*
 
 fun Route.communityRouter() {
     route("/api") {
+        patch("/get/community/by/id"){
+            val data = call.receive<RequestCommunity>()
+            val log = call.log
+            if(log != null){
+                val response = CommunityReadService.readCommunityByID(requester = log.userID, communityID = data.communityID, communityDAO = CommunityDAO, communityMemberDAO = CommunityMemberDAO)
+                if(response != null)
+                    call.respond(response)
+                else
+                    call.respond(HttpStatusCode.NoContent)
+            }
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
         get ("/communities/related"){
             val log = call.log
             if(log != null)

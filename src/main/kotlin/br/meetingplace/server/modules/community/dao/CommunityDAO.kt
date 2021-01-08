@@ -127,7 +127,9 @@ object CommunityDAO: CI {
             about = it[CommunityEntity.imageURL],
             imageURL =  it[CommunityEntity.imageURL],
             creationDate = it[CommunityEntity.creationDate],
-            parentCommunityID = it[CommunityEntity.parentCommunityID])
+            parentCommunityID = it[CommunityEntity.parentCommunityID],
+            backgroundImageURL = it[CommunityEntity.backgroundImageURL]
+            )
     }
 
 }

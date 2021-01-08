@@ -2,11 +2,40 @@ package br.meetingplace.server.modules.community.services.read
 
 import br.meetingplace.server.modules.community.dao.CI
 import br.meetingplace.server.modules.community.dao.member.CMI
+import br.meetingplace.server.modules.community.dto.response.CommunityDTO
+import br.meetingplace.server.modules.community.dto.response.CommunityInfoDTO
 import br.meetingplace.server.modules.community.dto.response.CommunityRelatedUsersDTO
 import br.meetingplace.server.modules.community.dto.response.RelatedCommunitiesDTO
 import br.meetingplace.server.modules.user.dao.user.UI
 
 object CommunityReadService {
+    suspend fun readCommunityByID(communityID: String, requester: String, communityDAO: CI, communityMemberDAO: CMI): CommunityInfoDTO? {
+        return try {
+            val community = communityDAO.read(communityID)
+
+            if(community != null){
+                val parentCommunity = community.parentCommunityID?.let { communityDAO.read(it) }
+                val member = communityMemberDAO.read(communityID, requester)
+
+                CommunityInfoDTO(
+                    name = community.name,
+                    about = community.about,
+                    communityID =community.id,
+                    creationDate =community.creationDate,
+                    parentCommunityID = community.parentCommunityID,
+                    parentCommunityImageURL = parentCommunity?.imageURL,
+                    parentCommunityName = parentCommunity?.name,
+                    imageURL = community.imageURL,
+                    backgroundImageURL = community.backgroundImageURL,
+                    role = member?.role
+                )
+            }
+            else
+                null
+        }catch (e: Exception){
+            null
+        }
+    }
     suspend fun readAllRelatedCommunities(requester: String, communityDAO: CI, communityMemberDAO: CMI): List<RelatedCommunitiesDTO>{
         return try {
             val communities = mutableListOf<RelatedCommunitiesDTO>()
