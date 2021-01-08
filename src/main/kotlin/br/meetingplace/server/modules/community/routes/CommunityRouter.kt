@@ -22,19 +22,25 @@ fun Route.communityRouter() {
                 call.respond(CommunityReadService.readAllRelatedCommunities(requester = log.userID, communityDAO = CommunityDAO, communityMemberDAO = CommunityMemberDAO))
             else call.respond(HttpStatusCode.Unauthorized)
         }
+        patch("/get/community/related/users"){
+            val data = call.receive<RequestCommunity>()
+            val log = call.log
+            if(log != null)
+                call.respond(CommunityReadService.readUsersRelatedToCommunity(communityMemberDAO = CommunityMemberDAO, communityID = data.communityID, userDAO = UserDAO))
+            else call.respond(HttpStatusCode.Unauthorized)
 
+        }
         patch("/search/community") {
             val data= call.receive<RequestCommunity>()
             val log = call.log
             if(log != null){
-                if(data.communityID.isBlank())
-                    call.respond(CommunityReadService.readAllRelatedCommunities(requester = log.userID, communityDAO = CommunityDAO, communityMemberDAO = CommunityMemberDAO))
-                else
+                if(data.communityID.isNotBlank())
                     call.respond(CommunityReadService.readCommunityByName(requester = log.userID, name= data.communityID, communityDAO = CommunityDAO, communityMemberDAO = CommunityMemberDAO))
             }
 
             else call.respond(HttpStatusCode.Unauthorized)
         }
+
         post<RequestCommunityCreation>("/community") {
             val log = call.log
             if(log != null)

@@ -15,7 +15,14 @@ object CommunityUpdateService {
               (memberData.role == MemberType.MODERATOR.toString() ||
                memberData.role == MemberType.MEMBER.toString())){
 
-               community.update(communityID = data.communityID, name = data.name, about = data.about, parentID = data.parentCommunityID)
+               community.update(
+                   communityID = data.communityID,
+                   name = data.name,
+                   about = data.about,
+                   parentID = data.parentCommunityID,
+                   imageURL = data.imageURL,
+                   backgroundImageURL = data.backgroundImageURL
+                   )
             }else HttpStatusCode.FailedDependency
         }catch (normal: Exception){
             HttpStatusCode.InternalServerError

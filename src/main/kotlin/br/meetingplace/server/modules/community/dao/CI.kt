@@ -8,9 +8,11 @@ interface CI {
     suspend fun create(data: RequestCommunityCreation):HttpStatusCode
     suspend fun read(id: String): CommunityDTO?
     suspend fun update(communityID: String,
-               name: String?,
-               about: String?,
-               parentID: String?):HttpStatusCode
+                       name: String?,
+                       imageURL: String?,
+                       backgroundImageURL: String?,
+                       about: String?,
+                       parentID: String?):HttpStatusCode
     suspend fun check(id: String):Boolean
     suspend fun readByName(name: String): List<CommunityDTO>
     suspend fun readByExactName (name: String):  CommunityDTO?

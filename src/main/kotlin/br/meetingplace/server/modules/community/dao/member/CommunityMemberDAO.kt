@@ -64,6 +64,19 @@ object CommunityMemberDAO: CMI {
             HttpStatusCode.InternalServerError
         }
     }
+
+    override suspend fun readByCommunity(communityID: String): List<CommunityMemberDTO> {
+        return try{
+            return transaction {
+                CommunityMemberEntity.select { CommunityMemberEntity.communityID eq communityID }
+                    .map { mapCommunityMemberDTO(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
     override suspend fun read(communityID: String, userID: String): CommunityMemberDTO? {
         return try{
             return transaction {

@@ -22,6 +22,7 @@ object CommunityDAO: CI {
                     it[creationDate] =  System.currentTimeMillis()
                     it[about] = data.about
                     it[parentCommunityID]= data.parentCommunityID
+                    it[backgroundImageURL] = data.backgroundImageURL
                 }
             }
             HttpStatusCode.Created
@@ -95,7 +96,7 @@ object CommunityDAO: CI {
             listOf()
         }
     }
-    override suspend fun update(communityID: String, name: String?, about: String?, parentID: String?):HttpStatusCode {
+    override suspend fun update(communityID: String, name: String?, imageURL: String?, backgroundImageURL: String?,about: String?, parentID: String?):HttpStatusCode {
         return try{
             transaction {
                 CommunityEntity.update( { CommunityEntity.id eq communityID } ){
@@ -105,6 +106,10 @@ object CommunityDAO: CI {
                         it[this.about] = about
                     if(!parentID.isNullOrBlank())
                         it[parentCommunityID] = parentID
+                    if(!backgroundImageURL.isNullOrBlank())
+                        it[this.backgroundImageURL] = backgroundImageURL
+                    if(!imageURL.isNullOrBlank())
+                        it[this.imageURL] = imageURL
                 }
             }
             HttpStatusCode.OK
