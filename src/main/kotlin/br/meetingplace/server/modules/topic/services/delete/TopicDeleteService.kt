@@ -6,7 +6,7 @@ import io.ktor.http.*
 
 object TopicDeleteService{
 
-    fun deleteTopic(requester: String,data: RequestTopic, topicDAO: TI): HttpStatusCode {
+    suspend fun deleteTopic(requester: String,data: RequestTopic, topicDAO: TI): HttpStatusCode {
         return try {
             val topic = topicDAO.read(topicID = data.topicID)
             if(topic != null && topic.creatorID == requester)

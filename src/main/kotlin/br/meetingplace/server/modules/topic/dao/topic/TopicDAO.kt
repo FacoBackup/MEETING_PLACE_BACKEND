@@ -71,8 +71,10 @@ object TopicDAO: TI {
             }
             HttpStatusCode.Created
         }catch (normal: Exception){
+            println("NORMAL EXCEPTION" + normal.message)
             HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
+            println("PSQL EXCEPTION" + psql.message)
             HttpStatusCode.InternalServerError
         }
     }

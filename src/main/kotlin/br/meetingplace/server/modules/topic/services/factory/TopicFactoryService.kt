@@ -16,16 +16,17 @@ object TopicFactoryService {
             val user = userDAO.readByID(requester)
             when (data.communityID.isNullOrBlank()) {
                 true -> {
+                    println("STEP 1")
                     return if (user != null && data.mainTopicID.isNullOrBlank()) {
                         val encryptedHeader = encryption.encrypt(myKey = key, data.header)
                         val encryptedBody= encryption.encrypt(myKey = key, data.body)
-                        val encryptedImageURL = data.imageURL?.let { encryption.encrypt(myKey = key, it) }
+
                         if(encryptedBody.isNullOrBlank() || encryptedHeader.isNullOrBlank())
                             return HttpStatusCode.InternalServerError
                         else topicDAO.create(
                             header = encryptedHeader,
                             body = encryptedBody,
-                            imageURL = encryptedImageURL ,
+                            imageURL = data.imageURL ,
                             communityID = null,
                             userID = requester,
                             mainTopicID = null,
@@ -38,13 +39,13 @@ object TopicFactoryService {
                     return if (user != null && member != null && data.mainTopicID.isNullOrBlank()) {
                         val encryptedHeader = encryption.encrypt(myKey = key, data.header)
                         val encryptedBody= encryption.encrypt(myKey = key, data.body)
-                        val encryptedImageURL = data.imageURL?.let { encryption.encrypt(myKey = key, it) }
+
                         if(encryptedBody.isNullOrBlank() || encryptedHeader.isNullOrBlank())
                             return HttpStatusCode.InternalServerError
                         else topicDAO.create(
                             header = encryptedHeader,
                             body = encryptedBody,
-                            imageURL = encryptedImageURL ,
+                            imageURL = data.imageURL ,
                             communityID = member.communityID,
                             userID = requester,
                             mainTopicID = null,

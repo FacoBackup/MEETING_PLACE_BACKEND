@@ -2,6 +2,7 @@ package br.meetingplace.server.modules.topic.routes
 
 
 import br.meetingplace.server.methods.AES
+import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
 import br.meetingplace.server.modules.topic.dao.topic.TopicDAO
 import br.meetingplace.server.modules.topic.dao.opinion.TopicOpinionDAO
@@ -36,7 +37,8 @@ fun Route.topicRouter() {
                     topicVisualizationDAO = TopicVisualizationDAO,
                     decryption = AES,
                     timePeriod = 0,
-                    userDAO = UserDAO
+                    userDAO = UserDAO,
+                    communityDAO = CommunityDAO
                 ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
@@ -49,7 +51,8 @@ fun Route.topicRouter() {
                     decryption = AES,
                     topicDAO = TopicDAO,
                     topicVisualizationDAO = TopicVisualizationDAO,
-                    userDAO = UserDAO
+                    userDAO = UserDAO,
+                    communityDAO = CommunityDAO
                     ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
@@ -63,13 +66,15 @@ fun Route.topicRouter() {
                     decryption = AES,
                     topicDAO = TopicDAO,
                     topicVisualizationDAO = TopicVisualizationDAO,
-                    userDAO = UserDAO
+                    userDAO = UserDAO,
+                    communityDAO = CommunityDAO
                 ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
 
         post<RequestTopicCreation>("/topic") {
             val log = call.log
+
             if(log != null)
                 call.respond(TopicFactoryService.create(requester = log.userID, it, TopicDAO, UserDAO, CommunityMemberDAO,AES))
             else call.respond(HttpStatusCode.Unauthorized)

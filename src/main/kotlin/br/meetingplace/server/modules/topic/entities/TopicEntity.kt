@@ -17,6 +17,6 @@ object TopicEntity: Table("topics") {
     val mainTopicID = varchar("main_topic_id",36).references(id, onDelete = ReferenceOption.CASCADE).nullable()
     val creationDate = long("creation_date")
     val communityID = varchar("community_id", 36).references(CommunityEntity.id).nullable()
-    val imageURL = varchar("image_url", 256).nullable()
+    val imageURL = varchar("image_url", 256000).nullable()
     override val primaryKey = PrimaryKey(id)
 }
