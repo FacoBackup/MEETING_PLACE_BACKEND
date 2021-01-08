@@ -20,7 +20,11 @@ fun Route.communityRouter() {
             val data = call.receive<RequestCommunity>()
             val log = call.log
             if(log != null){
-                val response = CommunityReadService.readCommunityByID(requester = log.userID, communityID = data.communityID, communityDAO = CommunityDAO, communityMemberDAO = CommunityMemberDAO)
+                val response = CommunityReadService.readCommunityByID(
+                    requester = log.userID,
+                    communityID = data.communityID,
+                    communityDAO = CommunityDAO,
+                    communityMemberDAO = CommunityMemberDAO)
                 if(response != null)
                     call.respond(response)
                 else
@@ -38,7 +42,12 @@ fun Route.communityRouter() {
             val data = call.receive<RequestCommunity>()
             val log = call.log
             if(log != null)
-                call.respond(CommunityReadService.readUsersRelatedToCommunity(communityMemberDAO = CommunityMemberDAO, communityID = data.communityID, userDAO = UserDAO))
+                call.respond(CommunityReadService.readUsersRelatedToCommunity(
+                    communityMemberDAO = CommunityMemberDAO,
+                    communityID = data.communityID,
+                    userDAO = UserDAO,
+                    communityDAO = CommunityDAO
+                ))
             else call.respond(HttpStatusCode.Unauthorized)
 
         }

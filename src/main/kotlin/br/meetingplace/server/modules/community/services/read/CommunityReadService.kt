@@ -75,7 +75,8 @@ object CommunityReadService {
                             userID = members[i].userID,
                             communityID = parentCommunities[j].id,
                             role = communityMember.role,
-                            userImageURL = user.imageURL
+                            userImageURL = user.imageURL,
+                            communityName = parentCommunities[j].name
                         ))
                 }
             }
@@ -88,7 +89,8 @@ object CommunityReadService {
                         userID = membersMainCommunity[i].userID,
                         communityID = communityID,
                         role = communityMember.role,
-                        userImageURL = user.imageURL
+                        userImageURL = user.imageURL,
+                        communityName = null
                     ))
             }
             response

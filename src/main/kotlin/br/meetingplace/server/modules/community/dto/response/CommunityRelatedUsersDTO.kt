@@ -5,5 +5,6 @@ data class CommunityRelatedUsersDTO(
     val userID: String,
     val userName: String,
     val userImageURL: String?,
-    val role: String
+    val role: String,
+    val communityName: String?
 )
