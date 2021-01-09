@@ -8,6 +8,7 @@ import br.meetingplace.server.modules.user.dto.requests.RequestProfileUpdate
 import br.meetingplace.server.modules.user.dto.requests.RequestSocial
 import br.meetingplace.server.modules.user.dto.requests.RequestUser
 import br.meetingplace.server.modules.user.dto.requests.RequestUserCreation
+import br.meetingplace.server.modules.user.dto.response.UserSearchDTO
 import br.meetingplace.server.modules.user.services.delete.UserDeleteService
 import br.meetingplace.server.modules.user.services.factory.UserFactoryService
 import br.meetingplace.server.modules.user.services.profile.UserUpdateService
@@ -71,6 +72,19 @@ fun Route.userRouter() {
                 val data = call.receive<RequestUser>()
                 if(log != null)
                     call.respond(UserSocialService.readFollowing(data.userID, UserSocialDAO, UserDAO))
+                else call.respond(HttpStatusCode.Unauthorized)
+            }
+            patch("/get/simplified/user/profile"){
+                val data = call.receive<RequestUser>()
+                val log = call.log
+                if(log != null){
+                    val user = UserDAO.readByID(data.userID)
+                    if(user != null)
+                        call.respond(UserSearchDTO(name= user.name,email = user.email,imageURL = user.imageURL,isFollowing = false))
+                    else
+                        call.respond(HttpStatusCode.NoContent)
+                }
+
                 else call.respond(HttpStatusCode.Unauthorized)
             }
             patch("/search/user"){

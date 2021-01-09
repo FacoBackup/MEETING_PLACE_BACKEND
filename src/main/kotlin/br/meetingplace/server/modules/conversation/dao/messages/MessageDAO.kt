@@ -124,7 +124,8 @@ object MessageDAO: MI{
             type =  it[MessageEntity.type],
             conversationID = it[MessageEntity.conversationID],
             creationDate = it[MessageEntity.creationDate],
-            seenByEveryone = it[MessageEntity.seenByEveryone]
+            seenByEveryone = it[MessageEntity.seenByEveryone],
+            receiverAsUserID = null
         )
     }
 }

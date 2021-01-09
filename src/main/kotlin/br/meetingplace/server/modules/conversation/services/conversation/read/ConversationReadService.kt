@@ -26,17 +26,21 @@ object ConversationReadService {
                 for(i in private.indices){
                     val unreadMessages = messageStatusDAO.unseenMessages(conversationID = private[i].conversationID, userID = requester)
                     val conversationData = conversationDAO.read(private[i].conversationID)
-                    if(conversationData != null) {
+
+                    val simplifiedUser = userDAO.readSimplifiedUserByID(if(private[i].primaryUserID != requester) private[i].primaryUserID else private[i].secondaryUserID)
+                    if(conversationData != null && simplifiedUser != null) {
                         conversations.add(
                             ConversationFullDTO(
                                 id = conversationData.id,
                                 name = conversationData.name,
                                 about = conversationData.about,
-                                imageURL = conversationData.imageURL,
+                                imageURL =simplifiedUser.imageURL,
                                 isGroup = conversationData.isGroup,
                                 creationDate = conversationData.creationDate,
                                 members = conversationMemberDAO.readAllByConversation(conversationID = private[i].conversationID),
-                                unreadMessages = unreadMessages
+                                unreadMessages = unreadMessages,
+                                userName = simplifiedUser.name,
+                                latestMessage = conversationData.latestMessage
                             )
                         )
                     }
@@ -54,14 +58,18 @@ object ConversationReadService {
                                 isGroup = conversationData.isGroup,
                                 creationDate = conversationData.creationDate,
                                 members = conversationMemberDAO.readAllByConversation(conversationID = memberIn[i].conversationID),
-                                unreadMessages =unreadMessages
+                                unreadMessages =unreadMessages,
+                                userName = null,
+                                latestMessage = conversationData.latestMessage
                         )
                         )
                     }
 
                 }
             }
-            conversations
+
+            (conversations.toList()).sortedBy { it.latestMessage ?: it.unreadMessages }
+
         }catch (e: Exception){
             listOf()
         }

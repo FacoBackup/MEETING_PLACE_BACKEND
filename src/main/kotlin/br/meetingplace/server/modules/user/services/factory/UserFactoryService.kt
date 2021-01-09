@@ -12,7 +12,7 @@ object UserFactoryService{
         return try{
             if(userDAO.readAllByAttribute(null, null,
                 phoneNumber = data.phoneNumber,null,null).isEmpty() &&
-                !userDAO.check(data.email) && data.email.isNotBlank())
+                 !userDAO.check(data.email) && data.email.isNotBlank() && data.email.length > 11 && data.email.contains("@"))
                 userDAO.create(data)
 
             else

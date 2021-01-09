@@ -88,22 +88,22 @@ fun Route.groupConversationRouter(){
             }
             else call.respond(HttpStatusCode.Unauthorized)
         }
-        post<RequestConversation>("/get/new/group/messages") {
-            val log = call.log
-            if(log != null){
-                val chats = MessageReadService.readNewGroupMessages(
-                    requester = log.userID,
-                    conversationID = it.conversationID,
-                    decryption = AES,
-                    messageDAO = MessageDAO,
-                    conversationMemberDAO = ConversationMemberDAO,
-                    messageStatusDAO = MessageStatusDAO
-                    )
-
-                call.respond(chats)
-            }
-            else call.respond(HttpStatusCode.Unauthorized)
-        }
+//        post<RequestConversation>("/get/new/group/messages") {
+//            val log = call.log
+//            if(log != null){
+//                val chats = MessageReadService.readNewGroupMessages(
+//                    requester = log.userID,
+//                    conversationID = it.conversationID,
+//                    decryption = AES,
+//                    messageDAO = MessageDAO,
+//                    conversationMemberDAO = ConversationMemberDAO,
+//                    messageStatusDAO = MessageStatusDAO
+//                    )
+//
+//                call.respond(chats)
+//            }
+//            else call.respond(HttpStatusCode.Unauthorized)
+//        }
         post<RequestConversation>("/get/all/group/messages") {
             val log = call.log
             if(log != null){

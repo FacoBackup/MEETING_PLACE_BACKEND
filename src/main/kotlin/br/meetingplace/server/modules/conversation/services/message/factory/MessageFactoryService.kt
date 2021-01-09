@@ -58,7 +58,7 @@ object MessageFactoryService {
 
         return try{
             lateinit var messageID: String
-            if(userDAO.check(requester) && data.receiverID != null){
+            if(data.receiverID != null){
                 val conversation = conversationOwnerDAO.read(userID = requester, secondUserID = data.receiverID)
                 when(conversation != null){
                     true->{ //already exists a conversation
@@ -116,7 +116,7 @@ object MessageFactoryService {
                                 }
 
                             }
-                            else HttpStatusCode.FailedDependency
+                            else HttpStatusCode.BadGateway
                         }
                         else HttpStatusCode.FailedDependency
                     }

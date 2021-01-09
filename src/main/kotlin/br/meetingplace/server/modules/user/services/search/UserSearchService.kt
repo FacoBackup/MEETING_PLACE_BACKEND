@@ -5,6 +5,7 @@ import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.modules.user.dto.response.UserSearchDTO
 
 object UserSearchService {
+
     suspend fun searchUser(requester: String, userID: String, userDAO: UI, userSocialDAO: SI): List<UserSearchDTO>{
         return try{
             val user = userDAO.readByName(userID, requester)

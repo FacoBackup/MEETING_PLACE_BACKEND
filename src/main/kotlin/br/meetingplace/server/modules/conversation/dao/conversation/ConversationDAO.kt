@@ -29,9 +29,12 @@ object ConversationDAO: CI {
             }
             HttpStatusCode.Created
         }catch (normal: Exception){
+            println("-------------------------------------------------------------------------")
+            println(normal.message)
             HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-
+            println("-------------------------------------------------------------------------")
+            println(psql.message)
             HttpStatusCode.InternalServerError
         }
     }
@@ -128,7 +131,9 @@ object ConversationDAO: CI {
             imageURL = it[ConversationEntity.imageURL],
             creationDate = it[ConversationEntity.creationDate].toString("dd-MM-yyyy"),
             about = it[ConversationEntity.about],
-            isGroup = it[ConversationEntity.isGroup])
+            isGroup = it[ConversationEntity.isGroup],
+            latestMessage = it[ConversationEntity.latestMessage]
+            )
     }
 
 }

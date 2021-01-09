@@ -7,5 +7,7 @@ data class ConversationFullDTO(val id: String,
                                val isGroup: Boolean,
                                val creationDate: String,
                                val members: List<ConversationMemberDTO>,
-                               val unreadMessages: Long
+                               val unreadMessages: Long,
+                               val userName: String?,
+                               val latestMessage: Long?
                                )

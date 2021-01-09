@@ -11,15 +11,15 @@ import br.meetingplace.server.modules.conversation.dto.response.messages.Message
 import br.meetingplace.server.modules.user.dao.user.UI
 
 object MessageReadService {
-
-    fun readNewGroupMessages(requester: String, messageStatusDAO: MSI, conversationID: String, messageDAO: MI, decryption: AESInterface, conversationMemberDAO: CMI): List<MessageDTO>{
-        TODO("NOT YET IMPLEMENTED")
-//        return try {
 //
-//        }catch (e: Exception){
-//            listOf()
-//        }
-    }
+//    fun readNewGroupMessages(requester: String, messageStatusDAO: MSI, conversationID: String, messageDAO: MI, decryption: AESInterface, conversationMemberDAO: CMI): List<MessageDTO>{
+//        TODO("NOT YET IMPLEMENTED")
+////        return try {
+////
+////        }catch (e: Exception){
+////            listOf()
+////        }
+//    }
     suspend fun readGroupAllMessages(
         requester: String,
         conversationID: String,
@@ -50,7 +50,8 @@ object MessageReadService {
                             conversationID = encryptedMessages[i].conversationID,
                             valid = encryptedMessages[i].valid,
                             creationDate = encryptedMessages[i].creationDate,
-                            seenByEveryone = encryptedMessages[i].seenByEveryone
+                            seenByEveryone = encryptedMessages[i].seenByEveryone,
+                            receiverAsUserID = null
                         )
                     )
 
@@ -102,7 +103,8 @@ object MessageReadService {
                                     conversationID = encryptedMessage.conversationID,
                                     valid = encryptedMessage.valid,
                                     creationDate = encryptedMessage.creationDate,
-                                    seenByEveryone = encryptedMessage.seenByEveryone
+                                    seenByEveryone = encryptedMessage.seenByEveryone,
+                                    receiverAsUserID = if(conversation.secondaryUserID != requester) conversation.secondaryUserID else conversation.primaryUserID
                                 )
                             )
                             messageStatusDAO.update(conversationID = conversation.conversationID,
@@ -152,7 +154,8 @@ object MessageReadService {
                             conversationID = encryptedMessages[i].conversationID,
                             valid = encryptedMessages[i].valid,
                             creationDate = encryptedMessages[i].creationDate,
-                            seenByEveryone = encryptedMessages[i].seenByEveryone
+                            seenByEveryone = encryptedMessages[i].seenByEveryone,
+                            receiverAsUserID = if(conversation != null && conversation.secondaryUserID != requester) conversation.secondaryUserID else if(conversation != null && conversation.primaryUserID != requester) conversation.primaryUserID else null
                         )
                     )
                 messageStatusDAO.update(

@@ -15,11 +15,24 @@ import br.meetingplace.server.modules.user.dto.requests.RequestUser
 import br.meetingplace.server.server.AuthLog.log
 import io.ktor.application.*
 import io.ktor.http.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Route.userConversationRouter() {
     route("/api") {
+        patch("/get/conversationID"){
+            val data = call.receive<RequestUser>()
+            val log = call.log
+            if(log != null){
+                val conv = ConversationOwnersDAO.read(userID = data.userID, secondUserID = log.userID)
+                if(conv != null)
+                    call.respond(conv.conversationID)
+                else
+                    call.respond(HttpStatusCode.NoContent)
+            }
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
         get("/conversation/all"){
             val log = call.log
             if(log != null)
