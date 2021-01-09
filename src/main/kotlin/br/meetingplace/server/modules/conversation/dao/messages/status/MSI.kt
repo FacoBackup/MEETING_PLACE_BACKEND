@@ -4,8 +4,9 @@ import br.meetingplace.server.modules.conversation.dto.response.messages.Message
 import io.ktor.http.*
 
 interface MSI {
-    fun create(conversationID: String, userID: String, messageID: String): HttpStatusCode
-    fun readUnseen(conversationID: String, userID: String): List<MessageStatusDTO>
-    fun seenByEveryoneByMessage(messageID: String, conversationID: String): Boolean
-    fun update(conversationID: String, userID: String , messageID: String): HttpStatusCode
+    suspend fun create(conversationID: String, userID: String, messageID: String): HttpStatusCode
+    suspend fun readUnseen(conversationID: String, userID: String): List<MessageStatusDTO>
+    suspend fun seenByEveryoneByMessage(messageID: String, conversationID: String): Boolean
+    suspend fun update(conversationID: String, userID: String , messageID: String): HttpStatusCode
+    suspend fun unseenMessages(conversationID: String, userID: String): Long
 }

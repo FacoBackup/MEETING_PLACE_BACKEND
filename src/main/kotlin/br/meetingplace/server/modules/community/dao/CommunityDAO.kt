@@ -137,7 +137,7 @@ object CommunityDAO: CI {
         return CommunityDTO(
             name = it[CommunityEntity.name],
             id = it[CommunityEntity.id],
-            about = it[CommunityEntity.imageURL],
+            about = it[CommunityEntity.about],
             imageURL =  it[CommunityEntity.imageURL],
             creationDate = it[CommunityEntity.creationDate],
             parentCommunityID = it[CommunityEntity.parentCommunityID],

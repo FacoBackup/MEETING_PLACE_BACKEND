@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object MessageStatusDAO: MSI {
-    override fun create(conversationID: String, userID: String, messageID: String): HttpStatusCode {
+    override suspend fun create(conversationID: String, userID: String, messageID: String): HttpStatusCode {
         return try{
             transaction {
                 MessageStatusEntity.insert {
@@ -26,7 +26,7 @@ object MessageStatusDAO: MSI {
         }
     }
 
-    override fun seenByEveryoneByMessage(messageID: String, conversationID: String): Boolean {
+    override suspend fun seenByEveryoneByMessage(messageID: String, conversationID: String): Boolean {
         return try {
             transaction {
                 MessageStatusEntity.select {
@@ -41,7 +41,7 @@ object MessageStatusDAO: MSI {
             false
         }
     }
-    override fun readUnseen(conversationID: String, userID: String): List<MessageStatusDTO> {
+    override suspend fun readUnseen(conversationID: String, userID: String): List<MessageStatusDTO> {
         return try {
             transaction {
                 MessageStatusEntity.select {
@@ -56,7 +56,22 @@ object MessageStatusDAO: MSI {
         }
     }
 
-    override fun update(conversationID: String, userID: String, messageID: String): HttpStatusCode {
+    override suspend fun unseenMessages(conversationID: String, userID: String): Long {
+        return try{
+            transaction {
+                MessageStatusEntity.select{
+                    (MessageStatusEntity.conversationID eq conversationID) and
+                    (MessageStatusEntity.userID eq userID) and
+                    (MessageStatusEntity.seen eq false)
+                }.count()
+            }
+        }catch (e: Exception){
+            0
+        }catch (psql: PSQLException){
+            0
+        }
+    }
+    override suspend fun update(conversationID: String, userID: String, messageID: String): HttpStatusCode {
         return try{
             transaction {
                 MessageStatusEntity.update({ (MessageStatusEntity.conversationID eq conversationID) and

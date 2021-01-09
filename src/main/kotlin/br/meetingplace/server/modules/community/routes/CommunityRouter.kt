@@ -25,8 +25,12 @@ fun Route.communityRouter() {
                     communityID = data.communityID,
                     communityDAO = CommunityDAO,
                     communityMemberDAO = CommunityMemberDAO)
-                if(response != null)
+                if(response != null){
+
+
                     call.respond(response)
+                }
+
                 else
                     call.respond(HttpStatusCode.NoContent)
             }

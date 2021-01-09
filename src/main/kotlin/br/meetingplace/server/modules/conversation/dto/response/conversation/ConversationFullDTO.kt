@@ -6,5 +6,6 @@ data class ConversationFullDTO(val id: String,
                                val imageURL: String?,
                                val isGroup: Boolean,
                                val creationDate: String,
-                               val members: List<ConversationMemberDTO>
+                               val members: List<ConversationMemberDTO>,
+                               val unreadMessages: Long
                                )

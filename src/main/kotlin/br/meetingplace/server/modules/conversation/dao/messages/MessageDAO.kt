@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object MessageDAO: MI{
-    override fun create(message: String, imageURL: String?, conversationID: String, creator: String, messageID: String): HttpStatusCode {
+    override suspend fun create(message: String, imageURL: String?, conversationID: String, creator: String, messageID: String): HttpStatusCode {
         return try {
             transaction {
                 MessageEntity.insert {
@@ -31,7 +31,7 @@ object MessageDAO: MI{
         }
     }
 
-    override fun update(messageID: String): HttpStatusCode {
+    override suspend fun update(messageID: String): HttpStatusCode {
         return try {
             transaction {
                 MessageEntity.update( {
@@ -48,7 +48,7 @@ object MessageDAO: MI{
             HttpStatusCode.InternalServerError
         }
     }
-    override fun delete(messageID: String): HttpStatusCode {
+    override suspend fun delete(messageID: String): HttpStatusCode {
         return try {
             transaction {
                 MessageEntity.deleteWhere {
@@ -62,7 +62,8 @@ object MessageDAO: MI{
             HttpStatusCode.InternalServerError
         }
     }
-    override fun check(messageID: String): Boolean {
+
+    override suspend fun check(messageID: String): Boolean {
         return try {
             !transaction {
                 MessageEntity.select {
@@ -75,7 +76,7 @@ object MessageDAO: MI{
             false
         }
     }
-    override fun read(messageID: String): MessageDTO? {
+    override suspend fun read(messageID: String): MessageDTO? {
         return try {
             transaction {
                 MessageEntity.deleteWhere {
@@ -93,7 +94,7 @@ object MessageDAO: MI{
             null
         }
     }
-    override fun readAllConversation(userID: String, conversationID: String): List<MessageDTO> {
+    override suspend fun readAllConversation(userID: String, conversationID: String): List<MessageDTO> {
         return try {
             val conversation  = mutableListOf<MessageDTO>()
             transaction {

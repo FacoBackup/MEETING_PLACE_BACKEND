@@ -6,7 +6,7 @@ import br.meetingplace.server.modules.conversation.dto.requests.conversation.Req
 import io.ktor.http.*
 
 object ConversationDeleteService{
-    fun delete(requester: String, data: RequestConversation, conversationMemberDAO: CMI, groupDAO: CI): HttpStatusCode {
+    suspend fun delete(requester: String, data: RequestConversation, conversationMemberDAO: CMI, groupDAO: CI): HttpStatusCode {
         return try{
             val member = conversationMemberDAO.read(userID = requester, conversationID = data.conversationID)
             if(member != null && member.admin)

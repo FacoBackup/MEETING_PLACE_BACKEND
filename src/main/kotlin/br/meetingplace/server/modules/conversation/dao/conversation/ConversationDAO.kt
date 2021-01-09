@@ -13,7 +13,7 @@ import org.postgresql.util.PSQLException
 
 object ConversationDAO: CI {
 
-    override fun create(data: RequestConversationCreation, id: String): HttpStatusCode {
+    override suspend fun create(data: RequestConversationCreation, id: String): HttpStatusCode {
         return try {
 
             transaction {
@@ -24,6 +24,7 @@ object ConversationDAO: CI {
                     it[about] = data.about
                     it[name] = data.name
                     it[isGroup] = data.isGroup
+                    it[latestMessage] = null
                 }
             }
             HttpStatusCode.Created
@@ -35,7 +36,7 @@ object ConversationDAO: CI {
         }
     }
 
-    override fun check(conversationID: String): Boolean {
+    override suspend fun check(conversationID: String): Boolean {
         return try {
             !transaction {
                 ConversationEntity.select { ConversationEntity.id eq conversationID }.empty()
@@ -47,7 +48,7 @@ object ConversationDAO: CI {
         }
     }
 
-    override fun readByName(input: String, userID: String): List<ConversationDTO> {
+    override suspend fun readByName(input: String, userID: String): List<ConversationDTO> {
         return try {
             val conversations = mutableListOf<ConversationDTO>()
 
@@ -75,7 +76,7 @@ object ConversationDAO: CI {
             listOf()
         }
     }
-    override fun delete(conversationID: String): HttpStatusCode {
+    override suspend fun delete(conversationID: String): HttpStatusCode {
         return try {
             transaction {
                 ConversationEntity.deleteWhere { ConversationEntity.id eq conversationID }
@@ -88,7 +89,7 @@ object ConversationDAO: CI {
         }
     }
 
-    override fun read(conversationID: String): ConversationDTO? {
+    override suspend fun read(conversationID: String): ConversationDTO? {
         return try {
             transaction {
                 ConversationEntity.select { ConversationEntity.id eq conversationID }.map { mapConversation(it) }.firstOrNull()
@@ -100,7 +101,7 @@ object ConversationDAO: CI {
         }
     }
 
-    override fun update(conversationID: String, name: String?, about: String?, imageURL: String?): HttpStatusCode {
+    override suspend fun update(conversationID: String, latestMessage: Long?, name: String?, about: String?, imageURL: String?): HttpStatusCode {
         return try {
             transaction {
                 ConversationEntity.update({ ConversationEntity.id eq conversationID}) {
@@ -110,6 +111,8 @@ object ConversationDAO: CI {
                         it[this.about] = about
                     if(!imageURL.isNullOrBlank())
                         it[this.imageURL] = imageURL
+                    if(latestMessage != null)
+                        it[this.latestMessage] = latestMessage
                 }
             }
             HttpStatusCode.OK
