@@ -64,7 +64,7 @@ object TopicReadService {
                     if(!topicVisualizationDAO.check(topicID = topics[j].id, userID = requester)){
                         val header =decryption.decrypt(myKey = key, data = topics[j].header)
                         val body = decryption.decrypt(myKey = key, data = topics[j].body)
-                        val imageURL = topics[j].imageURL?.let { decryption.decrypt(myKey = key, data = it) }
+                        //val imageURL = topics[j].imageURL?.let { decryption.decrypt(myKey = key, data = it) }
                         val user = userDAO.readByID(topics[j].creatorID)
                         val communityEntity = topics[j].communityID?.let { communityDAO.read(it) }
                         if(!header.isNullOrBlank() && !body.isNullOrBlank() && user != null && communityEntity != null)
@@ -74,7 +74,7 @@ object TopicReadService {
                                 approved = topics[j].approved,
                                 header= header,
                                 body = body,
-                                imageURL = imageURL,
+                                imageURL = topics[j].imageURL,
                                 id = topics[j].id,
                                 communityID = topics[j].communityID,
                                 mainTopicID = topics[j].mainTopicID,
@@ -103,13 +103,13 @@ object TopicReadService {
                  val decryptedTopics = mutableListOf<TopicDataDTO>()
 
                  for(j in topics.indices) {
-                     if (!topicVisualizationDAO.check(topicID = topics[j].id, userID = requester)) {
+//                     if (!topicVisualizationDAO.check(topicID = topics[j].id, userID = requester)) {
                          val header = decryption.decrypt(myKey = key, data = topics[j].header)
                          val body = decryption.decrypt(myKey = key, data = topics[j].body)
-                         val imageURL = topics[j].imageURL?.let { decryption.decrypt(myKey = key, data = it) }
+                         //val imageURL = topics[j].imageURL?.let { decryption.decrypt(myKey = key, data = it) }
                          val user = userDAO.readByID(topics[j].creatorID)
                          val communityEntity = topics[j].communityID?.let { communityDAO.read(it) }
-                         if (!header.isNullOrBlank() && !body.isNullOrBlank() && user != null && communityEntity != null)
+                         if (!header.isNullOrBlank() && !body.isNullOrBlank() && user != null)
                              decryptedTopics.add(
                                  TopicDataDTO(
                                      creationDate = topics[j].creationDate,
@@ -117,17 +117,17 @@ object TopicReadService {
                                      approved = topics[j].approved,
                                      header = header,
                                      body = body,
-                                     imageURL = imageURL,
+                                     imageURL = topics[j].imageURL,
                                      id = topics[j].id,
                                      communityID = topics[j].communityID,
                                      mainTopicID = topics[j].mainTopicID,
                                      subjectName = user.name,
                                      subjectImageURL = user.imageURL,
-                                     communityName = communityEntity.name
+                                     communityName = communityEntity?.name
                                  )
                              )
                          topicVisualizationDAO.create(topicID = topics[j].id, userID = requester)
-                     }
+//                     }
                      if(subjectID != requester && !topicVisualizationDAO.check(topicID = topics[j].id, userID = requester))
                          topicVisualizationDAO.create(topicID = topics[j].id, userID = requester)
                  }
