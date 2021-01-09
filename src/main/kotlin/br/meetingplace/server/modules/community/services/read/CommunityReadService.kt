@@ -4,16 +4,17 @@ import br.meetingplace.server.modules.community.dao.CI
 import br.meetingplace.server.modules.community.dao.member.CMI
 import br.meetingplace.server.modules.community.dto.response.CommunityInfoDTO
 import br.meetingplace.server.modules.community.dto.response.CommunityRelatedUsersDTO
-import br.meetingplace.server.modules.community.dto.response.RelatedCommunitiesDTO
+import br.meetingplace.server.modules.community.dto.response.UserCommunitiesDTO
 import br.meetingplace.server.modules.user.dao.user.UI
 
 object CommunityReadService {
+//    suspend fun readCommunitiesRelatedToCommunity
     suspend fun readCommunityByID(communityID: String, requester: String, communityDAO: CI, communityMemberDAO: CMI): CommunityInfoDTO? {
         return try {
             val community = communityDAO.read(communityID)
 
             if(community != null){
-                val parentCommunity = community.parentCommunityID?.let { communityDAO.read(it) }
+                val parentCommunity = community.relatedCommunityID?.let { communityDAO.read(it) }
                 val member = communityMemberDAO.read(communityID, requester)
 
                 CommunityInfoDTO(
@@ -21,9 +22,9 @@ object CommunityReadService {
                     about = community.about,
                     communityID =community.id,
                     creationDate =community.creationDate,
-                    parentCommunityID = community.parentCommunityID,
-                    parentCommunityImageURL = parentCommunity?.imageURL,
-                    parentCommunityName = parentCommunity?.name,
+                    relatedCommunityID = community.relatedCommunityID,
+                    relatedCommunityImageURL = parentCommunity?.imageURL,
+                    relatedCommunityName = parentCommunity?.name,
                     imageURL = community.imageURL,
                     backgroundImageURL = community.backgroundImageURL,
                     role = member?.role
@@ -35,17 +36,17 @@ object CommunityReadService {
             null
         }
     }
-    suspend fun readAllRelatedCommunities(requester: String, communityDAO: CI, communityMemberDAO: CMI): List<RelatedCommunitiesDTO>{
+    suspend fun readAllUserCommunities(requester: String, communityDAO: CI, communityMemberDAO: CMI): List<UserCommunitiesDTO>{
         return try {
-            val communities = mutableListOf<RelatedCommunitiesDTO>()
+            val communities = mutableListOf<UserCommunitiesDTO>()
             val relatedCommunities = communityMemberDAO.readByUser(requester)
             for(i in relatedCommunities.indices){
                 val community = communityDAO.read(relatedCommunities[i].communityID)
                 if(community != null){
-                    communities.add(RelatedCommunitiesDTO(
+                    communities.add(UserCommunitiesDTO(
                         name = community.name,
                         about = community.about,
-                        parentCommunityName = community.parentCommunityID?.let { communityDAO.read(id = it) }?.name,
+                        relatedCommunityName = community.relatedCommunityID?.let { communityDAO.read(id = it) }?.name,
                         role = relatedCommunities[i].role,
                         communityID = community.id,
                         imageURL = community.imageURL
@@ -98,16 +99,16 @@ object CommunityReadService {
             listOf()
         }
     }
-    suspend fun readCommunityByName(requester: String, name: String, communityDAO: CI, communityMemberDAO: CMI): List<RelatedCommunitiesDTO>{
+    suspend fun readCommunityByName(requester: String, name: String, communityDAO: CI, communityMemberDAO: CMI): List<UserCommunitiesDTO>{
         return try {
             val communities = communityDAO.readByName(name)
-            val response = mutableListOf<RelatedCommunitiesDTO>()
+            val response = mutableListOf<UserCommunitiesDTO>()
             for(i in communities.indices){
                 val communityMember = communityMemberDAO.read(communityID = communities[i].id, userID = requester)
-                response.add(RelatedCommunitiesDTO(
+                response.add(UserCommunitiesDTO(
                     name = communities[i].name,
                     about = communities[i].about,
-                    parentCommunityName = communities[i].parentCommunityID?.let { communityDAO.read(id = it) }?.name,
+                    relatedCommunityName = communities[i].relatedCommunityID?.let { communityDAO.read(id = it) }?.name,
                     role = communityMember?.role ?: "",
                     communityID = communities[i].id,
                     imageURL = communities[i].imageURL

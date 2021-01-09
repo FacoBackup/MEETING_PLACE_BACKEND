@@ -6,7 +6,6 @@ import br.meetingplace.server.modules.community.entities.CommunityEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
 import org.postgresql.util.PSQLException
 import java.util.*
 
@@ -21,7 +20,7 @@ object CommunityDAO: CI {
                     it[imageURL] = data.imageURL
                     it[creationDate] =  System.currentTimeMillis()
                     it[about] = data.about
-                    it[parentCommunityID]= data.parentCommunityID
+                    it[relatedCommunityID]= data.relatedCommunityID
                     it[backgroundImageURL] = data.backgroundImageURL
                 }
             }
@@ -37,7 +36,7 @@ object CommunityDAO: CI {
         return try{
             transaction {
                 CommunityEntity.select{
-                    CommunityEntity.parentCommunityID eq communityID
+                    CommunityEntity.relatedCommunityID eq communityID
                 }.map { mapCommunityDTO(it) }
             }
         }catch (normal: Exception){
@@ -109,7 +108,7 @@ object CommunityDAO: CI {
             listOf()
         }
     }
-    override suspend fun update(communityID: String, name: String?, imageURL: String?, backgroundImageURL: String?,about: String?, parentID: String?):HttpStatusCode {
+    override suspend fun update(communityID: String, name: String?, imageURL: String?, backgroundImageURL: String?, about: String?, relatedID: String?):HttpStatusCode {
         return try{
             transaction {
                 CommunityEntity.update( { CommunityEntity.id eq communityID } ){
@@ -117,8 +116,8 @@ object CommunityDAO: CI {
                         it[this.name] = name
                     if(!about.isNullOrBlank())
                         it[this.about] = about
-                    if(!parentID.isNullOrBlank())
-                        it[parentCommunityID] = parentID
+                    if(!relatedID.isNullOrBlank())
+                        it[relatedCommunityID] = relatedID
                     if(!backgroundImageURL.isNullOrBlank())
                         it[this.backgroundImageURL] = backgroundImageURL
                     if(!imageURL.isNullOrBlank())
@@ -140,7 +139,7 @@ object CommunityDAO: CI {
             about = it[CommunityEntity.about],
             imageURL =  it[CommunityEntity.imageURL],
             creationDate = it[CommunityEntity.creationDate],
-            parentCommunityID = it[CommunityEntity.parentCommunityID],
+            relatedCommunityID = it[CommunityEntity.relatedCommunityID],
             backgroundImageURL = it[CommunityEntity.backgroundImageURL]
             )
     }

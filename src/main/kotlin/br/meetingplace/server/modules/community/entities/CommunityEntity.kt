@@ -12,6 +12,6 @@ object CommunityEntity: Table("communities"){
     val imageURL = varchar("community_image_url", 256000).nullable()
     val backgroundImageURL = varchar("community_background_image_url", 256000).nullable()
     val creationDate = long("creation_date")
-    val parentCommunityID = varchar("parent_community_id", 36).references(id, onDelete = ReferenceOption.SET_NULL).nullable()
+    val relatedCommunityID = varchar("parent_community_id", 36).references(id, onDelete = ReferenceOption.SET_NULL).nullable()
     override val primaryKey = PrimaryKey(id)
 }

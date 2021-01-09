@@ -5,9 +5,9 @@ data class CommunityInfoDTO(val name: String,
                             val about: String?,
                             val imageURL: String?,
                             val creationDate: Long,
-                            val parentCommunityID: String?,
+                            val relatedCommunityID: String?,
                             val backgroundImageURL: String?,
                             val role: String?,
-                            val parentCommunityName: String?,
-                            val parentCommunityImageURL: String?
+                            val relatedCommunityName: String?,
+                            val relatedCommunityImageURL: String?
                             )

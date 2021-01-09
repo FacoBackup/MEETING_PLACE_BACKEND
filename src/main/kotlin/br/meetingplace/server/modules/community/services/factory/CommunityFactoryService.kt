@@ -12,7 +12,7 @@ object CommunityFactoryService {
     suspend fun create(requester: String,data: RequestCommunityCreation, communityDAO: CI, communityMemberDAO: CMI): HttpStatusCode {
 
         return try {
-            return if(!data.parentCommunityID.isNullOrBlank() && communityDAO.read(data.parentCommunityID) != null){
+            return if(!data.relatedCommunityID.isNullOrBlank() && communityDAO.read(data.relatedCommunityID) != null){
                 communityDAO.create(data)
                 val community = communityDAO.readByExactName(data.name)
                 return if(community != null)
@@ -20,7 +20,7 @@ object CommunityFactoryService {
                 else
                     HttpStatusCode.InternalServerError
             }
-            else if(data.parentCommunityID.isNullOrBlank()){
+            else if(data.relatedCommunityID.isNullOrBlank()){
                 communityDAO.create(data)
                 val community = communityDAO.readByExactName(data.name)
                 return if(community != null)

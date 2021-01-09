@@ -19,7 +19,7 @@ object CommunityUpdateService {
                    communityID = data.communityID,
                    name = data.name,
                    about = data.about,
-                   parentID = data.parentCommunityID,
+                   relatedID = data.relatedCommunityID,
                    imageURL = data.imageURL,
                    backgroundImageURL = data.backgroundImageURL
                    )
