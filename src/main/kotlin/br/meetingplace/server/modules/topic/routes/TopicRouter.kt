@@ -6,7 +6,7 @@ import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
 import br.meetingplace.server.modules.topic.dao.topic.TopicDAO
 import br.meetingplace.server.modules.topic.dao.opinion.TopicOpinionDAO
-import br.meetingplace.server.modules.topic.dao.seen.TopicVisualizationDAO
+import br.meetingplace.server.modules.topic.dao.seen.TopicStatusDAO
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopic
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopics
@@ -34,9 +34,7 @@ fun Route.topicRouter() {
                     subjectID= data.subjectID,
                     community = data.community,
                     topicDAO =  TopicDAO,
-                    topicVisualizationDAO = TopicVisualizationDAO,
                     decryption = AES,
-                    timePeriod = 0,
                     userDAO = UserDAO,
                     communityDAO = CommunityDAO
                 ))
@@ -50,7 +48,7 @@ fun Route.topicRouter() {
                     userSocialDAO = UserSocialDAO,
                     decryption = AES,
                     topicDAO = TopicDAO,
-                    topicVisualizationDAO = TopicVisualizationDAO,
+                    topicStatusDAO = TopicStatusDAO,
                     userDAO = UserDAO,
                     communityDAO = CommunityDAO
                     ))
@@ -65,7 +63,7 @@ fun Route.topicRouter() {
                     userSocialDAO = UserSocialDAO,
                     decryption = AES,
                     topicDAO = TopicDAO,
-                    topicVisualizationDAO = TopicVisualizationDAO,
+                    topicStatusDAO = TopicStatusDAO,
                     userDAO = UserDAO,
                     communityDAO = CommunityDAO
                 ))

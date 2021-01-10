@@ -17,7 +17,7 @@ interface TI {
     suspend fun readBySubject(subjectID: String, community: Boolean): List<TopicDTO>
 
     suspend fun readAllComments(topicID: String): List<TopicDTO>
-    suspend fun readByTimePeriod(subjectID: String, until: Long , community: Boolean): List<TopicDTO>
+    suspend fun readByTimePeriod(subjectID: String, since: Long, community: Boolean): List<TopicDTO>
     suspend fun update(topicID: String,
                approved: Boolean?,
                mainTopicID: String?,

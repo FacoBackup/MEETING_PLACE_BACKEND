@@ -10,5 +10,6 @@ data class UserDTO (val email: String,
                     val cityOfBirth: String?,
                     val phoneNumber: String?,
                     val nationality: String?,
-                    val backgroundImageURL: String?
+                    val backgroundImageURL: String?,
+                    val joinedIn: Long
                 )

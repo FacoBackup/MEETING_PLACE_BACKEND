@@ -24,10 +24,12 @@ object UserDAO: UI {
                    it[nationality] = data.nationality
                    it[birth] = data.birthDate
                    it[imageURL] = null
+                   it[backgroundImageURL] = null
                    it[about] = null
                    it[admin] = data.admin
                    it[cityOfBirth] = data.cityOfBirth
                    it[phoneNumber] = data.phoneNumber
+                   it[joinedIn] = System.currentTimeMillis()
                }
             }
             HttpStatusCode.Created
@@ -208,8 +210,10 @@ object UserDAO: UI {
             }
             HttpStatusCode.OK
         }catch (normal: Exception){
+            println("NORMAL EXCEPTION -> " + normal.message)
             HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
+            println("PSQL EXCEPTION -> " + psql.message)
             HttpStatusCode.InternalServerError
         }
     }
@@ -235,7 +239,8 @@ object UserDAO: UI {
             cityOfBirth = it[UserEntity.cityOfBirth],
             phoneNumber = it[UserEntity.phoneNumber],
             nationality = it[UserEntity.nationality],
-            backgroundImageURL = it[UserEntity.backgroundImageURL]
+            backgroundImageURL = it[UserEntity.backgroundImageURL],
+            joinedIn = it[UserEntity.joinedIn]
             )
     }
 

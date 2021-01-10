@@ -11,7 +11,7 @@ import br.meetingplace.server.modules.conversation.entities.messages.MessageOpin
 import br.meetingplace.server.modules.conversation.entities.messages.MessageStatusEntity
 import br.meetingplace.server.modules.topic.entities.TopicEntity
 import br.meetingplace.server.modules.topic.entities.TopicOpinionEntity
-import br.meetingplace.server.modules.topic.entities.TopicVisualizationEntity
+import br.meetingplace.server.modules.topic.entities.TopicStatusEntity
 import br.meetingplace.server.modules.user.entities.UserSocialEntity
 import br.meetingplace.server.modules.user.entities.UserEntity
 import org.jetbrains.exposed.sql.Database
@@ -48,7 +48,7 @@ object DBSettings {
                     TopicEntity,
                     TopicOpinionEntity,
                     ConversationOwnersEntity,
-                    TopicVisualizationEntity
+                    TopicStatusEntity
                 )
             }
         }catch (e: Exception){

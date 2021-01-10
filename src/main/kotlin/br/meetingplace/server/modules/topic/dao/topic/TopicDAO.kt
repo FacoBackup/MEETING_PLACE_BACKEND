@@ -23,17 +23,17 @@ object TopicDAO: TI {
         }
     }
 
-    override suspend fun readByTimePeriod(subjectID: String, until: Long, community: Boolean): List<TopicDTO> {
+    override suspend fun readByTimePeriod(subjectID: String, since: Long, community: Boolean): List<TopicDTO> {
         return try{
             transaction {
                 TopicEntity.select{
                     when(community){
                         true->{
-                            TopicEntity.creationDate.greaterEq(until) and
+                            TopicEntity.creationDate.greaterEq(since) and
                             (TopicEntity.communityID eq subjectID)
                         }
                         false->{
-                            TopicEntity.creationDate.greaterEq(until) and
+                            TopicEntity.creationDate.greaterEq(since) and
                             (TopicEntity.creatorID eq subjectID)
                         }
                     }

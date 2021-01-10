@@ -6,8 +6,8 @@ import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 object MessageEntity: Table("messages"){
-    val content = varchar("message_content", 4096)
-    val imageURL = varchar("image_url", 256).nullable()
+    val content = text("message_content")
+    val imageURL = text("image_url").nullable()
     val id = varchar("message_id", 36)
     val creatorID = varchar("creator_id", 320).references(UserEntity.email, onDelete = ReferenceOption.CASCADE)
     val conversationID = varchar("conversation_id", 36).references(ConversationEntity.id, onDelete = ReferenceOption.CASCADE)

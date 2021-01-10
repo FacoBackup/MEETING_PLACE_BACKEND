@@ -16,6 +16,7 @@ object MessageStatusDAO: MSI {
                     it[this.userID] = userID
                     it[this.messageID] = messageID
                     it[this.seen] = false
+                    it[this.seenAt] = null
                 }
             }
             HttpStatusCode.Created
@@ -41,7 +42,7 @@ object MessageStatusDAO: MSI {
             false
         }
     }
-    override suspend fun readUnseen(conversationID: String, userID: String): List<MessageStatusDTO> {
+    override suspend fun readAllUnseenMessages(conversationID: String, userID: String): List<MessageStatusDTO> {
         return try {
             transaction {
                 MessageStatusEntity.select {
@@ -56,7 +57,7 @@ object MessageStatusDAO: MSI {
         }
     }
 
-    override suspend fun unseenMessages(conversationID: String, userID: String): Long {
+    override suspend fun unseenMessagesCount(conversationID: String, userID: String): Long {
         return try{
             transaction {
                 MessageStatusEntity.select{
@@ -79,6 +80,7 @@ object MessageStatusDAO: MSI {
                         (MessageStatusEntity.messageID eq messageID)}) {
 
                     it[seen] = true
+                    it[this.seenAt] = System.currentTimeMillis()
                 }
             }
             HttpStatusCode.OK
@@ -93,7 +95,8 @@ object MessageStatusDAO: MSI {
             conversationID = it[MessageStatusEntity.conversationID],
             userID = it[MessageStatusEntity.userID],
             messageID = it[MessageStatusEntity.messageID],
-            seen = it[MessageStatusEntity.seen]
+            seen = it[MessageStatusEntity.seen],
+            seenAt = it[MessageStatusEntity.seenAt]
         )
     }
 }

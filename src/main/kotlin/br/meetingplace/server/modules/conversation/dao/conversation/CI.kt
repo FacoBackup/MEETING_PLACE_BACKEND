@@ -8,7 +8,7 @@ interface CI {
     suspend fun create(data: RequestConversationCreation, id: String): HttpStatusCode
     suspend fun read(conversationID: String): ConversationDTO?
     suspend fun check(conversationID: String): Boolean
-    suspend fun update(conversationID: String, latestMessage: Long?, name: String?, about: String?, imageURL: String?): HttpStatusCode
+    suspend fun update(conversationID: String, latestMessage: Boolean, name: String?, about: String?, imageURL: String?): HttpStatusCode
     suspend fun delete(conversationID: String): HttpStatusCode
     suspend fun readByName(input: String, userID: String):List<ConversationDTO>
 }

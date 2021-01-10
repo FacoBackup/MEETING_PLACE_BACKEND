@@ -10,4 +10,5 @@ object MessageStatusEntity: Table("message_status") {
     val conversationID = varchar("conversation_id" ,320).references(ConversationEntity.id, onDelete = ReferenceOption.CASCADE)
     val messageID = varchar("message_id" ,320).references(MessageEntity.id, onDelete = ReferenceOption.CASCADE)
     val seen = bool("seen")
+    val seenAt = long("seen_at").nullable()
 }

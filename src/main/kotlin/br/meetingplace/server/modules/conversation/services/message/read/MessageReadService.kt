@@ -83,7 +83,7 @@ object MessageReadService {
             val conversation = conversationOwnerDAO.read(userID = requester, secondUserID = userID)
 
             if(conversation != null && userDAO.check(requester) && userDAO.check(userID)) {
-                unseenMessages = messageStatusDAO.readUnseen(conversationID = conversation.conversationID, userID = requester)
+                unseenMessages = messageStatusDAO.readAllUnseenMessages(conversationID = conversation.conversationID, userID = requester)
                 val decryptedMessages = mutableListOf<MessageDTO>()
 
                 for (i in unseenMessages.indices){

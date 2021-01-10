@@ -39,7 +39,7 @@ object MessageFactoryService {
                             conversationID = data.conversationID,
                             messageID = messageID)
 
-                        conversationDAO.update(conversationID =  data.conversationID, latestMessage = System.currentTimeMillis(),null,null,null)
+                        conversationDAO.update(conversationID =  data.conversationID, latestMessage = true,null,null,null)
                         for(i in conversationMembers.indices){
                             messageStatusDAO.create(conversationID = data.conversationID, userID = conversationMembers[i].userID, messageID = messageID)
                         }
@@ -75,7 +75,7 @@ object MessageFactoryService {
                                 creator = requester,
                                 conversationID = conversation.conversationID,
                                 messageID = messageID)
-                            conversationDAO.update(conversationID =  data.conversationID, latestMessage = System.currentTimeMillis(),null,null,null)
+                            conversationDAO.update(conversationID =  conversation.conversationID, latestMessage =true,null,null,null)
                             messageStatusDAO.create(conversationID = conversation.conversationID, userID = requester, messageID = messageID)
                             messageStatusDAO.create(conversationID = conversation.conversationID, userID = data.receiverID, messageID = messageID)
                             response
@@ -102,6 +102,7 @@ object MessageFactoryService {
                                     return HttpStatusCode.InternalServerError
                                 else{
                                     messageID = UUID.randomUUID().toString()
+
                                     val response = messageDAO.create(
                                         message = encryptedMessage,
                                         imageURL = encryptedImageURL,
@@ -109,7 +110,7 @@ object MessageFactoryService {
                                         conversationID = id,
                                         messageID = messageID
                                     )
-                                    conversationDAO.update(conversationID =  data.conversationID, latestMessage = System.currentTimeMillis(),null,null,null)
+                                    conversationDAO.update(conversationID = id, latestMessage = true,null,null,null)
                                     messageStatusDAO.create(conversationID = id, userID = requester, messageID = messageID)
                                     messageStatusDAO.create(conversationID = id, userID = data.receiverID, messageID = messageID)
                                     response

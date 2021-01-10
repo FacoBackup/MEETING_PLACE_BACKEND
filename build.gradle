@@ -1,17 +1,26 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
-    id 'org.jetbrains.kotlin.jvm' version "$ktor_version"
+//    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'org.jetbrains.kotlin.jvm' version "1.4.21"
     id 'application'
 }
 group 'meetingplace.server'
-version 'beta 1.0'
+version 'beta-1.0'
 
 repositories {
     jcenter()
     mavenCentral()
 }
+jar{
+    manifest {
+        attributes ('Main-Class' : 'br.meetingplace.server.server.MainKt')
+    }
 
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'io.ktor:ktor-server-netty:1.4.0'
@@ -29,7 +38,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
 }
 
-mainClassName = 'server.server.MainKt'
+//mainClassName = 'br.meetingplace.server.server.MainKt'
 task stage{
     dependsOn installDist
 }

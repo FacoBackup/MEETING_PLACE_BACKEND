@@ -11,10 +11,10 @@ object Report: Table("reports"){
         val id = varchar("report_id", 36)
         val creatorID = varchar("creator_id", 320).references(UserEntity.email,onDelete = ReferenceOption.CASCADE)
         val topicID = varchar("topic_id", 36).references(TopicEntity.id,onDelete = ReferenceOption.CASCADE)
-        val reason = varchar("reason", 512).nullable()
+        val reason = text("reason").nullable()
         val communityID = varchar("community_id", 36).references(CommunityEntity.id,onDelete = ReferenceOption.CASCADE)
         val creationDate  = datetime("date_of_creation")
         var done = bool("status")
-        var response = varchar("response", 512).references(UserEntity.email).nullable()
+        var response = text("response").references(UserEntity.email).nullable()
         override val primaryKey = PrimaryKey(id)
 }

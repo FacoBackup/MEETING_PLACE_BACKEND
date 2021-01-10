@@ -19,7 +19,7 @@ object ConversationDAO: CI {
             transaction {
                 ConversationEntity.insert {
                     it[this.id] = id
-                    it[creationDate] = DateTime.now()
+                    it[creationDate] = System.currentTimeMillis()
                     it[imageURL] = data.imageURL
                     it[about] = data.about
                     it[name] = data.name
@@ -29,12 +29,10 @@ object ConversationDAO: CI {
             }
             HttpStatusCode.Created
         }catch (normal: Exception){
-            println("-------------------------------------------------------------------------")
-            println(normal.message)
+
             HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            println("-------------------------------------------------------------------------")
-            println(psql.message)
+
             HttpStatusCode.InternalServerError
         }
     }
@@ -104,7 +102,7 @@ object ConversationDAO: CI {
         }
     }
 
-    override suspend fun update(conversationID: String, latestMessage: Long?, name: String?, about: String?, imageURL: String?): HttpStatusCode {
+    override suspend fun update(conversationID: String, latestMessage: Boolean, name: String?, about: String?, imageURL: String?): HttpStatusCode {
         return try {
             transaction {
                 ConversationEntity.update({ ConversationEntity.id eq conversationID}) {
@@ -114,8 +112,8 @@ object ConversationDAO: CI {
                         it[this.about] = about
                     if(!imageURL.isNullOrBlank())
                         it[this.imageURL] = imageURL
-                    if(latestMessage != null)
-                        it[this.latestMessage] = latestMessage
+                    if(latestMessage)
+                        it[this.latestMessage] = System.currentTimeMillis()
                 }
             }
             HttpStatusCode.OK
@@ -129,7 +127,7 @@ object ConversationDAO: CI {
         return ConversationDTO( id = it[ConversationEntity.id],
             name = it[ConversationEntity.name],
             imageURL = it[ConversationEntity.imageURL],
-            creationDate = it[ConversationEntity.creationDate].toString("dd-MM-yyyy"),
+            creationDate = it[ConversationEntity.creationDate],
             about = it[ConversationEntity.about],
             isGroup = it[ConversationEntity.isGroup],
             latestMessage = it[ConversationEntity.latestMessage]
