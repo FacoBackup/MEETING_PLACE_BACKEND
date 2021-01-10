@@ -4,11 +4,34 @@ import br.meetingplace.server.modules.community.dao.CI
 import br.meetingplace.server.modules.community.dao.member.CMI
 import br.meetingplace.server.modules.community.dto.response.CommunityInfoDTO
 import br.meetingplace.server.modules.community.dto.response.CommunityRelatedUsersDTO
+import br.meetingplace.server.modules.community.dto.response.SimplifiedCommunityDTO
 import br.meetingplace.server.modules.community.dto.response.UserCommunitiesDTO
 import br.meetingplace.server.modules.user.dao.user.UI
 
 object CommunityReadService {
-//    suspend fun readCommunitiesRelatedToCommunity
+    suspend fun readCommunitiesRelatedToCommunity(requester: String,communityID: String,communityDAO: CI, communityMemberDAO: CMI): List<SimplifiedCommunityDTO>{
+        return try {
+            val response = mutableListOf<SimplifiedCommunityDTO>()
+            val parentCommunities = communityDAO.readParentCommunities(communityID)
+
+            for(i in parentCommunities.indices){
+                val communityMember = communityMemberDAO.read(communityID = parentCommunities[i].id, userID = requester)
+                val community = communityDAO.read(parentCommunities[i].id)
+                if(communityMember != null && community != null)
+                    response.add(SimplifiedCommunityDTO(
+                        name = community.name,
+                        about = community.about,
+                        communityID = community.id,
+                        role = communityMember.role,
+                        imageURL = community.imageURL
+                    ))
+            }
+
+            response
+        }catch (e: Exception){
+            listOf()
+        }
+    }
     suspend fun readCommunityByID(communityID: String, requester: String, communityDAO: CI, communityMemberDAO: CMI): CommunityInfoDTO? {
         return try {
             val community = communityDAO.read(communityID)
@@ -77,7 +100,8 @@ object CommunityReadService {
                             communityID = parentCommunities[j].id,
                             role = communityMember.role,
                             userImageURL = user.imageURL,
-                            communityName = parentCommunities[j].name
+                            communityName = parentCommunities[j].name,
+                            userEmail = user.email
                         ))
                 }
             }
@@ -91,7 +115,8 @@ object CommunityReadService {
                         communityID = communityID,
                         role = communityMember.role,
                         userImageURL = user.imageURL,
-                        communityName = null
+                        communityName = null,
+                        userEmail = user.email
                     ))
             }
             response
