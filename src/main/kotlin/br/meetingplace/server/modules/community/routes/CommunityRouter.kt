@@ -85,7 +85,7 @@ fun Route.communityRouter() {
             else call.respond(HttpStatusCode.Unauthorized)
 
         }
-        patch ("/get/all/users"){
+        patch ("/get/all/user/communities"){
             val data = call.receive<RequestUser>()
             val log = call.log
             if(log != null)
