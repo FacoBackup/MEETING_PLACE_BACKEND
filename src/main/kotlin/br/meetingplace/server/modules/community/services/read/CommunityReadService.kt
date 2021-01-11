@@ -82,6 +82,77 @@ object CommunityReadService {
             listOf()
         }
     }
+    suspend fun readFollowers(communityID: String,communityDAO: CI, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
+        return try {
+            val followers = communityMemberDAO.readFollowers(communityID)
+            val response = mutableListOf<CommunityRelatedUsersDTO>()
+            for(i in followers.indices){
+                val communityMember = communityMemberDAO.read(communityID = communityID, userID = followers[i].userID)
+                val user = userDAO.readByID(followers[i].userID)
+                if(communityMember != null && user != null)
+                    response.add(CommunityRelatedUsersDTO(
+                        userName = user.name,
+                        userID = followers[i].userID,
+                        communityID = communityID,
+                        role = communityMember.role,
+                        userImageURL = user.imageURL,
+                        communityName = null,
+                        userEmail = user.email
+                    ))
+            }
+            response
+        }catch (e: Exception){
+            listOf()
+        }
+    }
+    suspend fun readMods(communityID: String,communityDAO: CI, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
+        return try {
+            val mods = communityMemberDAO.readMods(communityID)
+            val response = mutableListOf<CommunityRelatedUsersDTO>()
+            for(i in mods.indices){
+                val communityMember = communityMemberDAO.read(communityID = communityID, userID = mods[i].userID)
+                val user = userDAO.readByID(mods[i].userID)
+                if(communityMember != null && user != null)
+                    response.add(CommunityRelatedUsersDTO(
+                        userName = user.name,
+                        userID = mods[i].userID,
+                        communityID = communityID,
+                        role = communityMember.role,
+                        userImageURL = user.imageURL,
+                        communityName = null,
+                        userEmail = user.email
+                    ))
+            }
+            response
+        }catch (e: Exception){
+            listOf()
+        }
+    }
+    suspend fun readMembers(communityID: String,communityDAO: CI, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
+        return try {
+            val members = communityMemberDAO.readMembers(communityID)
+            val response = mutableListOf<CommunityRelatedUsersDTO>()
+            for(i in members.indices){
+                val communityMember = communityMemberDAO.read(communityID = communityID, userID = members[i].userID)
+                val user = userDAO.readByID(members[i].userID)
+                if(communityMember != null && user != null)
+                    response.add(CommunityRelatedUsersDTO(
+                        userName = user.name,
+                        userID = members[i].userID,
+                        communityID = communityID,
+                        role = communityMember.role,
+                        userImageURL = user.imageURL,
+                        communityName = null,
+                        userEmail = user.email
+                    ))
+            }
+
+            response
+        }catch (e: Exception){
+            listOf()
+        }
+    }
+
     suspend fun readUsersRelatedToCommunity(communityID: String,communityDAO: CI, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
         return try {
             val membersMainCommunity = communityMemberDAO.readByCommunity(communityID)

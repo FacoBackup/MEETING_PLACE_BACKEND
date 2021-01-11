@@ -8,6 +8,50 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object CommunityMemberDAO: CMI {
+    override suspend fun readFollowers(communityID: String): List<CommunityMemberDTO> {
+        return try{
+            transaction {
+                CommunityMemberEntity.select {
+                    (CommunityMemberEntity.communityID eq communityID) and
+                            (CommunityMemberEntity.role eq "FOLLOWER")
+                }.map { mapCommunityMemberDTO(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
+
+    override suspend fun readMembers(communityID: String): List<CommunityMemberDTO> {
+        return try{
+            transaction {
+                CommunityMemberEntity.select {
+                    (CommunityMemberEntity.communityID eq communityID) and
+                            (CommunityMemberEntity.role eq "MEMBER")
+                }.map { mapCommunityMemberDTO(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
+
+    override suspend fun readMods(communityID: String): List<CommunityMemberDTO> {
+        return try{
+            transaction {
+                CommunityMemberEntity.select {
+                    (CommunityMemberEntity.communityID eq communityID) and
+                            (CommunityMemberEntity.role eq "MODERATOR")
+                }.map { mapCommunityMemberDTO(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
     override suspend fun readByUser(userID: String): List<CommunityMemberDTO> {
         return try{
             transaction {

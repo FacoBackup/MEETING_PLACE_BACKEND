@@ -17,6 +17,45 @@ import io.ktor.routing.*
 
 fun Route.communityRouter() {
     route("/api") {
+        patch("/get/members"){
+            val data = call.receive<RequestCommunity>()
+            val log = call.log
+            if(log != null){
+                call.respond(CommunityReadService.readMembers(
+                    userDAO=UserDAO,
+                    communityID = data.communityID,
+                    communityDAO = CommunityDAO,
+                    communityMemberDAO = CommunityMemberDAO))
+
+            }
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
+        patch("/get/mods"){
+            val data = call.receive<RequestCommunity>()
+            val log = call.log
+            if(log != null){
+                call.respond(CommunityReadService.readMods(
+                    userDAO=UserDAO,
+                    communityID = data.communityID,
+                    communityDAO = CommunityDAO,
+                    communityMemberDAO = CommunityMemberDAO))
+
+            }
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
+        patch("/get/followers"){
+            val data = call.receive<RequestCommunity>()
+            val log = call.log
+            if(log != null){
+                call.respond(CommunityReadService.readFollowers(
+                    userDAO=UserDAO,
+                    communityID = data.communityID,
+                    communityDAO = CommunityDAO,
+                    communityMemberDAO = CommunityMemberDAO))
+
+            }
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
         patch("/get/community/by/id"){
             val data = call.receive<RequestCommunity>()
             val log = call.log
@@ -46,7 +85,7 @@ fun Route.communityRouter() {
             else call.respond(HttpStatusCode.Unauthorized)
 
         }
-        patch ("/communities/related"){
+        patch ("/get/all/users"){
             val data = call.receive<RequestUser>()
             val log = call.log
             if(log != null)
