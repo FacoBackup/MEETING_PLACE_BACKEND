@@ -59,10 +59,10 @@ object CommunityReadService {
             null
         }
     }
-    suspend fun readAllUserCommunities(requester: String, communityDAO: CI, communityMemberDAO: CMI): List<UserCommunitiesDTO>{
+    suspend fun readAllUserCommunities(userID: String, communityDAO: CI, communityMemberDAO: CMI): List<UserCommunitiesDTO>{
         return try {
             val communities = mutableListOf<UserCommunitiesDTO>()
-            val relatedCommunities = communityMemberDAO.readByUser(requester)
+            val relatedCommunities = communityMemberDAO.readByUser(userID)
             for(i in relatedCommunities.indices){
                 val community = communityDAO.read(relatedCommunities[i].communityID)
                 if(community != null){

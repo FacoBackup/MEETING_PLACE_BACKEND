@@ -147,21 +147,29 @@ object TopicDAO: TI {
     override suspend fun update(
         topicID: String,
         approved: Boolean?,
-        mainTopicID: String?,
         header: String?,
         body: String?
     ): HttpStatusCode {
-        TODO()
-//        return try {
-//            transaction {
-//
-//            }
-//            HttpStatusCode.OK
-//        }catch (normal: Exception){
-//            HttpStatusCode.InternalServerError
-//        }catch (psql: PSQLException){
-//            HttpStatusCode.InternalServerError
-//        }
+
+        return try {
+            transaction {
+                TopicEntity.update ({
+                    (TopicEntity.id eq topicID)
+                }){
+                    if(approved != null)
+                        it[this.approved] = approved
+                    if(!header.isNullOrBlank())
+                        it[this.header] = header
+                    if(!body.isNullOrBlank())
+                        it[this.body] = body
+                }
+            }
+            HttpStatusCode.OK
+        }catch (normal: Exception){
+            HttpStatusCode.InternalServerError
+        }catch (psql: PSQLException){
+            HttpStatusCode.InternalServerError
+        }
     }
     private fun mapTopic(it: ResultRow): TopicDTO {
         return TopicDTO(

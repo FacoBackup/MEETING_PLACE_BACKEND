@@ -7,6 +7,7 @@ import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCre
 import br.meetingplace.server.modules.community.services.factory.CommunityFactoryService
 import br.meetingplace.server.modules.community.services.read.CommunityReadService
 import br.meetingplace.server.modules.user.dao.user.UserDAO
+import br.meetingplace.server.modules.user.dto.requests.RequestUser
 import br.meetingplace.server.server.AuthLog.log
 import io.ktor.application.*
 import io.ktor.http.*
@@ -45,10 +46,11 @@ fun Route.communityRouter() {
             else call.respond(HttpStatusCode.Unauthorized)
 
         }
-        get ("/communities/related"){
+        patch ("/communities/related"){
+            val data = call.receive<RequestUser>()
             val log = call.log
             if(log != null)
-                call.respond(CommunityReadService.readAllUserCommunities(requester = log.userID, communityDAO = CommunityDAO, communityMemberDAO = CommunityMemberDAO))
+                call.respond(CommunityReadService.readAllUserCommunities(userID = data.userID, communityDAO = CommunityDAO, communityMemberDAO = CommunityMemberDAO))
             else call.respond(HttpStatusCode.Unauthorized)
         }
         patch("/get/community/related/users"){

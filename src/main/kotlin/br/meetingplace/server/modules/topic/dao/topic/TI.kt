@@ -20,7 +20,6 @@ interface TI {
     suspend fun readByTimePeriod(subjectID: String, since: Long, community: Boolean): List<TopicDTO>
     suspend fun update(topicID: String,
                approved: Boolean?,
-               mainTopicID: String?,
                header: String?,
                body: String?): HttpStatusCode
     suspend fun delete(topicID: String): HttpStatusCode

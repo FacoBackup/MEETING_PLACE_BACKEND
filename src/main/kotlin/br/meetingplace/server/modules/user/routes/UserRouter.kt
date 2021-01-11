@@ -133,10 +133,9 @@ fun Route.userRouter() {
 
             post<RequestSocial>(UserPaths.FOLLOW) {
                 val log = call.log
-                println("FOLLOW requested")
 
                 if(log != null){
-                    println(UserSocialDAO.readAll(userID = log.userID, following = true))
+
                     call.respond(UserSocialService.follow(requester = log.userID,it, UserSocialDAO, CommunityMemberDAO, CommunityDAO, UserDAO))
                 }
 
@@ -145,7 +144,7 @@ fun Route.userRouter() {
             delete(UserPaths.UNFOLLOW) {
                 val data = call.receive<RequestSocial>()
                 val log = call.log
-                println("UNFOLLOW requested")
+
                 if(log != null)
                     call.respond(UserSocialService.unfollow(requester = log.userID,data, UserSocialDAO, CommunityMemberDAO))
                 else call.respond(HttpStatusCode.Unauthorized)
