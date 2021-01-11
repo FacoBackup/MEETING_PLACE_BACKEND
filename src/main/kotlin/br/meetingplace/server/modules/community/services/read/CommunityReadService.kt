@@ -9,20 +9,20 @@ import br.meetingplace.server.modules.community.dto.response.UserCommunitiesDTO
 import br.meetingplace.server.modules.user.dao.user.UI
 
 object CommunityReadService {
-    suspend fun readCommunitiesRelatedToCommunity(requester: String,communityID: String,communityDAO: CI, communityMemberDAO: CMI): List<SimplifiedCommunityDTO>{
+    suspend fun readAllRelatedCommunities(requester: String, communityID: String, communityDAO: CI, communityMemberDAO: CMI): List<SimplifiedCommunityDTO>{
         return try {
             val response = mutableListOf<SimplifiedCommunityDTO>()
-            val parentCommunities = communityDAO.readParentCommunities(communityID)
+            val relatedCommunities = communityDAO.readParentCommunities(communityID)
 
-            for(i in parentCommunities.indices){
-                val communityMember = communityMemberDAO.read(communityID = parentCommunities[i].id, userID = requester)
-                val community = communityDAO.read(parentCommunities[i].id)
-                if(communityMember != null && community != null)
+            for(i in relatedCommunities.indices){
+                val communityMember = communityMemberDAO.read(communityID = relatedCommunities[i].id, userID = requester)
+                val community = communityDAO.read(relatedCommunities[i].id)
+                if(community != null)
                     response.add(SimplifiedCommunityDTO(
                         name = community.name,
                         about = community.about,
                         communityID = community.id,
-                        role = communityMember.role,
+                        role = communityMember?.role,
                         imageURL = community.imageURL
                     ))
             }

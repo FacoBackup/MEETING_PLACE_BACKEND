@@ -37,7 +37,7 @@ fun Route.communityRouter() {
             val data = call.receive<RequestCommunity>()
             val log = call.log
             if(log != null)
-                call.respond(CommunityReadService.readCommunitiesRelatedToCommunity(
+                call.respond(CommunityReadService.readAllRelatedCommunities(
                     communityMemberDAO = CommunityMemberDAO,
                     communityID = data.communityID,
                     communityDAO = CommunityDAO,
