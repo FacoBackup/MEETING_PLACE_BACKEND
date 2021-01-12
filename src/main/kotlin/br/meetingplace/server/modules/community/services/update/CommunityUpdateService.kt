@@ -17,9 +17,7 @@ object CommunityUpdateService {
 
                community.update(
                    communityID = data.communityID,
-                   name = data.name,
                    about = data.about,
-                   relatedID = data.relatedCommunityID,
                    imageURL = data.imageURL,
                    backgroundImageURL = data.backgroundImageURL
                    )

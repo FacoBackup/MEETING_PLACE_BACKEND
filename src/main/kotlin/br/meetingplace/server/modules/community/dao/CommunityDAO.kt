@@ -108,16 +108,12 @@ object CommunityDAO: CI {
             listOf()
         }
     }
-    override suspend fun update(communityID: String, name: String?, imageURL: String?, backgroundImageURL: String?, about: String?, relatedID: String?):HttpStatusCode {
+    override suspend fun update(communityID: String, imageURL: String?, backgroundImageURL: String?, about: String?):HttpStatusCode {
         return try{
             transaction {
                 CommunityEntity.update( { CommunityEntity.id eq communityID } ){
-                    if(!name.isNullOrBlank())
-                        it[this.name] = name
                     if(!about.isNullOrBlank())
                         it[this.about] = about
-                    if(!relatedID.isNullOrBlank())
-                        it[relatedCommunityID] = relatedID
                     if(!backgroundImageURL.isNullOrBlank())
                         it[this.backgroundImageURL] = backgroundImageURL
                     if(!imageURL.isNullOrBlank())

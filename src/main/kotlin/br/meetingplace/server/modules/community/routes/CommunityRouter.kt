@@ -2,6 +2,7 @@ package br.meetingplace.server.modules.community.routes
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
+import br.meetingplace.server.modules.community.dto.requests.CommunityUpdateDTO
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunity
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
 import br.meetingplace.server.modules.community.services.factory.CommunityFactoryService
@@ -17,6 +18,14 @@ import io.ktor.routing.*
 
 fun Route.communityRouter() {
     route("/api") {
+        put("/update/community"){
+            val data = call.receive<CommunityUpdateDTO>()
+            val log = call.log
+            if(log != null)
+                call.respond(CommunityDAO.update(communityID = data.communityID, about = data.about, imageURL = data.imageURL, backgroundImageURL = data.backgroundImageURL))
+            else call.respond(HttpStatusCode.Unauthorized)
+
+        }
         patch("/get/members"){
             val data = call.receive<RequestCommunity>()
             val log = call.log
@@ -43,7 +52,7 @@ fun Route.communityRouter() {
             }
             else call.respond(HttpStatusCode.Unauthorized)
         }
-        patch("/get/followers"){
+        patch("/get/followers/community"){
             val data = call.receive<RequestCommunity>()
             val log = call.log
             if(log != null){

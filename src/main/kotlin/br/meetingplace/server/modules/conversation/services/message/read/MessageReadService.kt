@@ -11,6 +11,7 @@ import br.meetingplace.server.modules.conversation.dto.response.messages.Message
 import br.meetingplace.server.modules.user.dao.user.UI
 
 object MessageReadService {
+
 //
 //    fun readNewGroupMessages(requester: String, messageStatusDAO: MSI, conversationID: String, messageDAO: MI, decryption: AESInterface, conversationMemberDAO: CMI): List<MessageDTO>{
 //        TODO("NOT YET IMPLEMENTED")

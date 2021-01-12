@@ -3,6 +3,7 @@ package br.meetingplace.server.modules.conversation.routes
 import br.meetingplace.server.modules.conversation.dao.conversation.member.ConversationMemberDAO
 import br.meetingplace.server.modules.conversation.dao.messages.MessageDAO
 import br.meetingplace.server.modules.conversation.dao.messages.opinions.MessageOpinionDAO
+import br.meetingplace.server.modules.conversation.dao.messages.status.MessageStatusDAO
 import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestShareMessage
 import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestMessage
 import br.meetingplace.server.modules.conversation.services.message.delete.MessageDeleteService
@@ -26,6 +27,13 @@ fun Route.messageRouter(){
                 call.respond(MessageDeleteService.deleteMessage(requester = log.userID,data, MessageDAO))
             else call.respond(HttpStatusCode.Unauthorized)
 
+        }
+        patch("/seen/by/everyone/check"){
+            val data = call.receive<RequestMessage>()
+            val log = call.log
+            if(log != null)
+                call.respond(MessageStatusDAO.seenByEveryoneByMessage(messageID = data.messageID, conversationID = data.conversationID))
+            else call.respond(HttpStatusCode.Unauthorized)
         }
         put("/message/like") {
             val data = call.receive<RequestMessage>()
