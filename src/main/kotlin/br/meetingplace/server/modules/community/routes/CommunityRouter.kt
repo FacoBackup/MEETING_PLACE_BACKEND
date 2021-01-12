@@ -5,7 +5,9 @@ import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
 import br.meetingplace.server.modules.community.dto.requests.CommunityUpdateDTO
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunity
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
+import br.meetingplace.server.modules.community.dto.requests.RequestCommunityMember
 import br.meetingplace.server.modules.community.services.factory.CommunityFactoryService
+import br.meetingplace.server.modules.community.services.member.CommunityMemberService
 import br.meetingplace.server.modules.community.services.read.CommunityReadService
 import br.meetingplace.server.modules.user.dao.user.UserDAO
 import br.meetingplace.server.modules.user.dto.requests.RequestUser
@@ -18,6 +20,30 @@ import io.ktor.routing.*
 
 fun Route.communityRouter() {
     route("/api") {
+        put("/lower/member"){
+            val data = call.receive<RequestCommunityMember>()
+            val log = call.log
+            if(log != null)
+                call.respond(CommunityMemberService.lowerMember(requester = log.userID, data = data,communityMemberDAO = CommunityMemberDAO))
+
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
+        put("/promote/member"){
+            val data = call.receive<RequestCommunityMember>()
+            val log = call.log
+            if(log != null)
+                call.respond(CommunityMemberService.promoteMember(requester = log.userID, data = data,communityMemberDAO = CommunityMemberDAO))
+
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
+        delete("/remove/member"){
+            val data = call.receive<RequestCommunityMember>()
+            val log = call.log
+            if(log != null)
+                call.respond(CommunityMemberService.removeMember(requester = log.userID, data = data,communityMemberDAO = CommunityMemberDAO))
+
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
         put("/update/community"){
             val data = call.receive<CommunityUpdateDTO>()
             val log = call.log

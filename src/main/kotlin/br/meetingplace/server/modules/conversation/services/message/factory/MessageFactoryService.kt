@@ -65,7 +65,7 @@ object MessageFactoryService {
                         val encryptedMessage = encryption.encrypt(myKey = key, data.message)
                         val encryptedImageURL = data.imageURL?.let { encryption.encrypt(myKey = key, it) }
                         if(encryptedMessage.isNullOrBlank())
-                            return HttpStatusCode.InternalServerError
+                            return HttpStatusCode.ExpectationFailed
                         else{
                             messageID = UUID.randomUUID().toString()
 

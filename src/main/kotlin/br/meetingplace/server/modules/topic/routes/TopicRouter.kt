@@ -118,7 +118,7 @@ fun Route.topicRouter() {
                 call.respond(topics)
         }
 
-        put("/topic/like") {
+        put("/like") {
             val data = call.receive<RequestTopic>()
             val log = call.log
             if(log != null)
@@ -126,13 +126,37 @@ fun Route.topicRouter() {
             else call.respond(HttpStatusCode.Unauthorized)
 
         }
-        put("/topic/dislike") {
+        put("/dislike") {
             val data = call.receive<RequestTopic>()
             val log = call.log
             if(log != null)
                 call.respond(TopicOpinionService.dislike(requester = log.userID, data, UserDAO, TopicDAO, TopicOpinionDAO))
             else call.respond(HttpStatusCode.Unauthorized)
+        }
+        patch("/check/like"){
+            val data = call.receive<RequestTopic>()
+            val log = call.log
+            if(log != null){
+                val response = TopicOpinionDAO.read(topicID = data.topicID, userID = log.userID)
+                if(response == null)
+                    call.respond(false)
+                else
+                    call.respond(response.liked)
+            }
 
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
+        patch("/check/dislike"){
+            val data = call.receive<RequestTopic>()
+            val log = call.log
+            if(log != null){
+                val response = TopicOpinionDAO.read(topicID = data.topicID, userID = log.userID)
+                if(response == null)
+                    call.respond(false)
+                else
+                    call.respond(!response.liked)
+            }
+            else call.respond(HttpStatusCode.Unauthorized)
         }
         get("/topic/opinions") {
             val data = call.receive<RequestTopic>()

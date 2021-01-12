@@ -97,7 +97,8 @@ object CommunityReadService {
                         role = communityMember.role,
                         userImageURL = user.imageURL,
                         communityName = null,
-                        userEmail = user.email
+                        userEmail = user.email,
+                        affiliatedCommunityID = communityID
                     ))
             }
             response
@@ -120,7 +121,8 @@ object CommunityReadService {
                         role = communityMember.role,
                         userImageURL = user.imageURL,
                         communityName = null,
-                        userEmail = user.email
+                        userEmail = user.email,
+                        affiliatedCommunityID = communityID
                     ))
             }
             response
@@ -143,7 +145,8 @@ object CommunityReadService {
                         role = communityMember.role,
                         userImageURL = user.imageURL,
                         communityName = null,
-                        userEmail = user.email
+                        userEmail = user.email,
+                        affiliatedCommunityID = communityID
                     ))
             }
 
@@ -172,7 +175,8 @@ object CommunityReadService {
                             role = communityMember.role,
                             userImageURL = user.imageURL,
                             communityName = parentCommunities[j].name,
-                            userEmail = user.email
+                            userEmail = user.email,
+                            affiliatedCommunityID = parentCommunities[j].id
                         ))
                 }
             }
@@ -187,7 +191,8 @@ object CommunityReadService {
                         role = communityMember.role,
                         userImageURL = user.imageURL,
                         communityName = null,
-                        userEmail = user.email
+                        userEmail = user.email,
+                        affiliatedCommunityID = communityID
                     ))
             }
             response
@@ -208,7 +213,6 @@ object CommunityReadService {
                     role = communityMember?.role ?: "",
                     communityID = communities[i].id,
                     imageURL = communities[i].imageURL
-
                 ))
             }
             response

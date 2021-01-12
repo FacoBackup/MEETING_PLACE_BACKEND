@@ -56,4 +56,21 @@ object CommunityMemberService {
             HttpStatusCode.InternalServerError
         }
     }
+    suspend  fun removeMember(requester: String,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
+        return try {
+            val userMember = communityMemberDAO.read(communityID = data.communityID, userID = requester)
+            val member = communityMemberDAO.read(communityID = data.communityID, userID = data.memberID)
+            return if(member != null){
+
+                if(MemberType.MODERATOR.toString() == member.role && userMember != null && userMember.role != MemberType.MODERATOR.toString()){
+                    communityMemberDAO.delete(userID = data.memberID, communityID = data.memberID)
+                }
+                else
+                    HttpStatusCode.FailedDependency
+            }
+            else HttpStatusCode.InternalServerError
+        }catch (normal: Exception){
+            HttpStatusCode.InternalServerError
+        }
+    }
 }
