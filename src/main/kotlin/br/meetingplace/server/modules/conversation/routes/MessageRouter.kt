@@ -26,7 +26,7 @@ fun Route.messageRouter(){
     route("/api"){
 
         //FETCH
-        get("/fetch/unseen/messages"){
+        patch("/fetch/unseen/messages"){
             val data = call.receive<RequestMessagesDTO>()
             val log = call.log
             if(log != null)
@@ -42,7 +42,7 @@ fun Route.messageRouter(){
             else call.respond(HttpStatusCode.Unauthorized)
         }
 
-        get("/fetch/by/page"){
+        patch("/fetch/by/page"){
             val data = call.receive<RequestMessagesDTO>()
             val log = call.log
             if(log != null)
