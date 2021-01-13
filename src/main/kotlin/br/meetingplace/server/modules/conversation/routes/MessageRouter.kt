@@ -26,39 +26,7 @@ fun Route.messageRouter(){
     route("/api"){
 
         //FETCH
-        patch("/fetch/below/messages"){
-            val data = call.receive<RequestMessagesDTO>()
-            val log = call.log
-            if(log != null)
-                when(data.isUser){
-                    true->{
-
-                        call.respond(MessageReadService.readUserMessages(requester = log.userID, data= data, conversationOwnerDAO = ConversationOwnersDAO, decryption = AES, messageStatusDAO = MessageStatusDAO, messageDAO = MessageDAO))
-                    }
-                    false->{
-                        call.respond(HttpStatusCode.NotImplemented)
-                    }
-                }
-            else call.respond(HttpStatusCode.Unauthorized)
-        }
-
-        patch("/fetch/above/messages"){
-            val data = call.receive<RequestMessagesDTO>()
-            val log = call.log
-            if(log != null)
-                when(data.isUser){
-                    true->{
-                        call.respond(MessageReadService.readUserMessages(requester = log.userID, data= data, conversationOwnerDAO = ConversationOwnersDAO, decryption = AES, messageStatusDAO = MessageStatusDAO, messageDAO = MessageDAO))
-
-                    }
-                    false->{
-                        call.respond(HttpStatusCode.NotImplemented)
-                    }
-                }
-            else call.respond(HttpStatusCode.Unauthorized)
-        }
-
-        patch("/fetch/unseen/messages"){
+        get("/fetch/unseen/messages"){
             val data = call.receive<RequestMessagesDTO>()
             val log = call.log
             if(log != null)
@@ -74,7 +42,7 @@ fun Route.messageRouter(){
             else call.respond(HttpStatusCode.Unauthorized)
         }
 
-        patch("/fetch/latest/messages"){
+        get("/fetch/by/page"){
             val data = call.receive<RequestMessagesDTO>()
             val log = call.log
             if(log != null)
@@ -89,6 +57,7 @@ fun Route.messageRouter(){
                 }
             else call.respond(HttpStatusCode.Unauthorized)
         }
+
         //FETCH
 
 

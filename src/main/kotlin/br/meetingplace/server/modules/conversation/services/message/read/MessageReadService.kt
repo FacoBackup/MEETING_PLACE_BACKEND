@@ -53,7 +53,8 @@ object MessageReadService {
                             valid = encryptedMessages[i].valid,
                             creationDate = encryptedMessages[i].creationDate,
                             seenByEveryone = encryptedMessages[i].seenByEveryone,
-                            receiverAsUserID = null
+                            receiverAsUserID = null,
+                            page = encryptedMessages[i].page
                         )
                     )
 
@@ -84,27 +85,7 @@ object MessageReadService {
             val newMessages = mutableListOf<MessageDTO>()
             val decryptedMessages = mutableListOf<MessageDTO>()
             if(conversation != null) {
-                newMessages.addAll(
-                    when(data.above){
-
-                        true->{
-                            if(data.timePeriod != null)
-                                messageDAO.readAboveTimePeriod(conversationID = conversation.conversationID, timePeriod = data.timePeriod)
-                            else
-                                listOf()
-                        }
-                        false->{
-                            if(data.timePeriod != null)
-                                messageDAO.readBelowTimePeriod(conversationID = conversation.conversationID, timePeriod = data.timePeriod)
-                            else
-                                listOf()
-                        }
-                        null->{
-                            messageDAO.readNew(conversation.conversationID)
-                        }
-                    }
-
-                )
+                newMessages.addAll(messageDAO.readByPage(conversationID = conversation.conversationID, page = data.page))
                 for (i in newMessages.indices){
                     val messageContent = decryption.decrypt(AESMessageKey.key, data = newMessages[i].content)
                     val messageImage = newMessages[i].imageURL?.let { decryption.decrypt(AESMessageKey.key, data = it) }
@@ -121,7 +102,8 @@ object MessageReadService {
                                 valid = newMessages[i].valid,
                                 creationDate = newMessages[i].creationDate,
                                 seenByEveryone = newMessages[i].seenByEveryone,
-                                receiverAsUserID = if(conversation.secondaryUserID != requester) conversation.secondaryUserID else conversation.primaryUserID
+                                receiverAsUserID = if(conversation.secondaryUserID != requester) conversation.secondaryUserID else conversation.primaryUserID,
+                                page = newMessages[i].page
                             )
                         )
                         messageStatusDAO.update(conversationID = conversation.conversationID,
@@ -132,7 +114,7 @@ object MessageReadService {
                     }
                 }
             }
-            decryptedMessages
+            (decryptedMessages.toList()).sortedBy { it.creationDate } .reversed()
         }catch (e: Exception){
             listOf()
         }
@@ -173,7 +155,9 @@ object MessageReadService {
                                     valid = encryptedMessage.valid,
                                     creationDate = encryptedMessage.creationDate,
                                     seenByEveryone = encryptedMessage.seenByEveryone,
-                                    receiverAsUserID = if(conversation.secondaryUserID != requester) conversation.secondaryUserID else conversation.primaryUserID
+                                    receiverAsUserID = if(conversation.secondaryUserID != requester) conversation.secondaryUserID else conversation.primaryUserID,
+                                    page = encryptedMessage.page
+
                                 )
                             )
                             messageStatusDAO.update(conversationID = conversation.conversationID,
@@ -185,7 +169,7 @@ object MessageReadService {
                         }
                     }
                 }
-                decryptedMessages //RETURN
+                (decryptedMessages.toList()).sortedBy { it.creationDate } .reversed() //RETURN
             }
             else
                 listOf()
@@ -207,13 +191,13 @@ object MessageReadService {
                     messageDAO.readAllConversation(userID = requester, conversationID = conversation.conversationID)
                 else
                     listOf()
-            val decryptedConversation = mutableListOf<MessageDTO>()
+            val decryptedMessages = mutableListOf<MessageDTO>()
 
             for (i in encryptedMessages.indices){
                 val decryptedMessage = decryption.decrypt(myKey = AESMessageKey.key, encryptedMessages[i].content)
                 val decryptedImageURL = encryptedMessages[i].imageURL?.let { decryption.decrypt(myKey = AESMessageKey.key, it) }
                 if(!decryptedMessage.isNullOrBlank())
-                    decryptedConversation.add(
+                    decryptedMessages.add(
                         MessageDTO(
                             content = decryptedMessage,
                             imageURL = decryptedImageURL,
@@ -224,7 +208,8 @@ object MessageReadService {
                             valid = encryptedMessages[i].valid,
                             creationDate = encryptedMessages[i].creationDate,
                             seenByEveryone = encryptedMessages[i].seenByEveryone,
-                            receiverAsUserID = if(conversation != null && conversation.secondaryUserID != requester) conversation.secondaryUserID else if(conversation != null && conversation.primaryUserID != requester) conversation.primaryUserID else null
+                            receiverAsUserID = if(conversation != null && conversation.secondaryUserID != requester) conversation.secondaryUserID else if(conversation != null && conversation.primaryUserID != requester) conversation.primaryUserID else null,
+                            page = encryptedMessages[i].page
                         )
                     )
                 messageStatusDAO.update(
@@ -236,7 +221,7 @@ object MessageReadService {
                     messageDAO.update(encryptedMessages[i].id)
                 }
             }
-            decryptedConversation
+            (decryptedMessages.toList()).sortedBy { it.creationDate } .reversed()
         }catch (e: Exception){
             listOf()
         }

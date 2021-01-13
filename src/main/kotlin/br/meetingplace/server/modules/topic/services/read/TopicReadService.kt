@@ -45,7 +45,7 @@ object TopicReadService {
                             topicStatusDAO.create(topicID = topics[j].id, userID = requester)
                     }
                 }
-                timeline.addAll(decryptedTopics)
+                timeline.addAll((decryptedTopics.toList()).sortedBy { it.creationDate } .reversed())
             }
             timeline
         }catch(e: Exception){
@@ -86,7 +86,7 @@ object TopicReadService {
                         }
                     }
                 }
-                timeline.addAll(decryptedTopics)
+                timeline.addAll((decryptedTopics.toList()).sortedBy { it.creationDate } .reversed())
             }
             timeline
         }catch(e: Exception){

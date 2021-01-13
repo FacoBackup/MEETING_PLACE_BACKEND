@@ -8,13 +8,13 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object MessageDAO: MI{
-    override suspend fun readAboveTimePeriod(conversationID: String, timePeriod: Long): List<MessageDTO> {
+    override suspend fun readByPage(conversationID: String, page: Int): List<MessageDTO> {
         return try {
             transaction {
                 MessageEntity.select {
                     (MessageEntity.conversationID eq conversationID) and
-                            (MessageEntity.creationDate.greaterEq(timePeriod))
-                }.orderBy(MessageEntity.creationDate, SortOrder.ASC).limit(20).map { mapMessage(it) }
+                            (MessageEntity.page eq page)
+                }.map { mapMessage(it) }
             }
         }catch (normal: Exception){
             listOf()
@@ -23,38 +23,26 @@ object MessageDAO: MI{
         }
     }
 
-    override suspend fun readBelowTimePeriod(conversationID: String, timePeriod: Long): List<MessageDTO> {
-        return try {
-            transaction {
-                MessageEntity.select {
-                    (MessageEntity.conversationID eq conversationID) and
-                            (MessageEntity.creationDate.lessEq(timePeriod))
-                }.orderBy(MessageEntity.creationDate, SortOrder.DESC).limit(20).map { mapMessage(it) }
-            }
-        }catch (normal: Exception){
-            listOf()
-        }catch (psql: PSQLException){
-            listOf()
-        }
-    }
-
-    override suspend fun readNew(conversationID: String): List<MessageDTO> {
-        return try {
-           transaction {
-               MessageEntity.select {
-                   (MessageEntity.conversationID eq conversationID)
-               }.orderBy(MessageEntity.creationDate, SortOrder.DESC).limit(40).map { mapMessage(it) }
-           }
-
-        }catch (normal: Exception){
-            listOf()
-        }catch (psql: PSQLException){
-            listOf()
-        }
-    }
     override suspend fun create(message: String, imageURL: String?, conversationID: String, creator: String, messageID: String): HttpStatusCode {
         return try {
             transaction {
+                val lastPageQuantity: Int
+                val currentPage: Int
+                val size= MessageEntity.select{
+                    (MessageEntity.conversationID eq conversationID)
+                }.count()
+                val lastPage = MessageEntity.select{
+                    (MessageEntity.conversationID eq conversationID)
+                }.limit(1, offset = if(size > 0) -1 else size).map{ mapMessage(it) }
+
+                lastPageQuantity = if(lastPage.isNotEmpty()) MessageEntity.select{
+                    (MessageEntity.conversationID eq conversationID) and
+                            (MessageEntity.page eq lastPage[0].page)
+                }.count().toInt()
+                else
+                    -1
+                currentPage = if(lastPageQuantity == -1) 1 else if(lastPageQuantity in 1..18) lastPage[0].page else lastPage[0].page+1
+
                 MessageEntity.insert {
                     it[this.id] = messageID
                     it[valid] = 0
@@ -65,6 +53,7 @@ object MessageDAO: MI{
                     it[this.conversationID] = conversationID
                     it[creationDate] = System.currentTimeMillis()
                     it[this.seenByEveryone] = false
+                    it[page] = currentPage
                 }
             }
             HttpStatusCode.Created
@@ -169,7 +158,8 @@ object MessageDAO: MI{
             conversationID = it[MessageEntity.conversationID],
             creationDate = it[MessageEntity.creationDate],
             seenByEveryone = it[MessageEntity.seenByEveryone],
-            receiverAsUserID = null
+            receiverAsUserID = null,
+            page = it[MessageEntity.page]
         )
     }
 }
