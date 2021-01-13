@@ -1,23 +1,22 @@
 package br.meetingplace.server.modules.conversation.dao.messages.status
 
 import br.meetingplace.server.modules.conversation.dto.response.messages.MessageStatusDTO
-import br.meetingplace.server.modules.conversation.entities.MessageStatusEntity
-import br.meetingplace.server.modules.conversation.entities.MessageStatusEntity.seen
+import br.meetingplace.server.modules.conversation.entities.messages.MessageStatusEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object MessageStatusDAO: MSI {
-    override fun create(conversationID: String, userID: String, messageID: String, seen: Boolean): HttpStatusCode {
+    override suspend fun create(conversationID: String, userID: String, messageID: String): HttpStatusCode {
         return try{
             transaction {
                 MessageStatusEntity.insert {
                     it[this.conversationID] = conversationID
                     it[this.userID] = userID
                     it[this.messageID] = messageID
-                    it[this.seen] = seen
+                    it[this.seen] = false
+                    it[this.seenAt] = null
                 }
             }
             HttpStatusCode.Created
@@ -28,12 +27,27 @@ object MessageStatusDAO: MSI {
         }
     }
 
-    override fun readUnseen(conversationID: String, userID: String): List<MessageStatusDTO> {
+    override suspend fun seenByEveryoneByMessage(messageID: String, conversationID: String): Boolean {
         return try {
             transaction {
                 MessageStatusEntity.select {
                     (MessageStatusEntity.conversationID eq conversationID) and
-                    (MessageStatusEntity.userID eq userID)
+                    (MessageStatusEntity.seen eq false) and (MessageStatusEntity.messageID eq messageID)
+                }.map{ mapMessageStatus(it) }.firstOrNull()
+            } == null
+
+        } catch (e: Exception) {
+            false
+        } catch (psql: PSQLException) {
+            false
+        }
+    }
+    override suspend fun readAllUnseenMessages(conversationID: String, userID: String): List<MessageStatusDTO> {
+        return try {
+            transaction {
+                MessageStatusEntity.select {
+                    (MessageStatusEntity.conversationID eq conversationID) and
+                    (MessageStatusEntity.userID eq userID) and (MessageStatusEntity.seen eq false)
                 }.map{ mapMessageStatus(it) }
             }
         } catch (e: Exception) {
@@ -43,7 +57,22 @@ object MessageStatusDAO: MSI {
         }
     }
 
-    override fun update(conversationID: String, userID: String, messageID: String): HttpStatusCode {
+    override suspend fun unseenMessagesCount(conversationID: String, userID: String): Long {
+        return try{
+            transaction {
+                MessageStatusEntity.select{
+                    (MessageStatusEntity.conversationID eq conversationID) and
+                    (MessageStatusEntity.userID eq userID) and
+                    (MessageStatusEntity.seen eq false)
+                }.count()
+            }
+        }catch (e: Exception){
+            0
+        }catch (psql: PSQLException){
+            0
+        }
+    }
+    override suspend fun update(conversationID: String, userID: String, messageID: String): HttpStatusCode {
         return try{
             transaction {
                 MessageStatusEntity.update({ (MessageStatusEntity.conversationID eq conversationID) and
@@ -51,6 +80,7 @@ object MessageStatusDAO: MSI {
                         (MessageStatusEntity.messageID eq messageID)}) {
 
                     it[seen] = true
+                    it[this.seenAt] = System.currentTimeMillis()
                 }
             }
             HttpStatusCode.OK
@@ -65,7 +95,8 @@ object MessageStatusDAO: MSI {
             conversationID = it[MessageStatusEntity.conversationID],
             userID = it[MessageStatusEntity.userID],
             messageID = it[MessageStatusEntity.messageID],
-            seen = it[seen]
+            seen = it[MessageStatusEntity.seen],
+            seenAt = it[MessageStatusEntity.seenAt]
         )
     }
 }

@@ -1,8 +1,10 @@
 package br.meetingplace.server.server
 
 import br.meetingplace.server.modules.authentication.dao.AccessLogDAO
+import br.meetingplace.server.modules.authentication.dto.response.AccessLogDTO
 import br.meetingplace.server.modules.authentication.routes.authentication
 import br.meetingplace.server.modules.community.routes.communityRouter
+import br.meetingplace.server.modules.conversation.routes.conversationRouter
 import br.meetingplace.server.modules.conversation.routes.groupConversationRouter
 import br.meetingplace.server.modules.conversation.routes.messageRouter
 import br.meetingplace.server.modules.conversation.routes.userConversationRouter
@@ -38,6 +40,9 @@ fun Application.module(){
             setPrettyPrinting()
         }
     }
+//    install(CallLogging){
+//
+//    }
     install(Authentication){
         jwt {
             verifier(JWTSettings.jwtVerifier)
@@ -46,8 +51,9 @@ fun Application.module(){
                 val userID = it.payload.getClaim("userID").asString()
                 val ip = it.payload.getClaim("ip").asString()
                 val log = AccessLogDAO.read(userID, ip)
-                if(!userID.isNullOrBlank() && !ip.isNullOrBlank() && log != null && log.active)
-                    log
+                if(!userID.isNullOrBlank() && !ip.isNullOrBlank()) {
+                    log ?: AccessLogDTO(userID =  userID, ipAddress = ip, timeOfLogin = System.currentTimeMillis().toString(),active = true)
+                }
                 else null
             }
         }
@@ -58,6 +64,7 @@ fun Application.module(){
             authentication()
         }
         authenticate(optional = false){
+            conversationRouter()
             topicRouter()
             communityRouter()
             userConversationRouter()

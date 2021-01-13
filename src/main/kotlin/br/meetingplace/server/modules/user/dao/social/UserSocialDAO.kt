@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.user.dao.social
 
 import br.meetingplace.server.modules.user.dto.response.SocialDTO
-import br.meetingplace.server.modules.user.entities.Social
+import br.meetingplace.server.modules.user.entities.UserSocialEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -9,12 +9,12 @@ import org.postgresql.util.PSQLException
 
 object UserSocialDAO:SI {
 
-    override fun create(userID: String, followedID: String): HttpStatusCode {
+    override suspend fun create(userID: String, followedID: String): HttpStatusCode {
         return try {
             transaction {
-                Social.insert{
-                    it[Social.followedID] = followedID
-                    it[Social.followerID] = userID
+                UserSocialEntity.insert{
+                    it[UserSocialEntity.followedID] = followedID
+                    it[UserSocialEntity.followerID] = userID
                 }
             }
             HttpStatusCode.Created
@@ -25,12 +25,12 @@ object UserSocialDAO:SI {
         }
     }
 
-    override fun delete(userID: String, followedID: String): HttpStatusCode {
+    override suspend fun delete(userID: String, followedID: String): HttpStatusCode {
         return try {
             transaction {
-                Social.deleteWhere {
-                    (Social.followedID eq followedID) and
-                    (Social.followerID eq userID)
+                UserSocialEntity.deleteWhere {
+                    (UserSocialEntity.followedID eq followedID) and
+                    (UserSocialEntity.followerID eq userID)
                 }
             }
             HttpStatusCode.OK
@@ -41,12 +41,12 @@ object UserSocialDAO:SI {
         }
     }
 
-    override fun check(followedID: String, userID: String): Boolean {
+    override suspend fun check(followedID: String, userID: String): Boolean {
         return try {
             return !transaction {
-                Social.select {
-                    (Social.followedID eq followedID) and
-                            (Social.followerID eq userID)
+                UserSocialEntity.select {
+                    (UserSocialEntity.followedID eq followedID) and
+                            (UserSocialEntity.followerID eq userID)
                 }.empty()}
         }catch (normal: Exception){
            false
@@ -55,17 +55,17 @@ object UserSocialDAO:SI {
         }
     }
 
-    override fun readAll(userID: String, following: Boolean): List<SocialDTO> {
+    override  suspend fun readAll(userID: String, following: Boolean): List<SocialDTO> {
         return try {
             when(following){
                 true-> transaction {
-                        Social.select {
-                            Social.followerID eq userID
+                        UserSocialEntity.select {
+                            UserSocialEntity.followerID eq userID
                         }.map { mapSocial(it) }
                     }
                 false-> transaction {
-                    Social.select {
-                        Social.followedID eq userID
+                    UserSocialEntity.select {
+                        UserSocialEntity.followedID eq userID
                     }.map { mapSocial(it) }
                 }
             }
@@ -76,6 +76,6 @@ object UserSocialDAO:SI {
         }
     }
     private fun mapSocial(it: ResultRow): SocialDTO {
-        return SocialDTO(followedID =  it[Social.followedID], followerID = it[Social.followerID])
+        return SocialDTO(followedID =  it[UserSocialEntity.followedID], followerID = it[UserSocialEntity.followerID])
     }
 }

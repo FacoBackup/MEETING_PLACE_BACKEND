@@ -1,7 +1,7 @@
 package br.meetingplace.server.modules.conversation.dao.messages.opinions
 
 import br.meetingplace.server.modules.conversation.dto.response.messages.MessageOpinionsDTO
-import br.meetingplace.server.modules.conversation.entities.MessageOpinionEntity
+import br.meetingplace.server.modules.conversation.entities.messages.MessageOpinionEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction

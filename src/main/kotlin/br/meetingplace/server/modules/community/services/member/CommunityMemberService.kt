@@ -7,24 +7,19 @@ import io.ktor.http.*
 
 object CommunityMemberService {
 
-    fun promoteMember(requester: String,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
+    suspend fun promoteMember(requester: String,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
         return try {
             val userMember = communityMemberDAO.read(communityID = data.communityID, userID = requester)
             val member = communityMemberDAO.read(communityID = data.communityID, userID = data.memberID)
             return if(member != null){
                 when(member.role){
-                    MemberType.LEADER.toString()->{
-                        if(userMember != null && userMember.role == MemberType.DIRECTOR.toString())
-                            communityMemberDAO.update(userID = data.memberID, communityID = data.memberID, role = MemberType.DIRECTOR.toString())
-                        else HttpStatusCode.FailedDependency
-                    }
                     MemberType.MEMBER.toString()->{
-                        if(userMember != null && userMember.role == MemberType.DIRECTOR.toString())
-                            communityMemberDAO.update(userID = data.memberID, communityID = data.memberID, role = MemberType.LEADER.toString())
+                        if(userMember != null && userMember.role == MemberType.MODERATOR.toString())
+                            communityMemberDAO.update(userID = data.memberID, communityID = data.memberID, role = MemberType.MODERATOR.toString())
                         else HttpStatusCode.FailedDependency
                     }
                     MemberType.FOLLOWER.toString()->{
-                        if(userMember != null && (userMember.role == MemberType.DIRECTOR.toString() || userMember.role == MemberType.LEADER.toString()))
+                        if(userMember != null && (userMember.role == MemberType.MODERATOR.toString() || userMember.role == MemberType.MEMBER.toString()))
                             communityMemberDAO.update(userID = data.memberID, communityID = data.memberID, role = MemberType.MEMBER.toString())
                         else HttpStatusCode.FailedDependency
                     }
@@ -37,24 +32,41 @@ object CommunityMemberService {
         }
     }
 
-    fun lowerMember(requester: String,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
+    suspend  fun lowerMember(requester: String,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
         return try {
             val userMember = communityMemberDAO.read(communityID = data.communityID, userID = requester)
             val member = communityMemberDAO.read(communityID = data.communityID, userID = data.memberID)
             return if(member != null){
                 when(member.role){
-                    MemberType.LEADER.toString()->{
-                        if(userMember != null && userMember.role == MemberType.DIRECTOR.toString())
+                    MemberType.MODERATOR.toString()->{
+                        if(userMember != null && userMember.role == MemberType.MODERATOR.toString())
                             communityMemberDAO.update(userID = data.memberID, communityID = data.memberID, role = MemberType.MEMBER.toString())
                         else HttpStatusCode.FailedDependency
                     }
                     MemberType.MEMBER.toString()->{
-                        if(userMember != null && (userMember.role == MemberType.DIRECTOR.toString() || userMember.role == MemberType.LEADER.toString()))
+                        if(userMember != null && userMember.role == MemberType.MODERATOR.toString())
                             communityMemberDAO.update(userID = data.memberID, communityID = data.memberID, role = MemberType.FOLLOWER.toString())
                         else HttpStatusCode.FailedDependency
                     }
                     else-> HttpStatusCode.FailedDependency
                 }
+            }
+            else HttpStatusCode.InternalServerError
+        }catch (normal: Exception){
+            HttpStatusCode.InternalServerError
+        }
+    }
+    suspend  fun removeMember(requester: String,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
+        return try {
+            val userMember = communityMemberDAO.read(communityID = data.communityID, userID = requester)
+            val member = communityMemberDAO.read(communityID = data.communityID, userID = data.memberID)
+            return if(member != null){
+
+                if(MemberType.MODERATOR.toString() == member.role && userMember != null && userMember.role != MemberType.MODERATOR.toString()){
+                    communityMemberDAO.delete(userID = data.memberID, communityID = data.memberID)
+                }
+                else
+                    HttpStatusCode.FailedDependency
             }
             else HttpStatusCode.InternalServerError
         }catch (normal: Exception){

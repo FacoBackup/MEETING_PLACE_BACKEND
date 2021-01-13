@@ -1,14 +1,14 @@
 package br.meetingplace.server.modules.conversation.dao.conversation.owners
 
 import br.meetingplace.server.modules.conversation.dto.response.conversation.ConversationOwnersDTO
-import br.meetingplace.server.modules.conversation.entities.ConversationOwnersEntity
+import br.meetingplace.server.modules.conversation.entities.conversation.ConversationOwnersEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object ConversationOwnersDAO: COI {
-    override fun create(userID: String, secondUserID: String, conversationID: String): HttpStatusCode {
+    override suspend fun create(userID: String, secondUserID: String, conversationID: String): HttpStatusCode {
         return try{
             transaction{
                 ConversationOwnersEntity.insert {
@@ -25,7 +25,7 @@ object ConversationOwnersDAO: COI {
         }
     }
 
-    override fun check(userID: String, secondUserID: String): Boolean {
+    override suspend fun check(userID: String, secondUserID: String): Boolean {
         return try{
             transaction{
                     ConversationOwnersEntity.select {
@@ -42,7 +42,7 @@ object ConversationOwnersDAO: COI {
             false
         }
     }
-    override fun readAll(userID: String): List<ConversationOwnersDTO> {
+    override suspend fun readAll(userID: String): List<ConversationOwnersDTO> {
         return try{
             transaction{
                 ConversationOwnersEntity.select {
@@ -56,7 +56,7 @@ object ConversationOwnersDAO: COI {
             listOf()
         }
     }
-    override fun read(userID: String, secondUserID: String): ConversationOwnersDTO? {
+    override suspend fun read(userID: String, secondUserID: String): ConversationOwnersDTO? {
         return try{
             transaction{
                 ConversationOwnersEntity.select {

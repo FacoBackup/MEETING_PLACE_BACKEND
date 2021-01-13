@@ -2,27 +2,26 @@ package br.meetingplace.server.modules.community.dao
 
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
 import br.meetingplace.server.modules.community.dto.response.CommunityDTO
-import br.meetingplace.server.modules.community.entities.Community
+import br.meetingplace.server.modules.community.entities.CommunityEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
 import org.postgresql.util.PSQLException
 import java.util.*
 
 object CommunityDAO: CI {
 
-    override fun create(data: RequestCommunityCreation):HttpStatusCode  {
+    override suspend fun create(data: RequestCommunityCreation):HttpStatusCode  {
         return try{
             transaction {
-                Community.insert {
+                CommunityEntity.insert {
                     it[name] = data.name
                     it[id] = UUID.randomUUID().toString()
                     it[imageURL] = data.imageURL
-                    it[creationDate] =  DateTime.now()
+                    it[creationDate] =  System.currentTimeMillis()
                     it[about] = data.about
-                    it[location] = data.location
-                    it[parentCommunityID]= data.parentCommunityID
+                    it[relatedCommunityID]= data.relatedCommunityID
+                    it[backgroundImageURL] = data.backgroundImageURL
                 }
             }
             HttpStatusCode.Created
@@ -33,10 +32,23 @@ object CommunityDAO: CI {
         }
     }
 
-    override fun check(id: String): Boolean {
+    override suspend fun readParentCommunities(communityID: String): List<CommunityDTO> {
+        return try{
+            transaction {
+                CommunityEntity.select{
+                    CommunityEntity.relatedCommunityID eq communityID
+                }.map { mapCommunityDTO(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
+    override suspend fun check(id: String): Boolean {
         return try{
             !transaction {
-                Community.select { Community.id eq id }.empty()
+                CommunityEntity.select { CommunityEntity.id eq id }.empty()
             }
         }catch (normal: Exception){
             false
@@ -44,10 +56,10 @@ object CommunityDAO: CI {
             false
         }
     }
-    override fun delete(id: String): HttpStatusCode {
+    override suspend fun delete(id: String): HttpStatusCode {
         return try{
             transaction {
-                Community.deleteWhere { Community.id eq id }
+                CommunityEntity.deleteWhere { CommunityEntity.id eq id }
             }
             HttpStatusCode.OK
         }catch (normal: Exception){
@@ -57,10 +69,10 @@ object CommunityDAO: CI {
         }
     }
 
-    override fun read(id: String): CommunityDTO? {
+    override suspend fun read(id: String): CommunityDTO? {
         return try{
             transaction {
-                Community.select { Community.id eq id }.map { mapCommunityDTO(it) }.firstOrNull()
+                CommunityEntity.select { CommunityEntity.id eq id }.map { mapCommunityDTO(it) }.firstOrNull()
             }
         }catch (normal: Exception){
             null
@@ -69,16 +81,43 @@ object CommunityDAO: CI {
         }
     }
 
-    override fun update(communityID: String, name: String?, about: String?, parentID: String?):HttpStatusCode {
+    override suspend fun readByExactName(name: String): CommunityDTO? {
         return try{
             transaction {
-                Community.update( { Community.id eq communityID } ){
-                    if(!name.isNullOrBlank())
-                        it[this.name] = name
+                CommunityEntity.select{
+                    CommunityEntity.name eq name
+                }.map { mapCommunityDTO(it) }.firstOrNull()
+            }
+        }catch (normal: Exception){
+            null
+        }catch (psql: PSQLException){
+            null
+        }
+    }
+
+    override suspend fun readByName(name: String): List<CommunityDTO> {
+        return try{
+            transaction {
+                CommunityEntity.select{
+                    CommunityEntity.name like "%$name%"
+                }.map { mapCommunityDTO(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
+    override suspend fun update(communityID: String, imageURL: String?, backgroundImageURL: String?, about: String?):HttpStatusCode {
+        return try{
+            transaction {
+                CommunityEntity.update( { CommunityEntity.id eq communityID } ){
                     if(!about.isNullOrBlank())
                         it[this.about] = about
-                    if(!parentID.isNullOrBlank() && read(parentID) != null)
-                        it[parentCommunityID] = parentID
+                    if(!backgroundImageURL.isNullOrBlank())
+                        it[this.backgroundImageURL] = backgroundImageURL
+                    if(!imageURL.isNullOrBlank())
+                        it[this.imageURL] = imageURL
                 }
             }
             HttpStatusCode.OK
@@ -90,10 +129,15 @@ object CommunityDAO: CI {
     }
 
     private fun mapCommunityDTO(it: ResultRow): CommunityDTO {
-        return CommunityDTO(name = it[Community.name], id = it[Community.id],
-                about = it[Community.imageURL], imageURL =  it[Community.imageURL],
-                creationDate = it[Community.creationDate].toString(), location = it[Community.location],
-                parentCommunityID = it[Community.parentCommunityID])
+        return CommunityDTO(
+            name = it[CommunityEntity.name],
+            id = it[CommunityEntity.id],
+            about = it[CommunityEntity.about],
+            imageURL =  it[CommunityEntity.imageURL],
+            creationDate = it[CommunityEntity.creationDate],
+            relatedCommunityID = it[CommunityEntity.relatedCommunityID],
+            backgroundImageURL = it[CommunityEntity.backgroundImageURL]
+            )
     }
 
 }

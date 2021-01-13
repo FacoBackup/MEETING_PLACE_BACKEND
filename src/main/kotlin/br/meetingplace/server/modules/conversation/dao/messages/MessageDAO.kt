@@ -1,14 +1,14 @@
 package br.meetingplace.server.modules.conversation.dao.messages
 
 import br.meetingplace.server.modules.conversation.dto.response.messages.MessageDTO
-import br.meetingplace.server.modules.conversation.entities.MessageEntity
+import br.meetingplace.server.modules.conversation.entities.messages.MessageEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object MessageDAO: MI{
-    override fun create(message: String, imageURL: String?, conversationID: String, creator: String, messageID: String): HttpStatusCode {
+    override suspend fun create(message: String, imageURL: String?, conversationID: String, creator: String, messageID: String): HttpStatusCode {
         return try {
             transaction {
                 MessageEntity.insert {
@@ -20,6 +20,7 @@ object MessageDAO: MI{
                     it[type] = 0
                     it[this.conversationID] = conversationID
                     it[creationDate] = System.currentTimeMillis()
+                    it[this.seenByEveryone] = false
                 }
             }
             HttpStatusCode.Created
@@ -30,7 +31,24 @@ object MessageDAO: MI{
         }
     }
 
-    override fun delete(messageID: String): HttpStatusCode {
+    override suspend fun update(messageID: String): HttpStatusCode {
+        return try {
+            transaction {
+                MessageEntity.update( {
+                    MessageEntity.id eq messageID
+                }){
+                    it[valid] = System.currentTimeMillis()
+                    it[this.seenByEveryone] = true
+                }
+            }
+            HttpStatusCode.OK
+        }catch (normal: Exception){
+            HttpStatusCode.InternalServerError
+        }catch (psql: PSQLException){
+            HttpStatusCode.InternalServerError
+        }
+    }
+    override suspend fun delete(messageID: String): HttpStatusCode {
         return try {
             transaction {
                 MessageEntity.deleteWhere {
@@ -44,7 +62,8 @@ object MessageDAO: MI{
             HttpStatusCode.InternalServerError
         }
     }
-    override fun check(messageID: String): Boolean {
+
+    override suspend fun check(messageID: String): Boolean {
         return try {
             !transaction {
                 MessageEntity.select {
@@ -57,8 +76,13 @@ object MessageDAO: MI{
             false
         }
     }
-    override fun read(messageID: String): MessageDTO? {
+    override suspend fun read(messageID: String): MessageDTO? {
         return try {
+            transaction {
+                MessageEntity.deleteWhere {
+                    ((MessageEntity.valid.less(System.currentTimeMillis().toInt())) and (MessageEntity.valid neq 0))   or (MessageEntity.valid eq System.currentTimeMillis())
+                }
+            }
             transaction {
                 MessageEntity.select {
                     MessageEntity.id eq messageID
@@ -70,16 +94,9 @@ object MessageDAO: MI{
             null
         }
     }
-    override fun readAllConversation(userID: String, conversationID: String): List<MessageDTO> {
+    override suspend fun readAllConversation(userID: String, conversationID: String): List<MessageDTO> {
         return try {
             val conversation  = mutableListOf<MessageDTO>()
-//            transaction {
-//                Message.update({(Message.valid eq 0) and (Message.read eq false) and (Message.creatorID neq userID)}){
-//                    it[valid] = System.currentTimeMillis() + 86400000 //24hours + current time
-//                    it[read] = true
-//
-//                }
-//            }
             transaction {
                 MessageEntity.deleteWhere {
                     ((MessageEntity.valid.less(System.currentTimeMillis().toInt())) and (MessageEntity.valid neq 0))   or (MessageEntity.valid eq System.currentTimeMillis())
@@ -106,6 +123,9 @@ object MessageDAO: MI{
             creatorID = it[MessageEntity.creatorID],
             type =  it[MessageEntity.type],
             conversationID = it[MessageEntity.conversationID],
-            creationDate = it[MessageEntity.creationDate])
+            creationDate = it[MessageEntity.creationDate],
+            seenByEveryone = it[MessageEntity.seenByEveryone],
+            receiverAsUserID = null
+        )
     }
 }

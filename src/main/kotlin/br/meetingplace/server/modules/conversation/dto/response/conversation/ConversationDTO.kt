@@ -5,4 +5,6 @@ data class ConversationDTO(val id: String,
                            val about: String?,
                            val imageURL: String?,
                            val isGroup: Boolean,
-                           val creationDate: String)
+                           val creationDate: Long,
+                           val latestMessage: Long?
+)

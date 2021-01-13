@@ -6,11 +6,49 @@ import br.meetingplace.server.modules.community.dto.MemberType
 import br.meetingplace.server.modules.user.dao.social.SI
 import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.modules.user.dto.requests.RequestSocial
+import br.meetingplace.server.modules.user.dto.response.UserSimplifiedDTO
 import io.ktor.http.*
 
 object UserSocialService {
+    suspend fun readFollowers(requester: String, userSocialDAO: SI, userDAO: UI): List<UserSimplifiedDTO>{
+        return try {
+            if(userDAO.check(requester)){
+                val followers = userSocialDAO.readAll(userID = requester, following = false)
+                val userFollowers = mutableListOf<UserSimplifiedDTO>()
+                for(i in followers.indices){
+                    val follower = userDAO.readSimplifiedUserByID(if(followers[i].followedID != requester) followers[i].followedID else followers[i].followerID )
+                    if(follower != null)
+                        userFollowers.add(follower)
+                }
+                userFollowers
+            }
+            else
+                listOf()
+        }catch (e: Exception){
+            listOf()
+        }
 
-    fun follow(requester: String,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI, communityDAO: CI, userDAO: UI): HttpStatusCode {
+    }
+    suspend fun readFollowing(requester: String, userSocialDAO: SI, userDAO: UI): List<UserSimplifiedDTO>{
+        return try {
+            if(userDAO.check(requester)){
+                val following = userSocialDAO.readAll(userID = requester, following = true)
+                val userFollowing = mutableListOf<UserSimplifiedDTO>()
+                for(i in following.indices){
+                    val followed = userDAO.readSimplifiedUserByID(if(following[i].followerID != requester) following[i].followerID else following[i].followedID )
+                    if(followed != null)
+                        userFollowing.add(followed)
+                }
+                userFollowing
+            }
+            else
+                listOf()
+        }catch (e: Exception){
+            listOf()
+        }
+
+    }
+    suspend fun follow(requester: String,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI, communityDAO: CI, userDAO: UI): HttpStatusCode {
         return try {
             when(data.community){
                 true-> {
@@ -29,7 +67,7 @@ object UserSocialService {
         }
     }
 
-    fun unfollow(requester: String,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI): HttpStatusCode {
+    suspend fun unfollow(requester: String,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI): HttpStatusCode {
         return try {
             when(data.community){
                 true-> communityMemberDAO.delete(data.subjectID, userID = requester)

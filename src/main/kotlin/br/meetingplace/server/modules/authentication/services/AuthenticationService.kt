@@ -9,22 +9,21 @@ import io.ktor.http.*
 
 object AuthenticationService {
 
-    fun login(data: RequestLog, userDAO: UserDAO, authenticationDAO: ALI): String? {
+    suspend fun signIn(data: RequestLog, userDAO: UserDAO, authenticationDAO: ALI): String? {
         return try {
             val user = userDAO.readAuthUser(data.userID)
 
             if(user != null && user.password == hashString(encryption = "SHA-1",data.password)){
-                val status = authenticationDAO.create(userID = data.userID, ip = data.ip)
+//                val status = authenticationDAO.create(userID = data.userID, ip = data.ip)
 
-                if (status == HttpStatusCode.OK) JWTSettings.makeToken(userID = user.userID, data.ip)
-                else null
+             JWTSettings.makeToken(userID = user.userID, data.ip)
             }else null
         }catch (e: Exception){
             null
         }
     }
 
-    fun logout(requester: String, ip: String, userDAO: UserDAO, authenticationDAO: ALI): HttpStatusCode{
+    suspend fun signOut(requester: String, ip: String, userDAO: UserDAO, authenticationDAO: ALI): HttpStatusCode{
         return try {
             val logged = authenticationDAO.read(requester, ip)
             if(userDAO.check(requester) && logged != null && logged.active){

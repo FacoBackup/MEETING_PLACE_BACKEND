@@ -2,11 +2,11 @@ package br.meetingplace.server.modules.conversation.services.conversation.member
 
 import br.meetingplace.server.modules.conversation.dao.conversation.CI
 import br.meetingplace.server.modules.conversation.dao.conversation.member.CMI
-import br.meetingplace.server.modules.conversation.dto.requests.RequestConversationMember
+import br.meetingplace.server.modules.conversation.dto.requests.conversation.RequestConversationMember
 import io.ktor.http.*
 
 object ConversationMemberService {
-    fun addMember(requester: String, data: RequestConversationMember, conversationMemberDAO: CMI, conversationDAO: CI): HttpStatusCode {
+    suspend fun addMember(requester: String, data: RequestConversationMember, conversationMemberDAO: CMI, conversationDAO: CI): HttpStatusCode {
         return try{
             val conversation = conversationDAO.read(data.conversationID)
             if(conversation != null && conversation.isGroup && conversationMemberDAO.check(userID = requester, conversationID = data.conversationID) &&
@@ -18,7 +18,7 @@ object ConversationMemberService {
         }
     }
 
-    fun removeMember(requester: String, data: RequestConversationMember, conversationMemberDAO: CMI, conversationDAO: CI): HttpStatusCode {
+    suspend fun removeMember(requester: String, data: RequestConversationMember, conversationMemberDAO: CMI, conversationDAO: CI): HttpStatusCode {
         return try {
             val userMember = conversationMemberDAO.read(requester, conversationID = data.conversationID)
             val conversation = conversationDAO.read(data.conversationID)
@@ -29,7 +29,7 @@ object ConversationMemberService {
             HttpStatusCode.InternalServerError
         }
     }
-    fun promoteMember(requester: String, data: RequestConversationMember, memberDAO: CMI, conversationDAO: CI): HttpStatusCode{
+    suspend fun promoteMember(requester: String, data: RequestConversationMember, memberDAO: CMI, conversationDAO: CI): HttpStatusCode{
         return try {
             val member = memberDAO.read(requester, conversationID = data.conversationID)
             val conversation = conversationDAO.read(data.conversationID)
@@ -40,7 +40,7 @@ object ConversationMemberService {
             HttpStatusCode.InternalServerError
         }
     }
-    fun lowerMember(requester: String, data: RequestConversationMember, memberDAO: CMI, conversationDAO: CI): HttpStatusCode{
+    suspend fun lowerMember(requester: String, data: RequestConversationMember, memberDAO: CMI, conversationDAO: CI): HttpStatusCode{
         return try {
             val member = memberDAO.read(requester, conversationID = data.conversationID)
             val conversation = conversationDAO.read(data.conversationID)

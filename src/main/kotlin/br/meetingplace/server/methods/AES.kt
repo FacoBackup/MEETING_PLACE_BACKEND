@@ -11,7 +11,7 @@ object AES: AESInterface{
     private var key: ByteArray? = null
     private var secret: SecretKeySpec? = null
 
-    override fun encrypt(myKey: String, data: String): String?{
+    override suspend fun encrypt(myKey: String, data: String): String?{
         return try {
             val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
             setKey(myKey)
@@ -22,7 +22,7 @@ object AES: AESInterface{
         }
     }
 
-    override fun decrypt(myKey: String, data: String): String?{
+    override suspend fun decrypt(myKey: String, data: String): String?{
         return try {
             val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
             setKey(myKey)

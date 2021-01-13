@@ -1,10 +1,10 @@
 package br.meetingplace.server.modules.conversation.services.message.quote
 
-import br.meetingplace.server.modules.conversation.dto.requests.RequestConversationMessage
+import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestShareMessage
 
 object MessageQuoteService {
 
-    fun quoteMessage(data: RequestConversationMessage) {
+    fun quoteMessage(data: RequestShareMessage) {
         TODO("NOT YET IMPLEMENTED")
 //        val user = rwUser.select(data.login.email)
 //        lateinit var messages: List<MessageDTO>

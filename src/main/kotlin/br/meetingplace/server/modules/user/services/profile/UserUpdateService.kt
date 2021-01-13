@@ -7,7 +7,7 @@ import org.postgresql.util.PSQLException
 
 object UserUpdateService {
 
-    fun updateProfile(requester: String,data: RequestProfileUpdate, userDAO: UI) : HttpStatusCode {
+    suspend fun updateProfile(requester: String,data: RequestProfileUpdate, userDAO: UI) : HttpStatusCode {
         return try {
             userDAO.update(
                 requester,
@@ -16,7 +16,9 @@ object UserUpdateService {
                 phoneNumber = data.phoneNumber,
                 name = data.name,
                 nationality = data.nationality,
-                city = data.city)
+                city = data.city,
+                backgroundImageURL = data.backgroundImageURL
+                )
 
         }catch (e: Exception){
             HttpStatusCode.InternalServerError

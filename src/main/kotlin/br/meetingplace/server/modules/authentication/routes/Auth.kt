@@ -2,7 +2,7 @@ package br.meetingplace.server.modules.authentication.routes
 
 import br.meetingplace.server.modules.authentication.dao.AccessLogDAO
 import br.meetingplace.server.modules.authentication.dto.requests.RequestLog
-import br.meetingplace.server.modules.authentication.entities.AccessLog
+import br.meetingplace.server.modules.authentication.entities.AccessLogEntity
 import br.meetingplace.server.modules.authentication.services.AuthenticationService
 import br.meetingplace.server.modules.user.dao.user.UserDAO
 import br.meetingplace.server.server.AuthLog.log
@@ -35,7 +35,7 @@ fun Route.authentication(){
         }
         put("/login") {
             val data = call.receive<RequestLog>()
-            val token = AuthenticationService.login(data, UserDAO, AccessLogDAO)
+            val token = AuthenticationService.signIn(data, UserDAO, AccessLogDAO)
             if(token.isNullOrBlank())
                 call.respond(HttpStatusCode.Unauthorized)
             else
@@ -44,7 +44,7 @@ fun Route.authentication(){
         delete("/delete/logs"){
             try {
                 transaction {
-                    AccessLog.deleteAll()
+                    AccessLogEntity.deleteAll()
                 }
                 call.respond(HttpStatusCode.Accepted)
             }catch (e: PSQLException){
@@ -60,7 +60,7 @@ fun Route.authentication(){
                 val log = call.log
                 println("SIGNOUT HERE")
                 if(log != null)
-                    call.respond(AuthenticationService.logout(userDAO = UserDAO,
+                    call.respond(AuthenticationService.signOut(userDAO = UserDAO,
                         authenticationDAO = AccessLogDAO,
                         requester = log.userID,
                         ip = log.ipAddress))

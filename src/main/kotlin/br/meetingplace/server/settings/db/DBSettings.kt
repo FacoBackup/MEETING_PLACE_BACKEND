@@ -1,13 +1,19 @@
 package br.meetingplace.server.settings.db
 
-import br.meetingplace.server.modules.authentication.entities.AccessLog
-import br.meetingplace.server.modules.community.entities.Community
-import br.meetingplace.server.modules.community.entities.CommunityMember
-import br.meetingplace.server.modules.conversation.entities.*
-import br.meetingplace.server.modules.topic.entities.Topic
-import br.meetingplace.server.modules.topic.entities.TopicOpinion
-import br.meetingplace.server.modules.user.entities.Social
-import br.meetingplace.server.modules.user.entities.User
+import br.meetingplace.server.modules.authentication.entities.AccessLogEntity
+import br.meetingplace.server.modules.community.entities.CommunityEntity
+import br.meetingplace.server.modules.community.entities.CommunityMemberEntity
+import br.meetingplace.server.modules.conversation.entities.conversation.ConversationEntity
+import br.meetingplace.server.modules.conversation.entities.conversation.ConversationMemberEntity
+import br.meetingplace.server.modules.conversation.entities.conversation.ConversationOwnersEntity
+import br.meetingplace.server.modules.conversation.entities.messages.MessageEntity
+import br.meetingplace.server.modules.conversation.entities.messages.MessageOpinionEntity
+import br.meetingplace.server.modules.conversation.entities.messages.MessageStatusEntity
+import br.meetingplace.server.modules.topic.entities.TopicEntity
+import br.meetingplace.server.modules.topic.entities.TopicOpinionEntity
+import br.meetingplace.server.modules.topic.entities.TopicStatusEntity
+import br.meetingplace.server.modules.user.entities.UserSocialEntity
+import br.meetingplace.server.modules.user.entities.UserEntity
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -29,18 +35,20 @@ object DBSettings {
         try {
             transaction {
                 SchemaUtils.create(
-                    User,
-                    Social,
-                    AccessLog,
+                    UserEntity,
+                    UserSocialEntity,
+                    AccessLogEntity,
                     ConversationEntity,
                     ConversationMemberEntity,
                     MessageEntity,
                     MessageOpinionEntity,
-                    Community,
-                    CommunityMember,
-                    Topic,
-                    TopicOpinion,
-                    ConversationOwnersEntity
+                    MessageStatusEntity,
+                    CommunityEntity,
+                    CommunityMemberEntity,
+                    TopicEntity,
+                    TopicOpinionEntity,
+                    ConversationOwnersEntity,
+                    TopicStatusEntity
                 )
             }
         }catch (e: Exception){

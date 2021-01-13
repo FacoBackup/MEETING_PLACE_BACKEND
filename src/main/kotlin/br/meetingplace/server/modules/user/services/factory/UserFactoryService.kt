@@ -8,11 +8,11 @@ import org.postgresql.util.PSQLException
 
 object UserFactoryService{
 
-    fun create(data: RequestUserCreation, userDAO: UI): HttpStatusCode {
+    suspend fun create(data: RequestUserCreation, userDAO: UI): HttpStatusCode {
         return try{
             if(userDAO.readAllByAttribute(null, null,
                 phoneNumber = data.phoneNumber,null,null).isEmpty() &&
-                !userDAO.check(data.email))
+                 !userDAO.check(data.email) && data.email.isNotBlank() && data.email.length > 11 && data.email.contains("@"))
                 userDAO.create(data)
 
             else
