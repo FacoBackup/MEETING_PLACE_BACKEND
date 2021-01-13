@@ -6,6 +6,7 @@ import br.meetingplace.server.modules.conversation.key.AESMessageKey
 import br.meetingplace.server.modules.conversation.dao.messages.MI
 import br.meetingplace.server.modules.conversation.dao.conversation.owners.COI
 import br.meetingplace.server.modules.conversation.dao.messages.status.MSI
+import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestMessagesDTO
 import br.meetingplace.server.modules.conversation.dto.response.messages.MessageDTO
 import br.meetingplace.server.modules.conversation.dto.response.messages.MessageStatusDTO
 import br.meetingplace.server.modules.user.dao.user.UI
@@ -71,6 +72,73 @@ object MessageReadService {
             listOf()
         }
     }
+    suspend fun readUserMessages(
+        requester: String,
+        data: RequestMessagesDTO,
+        messageStatusDAO: MSI,
+        messageDAO: MI, decryption: AESInterface,
+        conversationOwnerDAO: COI): List<MessageDTO>{
+
+        return try {
+            val conversation = conversationOwnerDAO.read(userID = requester, secondUserID = data.subjectID)
+            val newMessages = mutableListOf<MessageDTO>()
+            val decryptedMessages = mutableListOf<MessageDTO>()
+            if(conversation != null) {
+                newMessages.addAll(
+                    when(data.above){
+
+                        true->{
+                            if(data.timePeriod != null)
+                                messageDAO.readAboveTimePeriod(conversationID = conversation.conversationID, timePeriod = data.timePeriod)
+                            else
+                                listOf()
+                        }
+                        false->{
+                            if(data.timePeriod != null)
+                                messageDAO.readBelowTimePeriod(conversationID = conversation.conversationID, timePeriod = data.timePeriod)
+                            else
+                                listOf()
+                        }
+                        null->{
+                            messageDAO.readNew(conversation.conversationID)
+                        }
+                    }
+
+                )
+                for (i in newMessages.indices){
+                    val messageContent = decryption.decrypt(AESMessageKey.key, data = newMessages[i].content)
+                    val messageImage = newMessages[i].imageURL?.let { decryption.decrypt(AESMessageKey.key, data = it) }
+
+                    if(messageContent != null){
+                        decryptedMessages.add(
+                            MessageDTO(
+                                content = messageContent,
+                                imageURL = messageImage,
+                                id = newMessages[i].id,
+                                creatorID = newMessages[i].creatorID,
+                                type = newMessages[i].type,
+                                conversationID = newMessages[i].conversationID,
+                                valid = newMessages[i].valid,
+                                creationDate = newMessages[i].creationDate,
+                                seenByEveryone = newMessages[i].seenByEveryone,
+                                receiverAsUserID = if(conversation.secondaryUserID != requester) conversation.secondaryUserID else conversation.primaryUserID
+                            )
+                        )
+                        messageStatusDAO.update(conversationID = conversation.conversationID,
+                            userID = requester,
+                            messageID = newMessages[i].id)
+                        if(messageStatusDAO.seenByEveryoneByMessage(messageID = newMessages[i].id, conversationID = newMessages[i].conversationID))
+                            messageDAO.update(newMessages[i].id)
+                    }
+                }
+            }
+            decryptedMessages
+        }catch (e: Exception){
+            listOf()
+        }
+    }
+
+
     suspend fun readNewUserMessages(
         requester: String,
         userDAO: UI,

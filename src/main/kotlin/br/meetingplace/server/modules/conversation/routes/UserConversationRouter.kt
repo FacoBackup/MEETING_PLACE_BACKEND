@@ -8,6 +8,7 @@ import br.meetingplace.server.modules.conversation.dao.messages.MessageDAO
 import br.meetingplace.server.modules.conversation.dao.conversation.owners.ConversationOwnersDAO
 import br.meetingplace.server.modules.conversation.dao.messages.status.MessageStatusDAO
 import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestMessageCreation
+import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestMessagesDTO
 import br.meetingplace.server.modules.conversation.services.message.factory.MessageFactoryService
 import br.meetingplace.server.modules.conversation.services.conversation.read.ConversationReadService
 import br.meetingplace.server.modules.user.dao.user.UserDAO
@@ -21,18 +22,8 @@ import io.ktor.routing.*
 
 fun Route.userConversationRouter() {
     route("/api") {
-        patch("/get/conversationID"){
-            val data = call.receive<RequestUser>()
-            val log = call.log
-            if(log != null){
-                val conv = ConversationOwnersDAO.read(userID = data.userID, secondUserID = log.userID)
-                if(conv != null)
-                    call.respond(conv.conversationID)
-                else
-                    call.respond(HttpStatusCode.NoContent)
-            }
-            else call.respond(HttpStatusCode.Unauthorized)
-        }
+
+
         get("/conversation/all"){
             val log = call.log
             if(log != null)
@@ -46,6 +37,7 @@ fun Route.userConversationRouter() {
                     ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
+
         post<RequestUser>("/get/conversation/user") {
             val log = call.log
             if(log != null){
@@ -60,6 +52,7 @@ fun Route.userConversationRouter() {
             }
             else call.respond(HttpStatusCode.Unauthorized)
         }
+
         post<RequestUser>("/get/all/user/messages") {
             val log = call.log
             if(log != null){
@@ -72,22 +65,6 @@ fun Route.userConversationRouter() {
                     messageStatusDAO = MessageStatusDAO)
 
                 call.respond(chats)
-            }
-            else call.respond(HttpStatusCode.Unauthorized)
-        }
-        post<RequestUser>("/get/new/user/messages") {
-            val log = call.log
-            if(log != null){
-                val messages = MessageReadService.readNewUserMessages(
-                    requester = log.userID,
-                    userID = it.userID,
-                    decryption = AES,
-                    messageDAO = MessageDAO,
-                    conversationOwnerDAO = ConversationOwnersDAO,
-                    messageStatusDAO = MessageStatusDAO,
-                    userDAO = UserDAO
-                )
-                call.respond(messages)
             }
             else call.respond(HttpStatusCode.Unauthorized)
         }

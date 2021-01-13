@@ -8,6 +8,50 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object MessageDAO: MI{
+    override suspend fun readAboveTimePeriod(conversationID: String, timePeriod: Long): List<MessageDTO> {
+        return try {
+            transaction {
+                MessageEntity.select {
+                    (MessageEntity.conversationID eq conversationID) and
+                            (MessageEntity.creationDate.greaterEq(timePeriod))
+                }.orderBy(MessageEntity.creationDate, SortOrder.ASC).limit(20).map { mapMessage(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
+
+    override suspend fun readBelowTimePeriod(conversationID: String, timePeriod: Long): List<MessageDTO> {
+        return try {
+            transaction {
+                MessageEntity.select {
+                    (MessageEntity.conversationID eq conversationID) and
+                            (MessageEntity.creationDate.lessEq(timePeriod))
+                }.orderBy(MessageEntity.creationDate, SortOrder.DESC).limit(20).map { mapMessage(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
+
+    override suspend fun readNew(conversationID: String): List<MessageDTO> {
+        return try {
+           transaction {
+               MessageEntity.select {
+                   (MessageEntity.conversationID eq conversationID)
+               }.orderBy(MessageEntity.creationDate, SortOrder.DESC).limit(40).map { mapMessage(it) }
+           }
+
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
     override suspend fun create(message: String, imageURL: String?, conversationID: String, creator: String, messageID: String): HttpStatusCode {
         return try {
             transaction {

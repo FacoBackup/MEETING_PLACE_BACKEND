@@ -40,12 +40,12 @@ object CommunityMemberService {
                 when(member.role){
                     MemberType.MODERATOR.toString()->{
                         if(userMember != null && userMember.role == MemberType.MODERATOR.toString())
-                            communityMemberDAO.update(userID = data.memberID, communityID = data.memberID, role = MemberType.MEMBER.toString())
+                            communityMemberDAO.update(userID = data.memberID, communityID = data.communityID, role = MemberType.MEMBER.toString())
                         else HttpStatusCode.FailedDependency
                     }
                     MemberType.MEMBER.toString()->{
                         if(userMember != null && userMember.role == MemberType.MODERATOR.toString())
-                            communityMemberDAO.update(userID = data.memberID, communityID = data.memberID, role = MemberType.FOLLOWER.toString())
+                            communityMemberDAO.update(userID = data.memberID, communityID = data.communityID, role = MemberType.FOLLOWER.toString())
                         else HttpStatusCode.FailedDependency
                     }
                     else-> HttpStatusCode.FailedDependency
@@ -58,15 +58,14 @@ object CommunityMemberService {
     }
     suspend  fun removeMember(requester: String,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
         return try {
-            val userMember = communityMemberDAO.read(communityID = data.communityID, userID = requester)
+            val requesterMember = communityMemberDAO.read(communityID = data.communityID, userID = requester)
             val member = communityMemberDAO.read(communityID = data.communityID, userID = data.memberID)
-            return if(member != null){
-
-                if(MemberType.MODERATOR.toString() == member.role && userMember != null && userMember.role != MemberType.MODERATOR.toString()){
-                    communityMemberDAO.delete(userID = data.memberID, communityID = data.memberID)
+            return if(requesterMember != null){
+                if(MemberType.MODERATOR.toString() == requesterMember.role && member != null && member.role != MemberType.MODERATOR.toString()){
+                    communityMemberDAO.delete(userID = data.memberID, communityID = data.communityID)
                 }
                 else
-                    HttpStatusCode.FailedDependency
+                    HttpStatusCode.ServiceUnavailable
             }
             else HttpStatusCode.InternalServerError
         }catch (normal: Exception){
