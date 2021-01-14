@@ -81,11 +81,26 @@ object MessageReadService {
         conversationOwnerDAO: COI): List<MessageDTO>{
 
         return try {
+
             val conversation = conversationOwnerDAO.read(userID = requester, secondUserID = data.subjectID)
+
             val newMessages = mutableListOf<MessageDTO>()
             val decryptedMessages = mutableListOf<MessageDTO>()
             if(conversation != null) {
-                newMessages.addAll(messageDAO.readByPage(conversationID = conversation.conversationID, page = data.page))
+
+
+                newMessages.addAll(
+                    if(data.page == null)
+                        messageDAO.readLastPage(conversationID = conversation.conversationID)
+                    else
+                        messageDAO.readByPage(conversationID = conversation.conversationID, page = data.page))
+
+                if(newMessages.size <= 5){
+                    val currentPage = newMessages[0].page
+                    if(currentPage > 1)
+                        newMessages.addAll(messageDAO.readByPage(conversation.conversationID, currentPage-1))
+                }
+
                 for (i in newMessages.indices){
                     val messageContent = decryption.decrypt(AESMessageKey.key, data = newMessages[i].content)
                     val messageImage = newMessages[i].imageURL?.let { decryption.decrypt(AESMessageKey.key, data = it) }
@@ -114,7 +129,7 @@ object MessageReadService {
                     }
                 }
             }
-            (decryptedMessages.toList()).sortedBy { it.creationDate } .reversed()
+            (decryptedMessages.toList()).sortedBy { it.creationDate }
         }catch (e: Exception){
             listOf()
         }
@@ -169,7 +184,7 @@ object MessageReadService {
                         }
                     }
                 }
-                (decryptedMessages.toList()).sortedBy { it.creationDate } .reversed() //RETURN
+                (decryptedMessages.toList()).sortedBy { it.creationDate }
             }
             else
                 listOf()
@@ -221,7 +236,7 @@ object MessageReadService {
                     messageDAO.update(encryptedMessages[i].id)
                 }
             }
-            (decryptedMessages.toList()).sortedBy { it.creationDate } .reversed()
+            (decryptedMessages.toList()).sortedBy { it.creationDate }
         }catch (e: Exception){
             listOf()
         }
