@@ -14,7 +14,7 @@ interface TI {
                approved:Boolean,
                userName: String): HttpStatusCode
     suspend fun check(topicID: String): Boolean
-    suspend fun readBySubject(subjectID: String, community: Boolean): List<TopicDTO>
+    suspend fun readBySubject(subjectID: String,timePeriod: Long, community: Boolean): List<TopicDTO>
 
     suspend fun readAllComments(topicID: String): List<TopicDTO>
     suspend fun readByTimePeriod(subjectID: String, since: Long, community: Boolean): List<TopicDTO>

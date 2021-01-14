@@ -6,11 +6,12 @@ data class TopicDataDTO(
     val body: String,
     val approved: Boolean,
     val creatorID: String,
+    val creatorName: String,
+    val creatorImageURL: String?,
     val mainTopicID: String?,
     val creationDate: Long,
-    val communityID: String?,
     val imageURL: String?,
-    val subjectName: String,
+    val communityID: String?,
     val communityName: String?,
-    val subjectImageURL: String?
+    val communityImageURL: String?
 )

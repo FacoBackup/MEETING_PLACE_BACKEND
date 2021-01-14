@@ -41,12 +41,13 @@ fun Route.topicRouter() {
                     ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
-        patch("/get/topics/subject"){
+        //FETCHING
+        patch("/fetch/topics/subject"){
             val data = call.receive<RequestTopics>()
             val log = call.log
             if(log != null)
-                call.respond(TopicReadService.readSubjectTopics(
-                    requester = log.userID,
+                call.respond(TopicReadService.readSubjectTopicsByTimePeriod(
+                    timePeriod = data.timePeriod,
                     subjectID= data.subjectID,
                     community = data.community,
                     topicDAO =  TopicDAO,
@@ -56,11 +57,12 @@ fun Route.topicRouter() {
                 ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
-        get("/timeline/all") {
+        patch("/fetch/timeline") {
+            val data = call.receive<RequestTopics>()
             val log = call.log
             if(log != null)
-                call.respond(TopicReadService.readAllTimeline(requester = log.userID,
-
+                call.respond(TopicReadService.readTimelineByTimePeriod(requester = log.userID,
+                    timePeriod = data.timePeriod,
                     userSocialDAO = UserSocialDAO,
                     decryption = AES,
                     topicDAO = TopicDAO,
@@ -70,22 +72,7 @@ fun Route.topicRouter() {
                     ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
-
-        get("/timeline/new") {
-            val log = call.log
-            if(log != null)
-                call.respond(TopicReadService.readNewItemsTimeline(requester = log.userID,
-
-                    userSocialDAO = UserSocialDAO,
-                    decryption = AES,
-                    topicDAO = TopicDAO,
-                    topicStatusDAO = TopicStatusDAO,
-                    userDAO = UserDAO,
-                    communityDAO = CommunityDAO
-                ))
-            else call.respond(HttpStatusCode.Unauthorized)
-        }
-
+        //FETCHING
         post<RequestTopicCreation>("/topic") {
             val log = call.log
 
@@ -94,6 +81,8 @@ fun Route.topicRouter() {
             else call.respond(HttpStatusCode.Unauthorized)
 
         }
+
+
         delete("/topic") {
             val topic = call.receive<RequestTopic>()
             val log = call.log

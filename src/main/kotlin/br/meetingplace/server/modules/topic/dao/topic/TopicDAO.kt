@@ -29,16 +29,16 @@ object TopicDAO: TI {
                 TopicEntity.select{
                     when(community){
                         true->{
-                            TopicEntity.creationDate.greaterEq(since) and
+                            TopicEntity.creationDate.lessEq(since) and
                             (TopicEntity.communityID eq subjectID)
                         }
                         false->{
-                            TopicEntity.creationDate.greaterEq(since) and
+                            TopicEntity.creationDate.lessEq(since) and
                             (TopicEntity.creatorID eq subjectID)
                         }
                     }
 
-                }.map { mapTopic(it) }
+                }.limit(10).map { mapTopic(it) }
             }
         }catch (e: Exception){
             listOf()
@@ -106,7 +106,7 @@ object TopicDAO: TI {
             false
         }
     }
-    override suspend fun readBySubject(subjectID: String, community: Boolean): List<TopicDTO> {
+    override suspend fun readBySubject(subjectID: String, timePeriod: Long, community: Boolean): List<TopicDTO> {
         return try {
             transaction {
                 TopicEntity.select {
@@ -114,16 +114,18 @@ object TopicDAO: TI {
                         true->{
                             (TopicEntity.communityID eq subjectID) and
                             (TopicEntity.approved eq true) and
-                            (TopicEntity.mainTopicID eq null)
+                            (TopicEntity.mainTopicID eq null) and
+                                    TopicEntity.creationDate.lessEq(timePeriod)
                         }
                         false->{
                             (TopicEntity.creatorID eq subjectID) and
                             (TopicEntity.approved eq true) and
-                            (TopicEntity.mainTopicID eq null)
+                            (TopicEntity.mainTopicID eq null) and
+                                    TopicEntity.creationDate.lessEq(timePeriod)
                         }
                     }
 
-                }.map { mapTopic(it) }
+                }.limit(10).map { mapTopic(it) }
             }
         }catch (normal: Exception){
             listOf()
