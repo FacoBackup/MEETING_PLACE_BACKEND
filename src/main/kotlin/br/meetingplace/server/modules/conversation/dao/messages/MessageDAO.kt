@@ -60,7 +60,7 @@ object MessageDAO: MI{
                 }.count()
                 val lastPage = MessageEntity.select{
                     (MessageEntity.conversationID eq conversationID)
-                }.limit(1, offset = if(size > 0) -1 else size).map{ mapMessage(it) }
+                }.limit(1, offset = if(size > 0) size-1 else size).map{ mapMessage(it) }
 
                 lastPageQuantity = if(lastPage.isNotEmpty()) MessageEntity.select{
                     (MessageEntity.conversationID eq conversationID) and

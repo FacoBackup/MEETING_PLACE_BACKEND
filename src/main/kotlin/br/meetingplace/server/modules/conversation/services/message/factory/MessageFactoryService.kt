@@ -8,6 +8,7 @@ import br.meetingplace.server.modules.conversation.key.AESMessageKey
 import br.meetingplace.server.modules.conversation.dao.messages.MI
 import br.meetingplace.server.modules.conversation.dao.conversation.owners.COI
 import br.meetingplace.server.modules.conversation.dao.messages.status.MSI
+import br.meetingplace.server.modules.conversation.dao.notification.MNI
 import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestMessageCreation
 import br.meetingplace.server.modules.conversation.dto.response.conversation.ConversationMemberDTO
 import br.meetingplace.server.modules.user.dao.user.UI
@@ -18,7 +19,7 @@ import java.util.*
 object MessageFactoryService {
     private const val key = AESMessageKey.key
 
-    suspend fun createGroupMessage(requester: String, data: RequestMessageCreation, messageStatusDAO: MSI, conversationMemberDAO: CMI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface): HttpStatusCode {
+    suspend fun createGroupMessage(requester: String, data: RequestMessageCreation,messageNotificationDAO: MNI, messageStatusDAO: MSI, conversationMemberDAO: CMI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface): HttpStatusCode {
         return try {
             lateinit var messageID: String
             lateinit var conversationMembers: List<ConversationMemberDTO>
@@ -39,8 +40,10 @@ object MessageFactoryService {
                             conversationID = data.conversationID,
                             messageID = messageID)
 
+                        //BOOLEAN BECAUSE IT PUTS THE CURRENT TIME IF TRUE
                         conversationDAO.update(conversationID =  data.conversationID, latestMessage = true,null,null,null)
                         for(i in conversationMembers.indices){
+                            messageNotificationDAO.create(conversationMembers[i].userID, subjectID = data.conversationID,isGroup = true, System.currentTimeMillis())
                             messageStatusDAO.create(conversationID = data.conversationID, userID = conversationMembers[i].userID, messageID = messageID)
                         }
                         response
@@ -54,7 +57,7 @@ object MessageFactoryService {
         }
     }
 
-    suspend fun createUserMessage(requester: String, data: RequestMessageCreation, messageStatusDAO: MSI, conversationOwnerDAO: COI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface):HttpStatusCode{
+    suspend fun createUserMessage(requester: String, data: RequestMessageCreation, messageNotificationDAO: MNI, messageStatusDAO: MSI, conversationOwnerDAO: COI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface):HttpStatusCode{
 
         return try{
             lateinit var messageID: String
@@ -75,6 +78,8 @@ object MessageFactoryService {
                                 creator = requester,
                                 conversationID = conversation.conversationID,
                                 messageID = messageID)
+
+                            messageNotificationDAO.create(conversation.conversationID, subjectID = data.receiverID,isGroup = false, System.currentTimeMillis())
                             conversationDAO.update(conversationID =  conversation.conversationID, latestMessage =true,null,null,null)
                             messageStatusDAO.create(conversationID = conversation.conversationID, userID = requester, messageID = messageID)
                             messageStatusDAO.create(conversationID = conversation.conversationID, userID = data.receiverID, messageID = messageID)
@@ -110,12 +115,12 @@ object MessageFactoryService {
                                         conversationID = id,
                                         messageID = messageID
                                     )
+                                    messageNotificationDAO.create(id, subjectID = data.receiverID,isGroup = false, System.currentTimeMillis())
                                     conversationDAO.update(conversationID = id, latestMessage = true,null,null,null)
                                     messageStatusDAO.create(conversationID = id, userID = requester, messageID = messageID)
                                     messageStatusDAO.create(conversationID = id, userID = data.receiverID, messageID = messageID)
                                     response
                                 }
-
                             }
                             else HttpStatusCode.BadGateway
                         }

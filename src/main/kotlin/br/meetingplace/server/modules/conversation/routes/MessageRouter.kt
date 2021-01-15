@@ -1,17 +1,20 @@
 package br.meetingplace.server.modules.conversation.routes
 
 import br.meetingplace.server.methods.AES
+import br.meetingplace.server.modules.conversation.dao.conversation.ConversationDAO
 import br.meetingplace.server.modules.conversation.dao.conversation.member.ConversationMemberDAO
 import br.meetingplace.server.modules.conversation.dao.conversation.owners.ConversationOwnersDAO
 import br.meetingplace.server.modules.conversation.dao.messages.MessageDAO
 import br.meetingplace.server.modules.conversation.dao.messages.opinions.MessageOpinionDAO
 import br.meetingplace.server.modules.conversation.dao.messages.status.MessageStatusDAO
+import br.meetingplace.server.modules.conversation.dao.notification.MessageNotificationDAO
 import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestShareMessage
 import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestMessage
 import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestMessagesDTO
 import br.meetingplace.server.modules.conversation.services.message.delete.MessageDeleteService
 import br.meetingplace.server.modules.conversation.services.message.opinion.MessageOpinionService
 import br.meetingplace.server.modules.conversation.services.message.quote.MessageQuoteService
+import br.meetingplace.server.modules.conversation.services.message.read.MessageNotificationReadService
 import br.meetingplace.server.modules.conversation.services.message.read.MessageReadService
 import br.meetingplace.server.modules.conversation.services.message.share.MessageShareService
 import br.meetingplace.server.modules.user.dao.user.UserDAO
@@ -24,6 +27,22 @@ import io.ktor.routing.*
 
 fun Route.messageRouter(){
     route("/api"){
+
+        //NOTIFICATIONS
+        get("/fetch/new/message/notifications") {
+            val log = call.log
+            if(log != null)
+                call.respond(MessageNotificationReadService.readLatestNotifications(log.userID, MessageNotificationDAO, userDAO = UserDAO, conversationDAO = ConversationDAO))
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
+        patch("/fetch/page/message/notifications") {
+            val data = call.receive<RequestMessagesDTO>()
+            val log = call.log
+            if(log != null && data.page != null)
+                call.respond(MessageNotificationReadService.readByPage(log.userID, page = data.page,MessageNotificationDAO, userDAO = UserDAO, conversationDAO = ConversationDAO))
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
+        //NOTIFICATIONS
 
         //FETCH
         patch("/fetch/unseen/messages"){
