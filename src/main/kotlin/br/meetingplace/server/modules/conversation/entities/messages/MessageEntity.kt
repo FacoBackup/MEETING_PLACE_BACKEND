@@ -14,7 +14,7 @@ object MessageEntity: Table("messages"){
     val type = short("message_type")
     val valid = long("valid_until")
     val creationDate = long("creation_date")
-    val page = integer("page")
+    val page = long("page")
     val seenByEveryone = bool("seen_by_everyone")
     override val primaryKey = PrimaryKey(id)
 }

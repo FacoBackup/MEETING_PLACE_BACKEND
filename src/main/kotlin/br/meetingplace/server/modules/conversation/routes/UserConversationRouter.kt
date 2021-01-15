@@ -7,6 +7,7 @@ import br.meetingplace.server.modules.conversation.services.message.read.Message
 import br.meetingplace.server.modules.conversation.dao.messages.MessageDAO
 import br.meetingplace.server.modules.conversation.dao.conversation.owners.ConversationOwnersDAO
 import br.meetingplace.server.modules.conversation.dao.messages.status.MessageStatusDAO
+import br.meetingplace.server.modules.conversation.dao.notification.MessageNotificationDAO
 import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestMessageCreation
 import br.meetingplace.server.modules.conversation.dto.requests.messages.RequestMessagesDTO
 import br.meetingplace.server.modules.conversation.services.message.factory.MessageFactoryService
@@ -80,7 +81,8 @@ fun Route.userConversationRouter() {
                     conversationDAO = ConversationDAO,
                     messageDAO = MessageDAO,
                     encryption = AES,
-                    messageStatusDAO = MessageStatusDAO
+                    messageStatusDAO = MessageStatusDAO,
+                    messageNotificationDAO = MessageNotificationDAO
                     ))
             else call.respond(HttpStatusCode.Unauthorized)
         }

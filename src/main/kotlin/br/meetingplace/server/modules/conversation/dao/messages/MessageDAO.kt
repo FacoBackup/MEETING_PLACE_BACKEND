@@ -35,7 +35,7 @@ object MessageDAO: MI{
             listOf()
         }
     }
-    override suspend fun readByPage(conversationID: String, page: Int): List<MessageDTO> {
+    override suspend fun readByPage(conversationID: String, page: Long): List<MessageDTO> {
         return try {
             transaction {
                 MessageEntity.select {
@@ -54,7 +54,7 @@ object MessageDAO: MI{
         return try {
             transaction {
                 val lastPageQuantity: Int
-                val currentPage: Int
+                val currentPage: Long
                 val size= MessageEntity.select{
                     (MessageEntity.conversationID eq conversationID)
                 }.count()

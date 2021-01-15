@@ -5,6 +5,7 @@ import br.meetingplace.server.modules.conversation.dao.conversation.Conversation
 import br.meetingplace.server.modules.conversation.dao.conversation.member.ConversationMemberDAO
 import br.meetingplace.server.modules.conversation.dao.messages.MessageDAO
 import br.meetingplace.server.modules.conversation.dao.messages.status.MessageStatusDAO
+import br.meetingplace.server.modules.conversation.dao.notification.MessageNotificationDAO
 import br.meetingplace.server.modules.conversation.dto.requests.conversation.RequestConversation
 import br.meetingplace.server.modules.conversation.dto.requests.conversation.RequestConversationCreation
 import br.meetingplace.server.modules.conversation.dto.requests.conversation.RequestConversationMember
@@ -130,7 +131,8 @@ fun Route.groupConversationRouter(){
                     conversationDAO = ConversationDAO,
                     messageDAO = MessageDAO,
                     encryption = AES,
-                    messageStatusDAO = MessageStatusDAO
+                    messageStatusDAO = MessageStatusDAO,
+                    messageNotificationDAO = MessageNotificationDAO
                 ))
             else call.respond(HttpStatusCode.Unauthorized)
         }

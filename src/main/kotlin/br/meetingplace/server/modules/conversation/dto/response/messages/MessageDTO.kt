@@ -10,5 +10,5 @@ data class MessageDTO(val content: String,
                       val valid: Long,
                       val creationDate: Long,
                       val seenByEveryone: Boolean,
-                      val page: Int
+                      val page: Long
                       )
