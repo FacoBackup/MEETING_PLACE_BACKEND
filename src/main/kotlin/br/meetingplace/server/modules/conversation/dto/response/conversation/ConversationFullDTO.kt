@@ -9,5 +9,6 @@ data class ConversationFullDTO(val id: String,
                                val members: List<ConversationMemberDTO>,
                                val unreadMessages: Long,
                                val userName: String?,
-                               val latestMessage: Long?
+                               val latestMessage: Long?,
+                               val latestMessageContent: String?
                                )

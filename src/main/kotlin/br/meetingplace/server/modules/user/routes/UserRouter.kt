@@ -2,6 +2,7 @@ package br.meetingplace.server.modules.user.routes
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
+import br.meetingplace.server.modules.topic.dao.topic.TopicDAO
 import br.meetingplace.server.modules.user.dao.social.UserSocialDAO
 import br.meetingplace.server.modules.user.dao.user.UserDAO
 import br.meetingplace.server.modules.user.dto.requests.RequestProfileUpdate
@@ -12,6 +13,7 @@ import br.meetingplace.server.modules.user.dto.response.UserSearchDTO
 import br.meetingplace.server.modules.user.services.delete.UserDeleteService
 import br.meetingplace.server.modules.user.services.factory.UserFactoryService
 import br.meetingplace.server.modules.user.services.profile.UserUpdateService
+import br.meetingplace.server.modules.user.services.read.UserReadService
 import br.meetingplace.server.modules.user.services.search.UserSearchService
 import br.meetingplace.server.modules.user.services.social.UserSocialService
 import br.meetingplace.server.server.AuthLog.log
@@ -30,12 +32,31 @@ fun Route.userRouter() {
         }
         patch("/get/profile") {
             val data = call.receive<RequestUser>()
-            val user = UserDAO.readByID(data.userID)
+            println()
+            println()
+            println()
 
-            if (user == null)
-                call.respond(HttpStatusCode.NotFound)
-            else
-                call.respond(user)
+            println(data)
+
+            println()
+            println()
+            println()
+
+
+
+            val log = call.log
+            if(log != null){
+                val response = UserReadService.read(data.userID, topicDAO = TopicDAO, userDAO = UserDAO, userSocialDAO = UserSocialDAO)
+                if(response == null)
+                    call.respond(HttpStatusCode.NoContent)
+                else
+                    call.respond(response)
+
+            }
+
+            else call.respond(HttpStatusCode.InternalServerError)
+
+
         }
 
         get(UserPaths.USER +"/all") {

@@ -9,6 +9,7 @@ import br.meetingplace.server.modules.community.dto.requests.RequestCommunityMem
 import br.meetingplace.server.modules.community.services.factory.CommunityFactoryService
 import br.meetingplace.server.modules.community.services.member.CommunityMemberService
 import br.meetingplace.server.modules.community.services.read.CommunityReadService
+import br.meetingplace.server.modules.topic.dao.topic.TopicDAO
 import br.meetingplace.server.modules.user.dao.user.UserDAO
 import br.meetingplace.server.modules.user.dto.requests.RequestUser
 import br.meetingplace.server.server.AuthLog.log
@@ -99,7 +100,9 @@ fun Route.communityRouter() {
                     requester = log.userID,
                     communityID = data.communityID,
                     communityDAO = CommunityDAO,
-                    communityMemberDAO = CommunityMemberDAO)
+                    communityMemberDAO = CommunityMemberDAO,
+                    topicDAO = TopicDAO
+                    )
                 if(response != null)
                     call.respond(response)
                 else

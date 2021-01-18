@@ -1,10 +1,13 @@
 package br.meetingplace.server.modules.conversation.services.conversation.read
 
+import br.meetingplace.server.methods.AESInterface
 import br.meetingplace.server.modules.conversation.dao.conversation.CI
 import br.meetingplace.server.modules.conversation.dao.conversation.member.CMI
 import br.meetingplace.server.modules.conversation.dao.conversation.owners.COI
+import br.meetingplace.server.modules.conversation.dao.messages.MI
 import br.meetingplace.server.modules.conversation.dao.messages.status.MSI
 import br.meetingplace.server.modules.conversation.dto.response.conversation.ConversationFullDTO
+import br.meetingplace.server.modules.conversation.key.AESMessageKey
 import br.meetingplace.server.modules.user.dao.user.UI
 
 object ConversationReadService {
@@ -14,7 +17,9 @@ object ConversationReadService {
         conversationMemberDAO: CMI,
         conversationDAO: CI, userDAO: UI,
         conversationOwnerDAO: COI,
-        messageStatusDAO: MSI
+        messageStatusDAO: MSI,
+        messageDAO: MI,
+        decryption: AESInterface
         ): List<ConversationFullDTO> {
 
         return try {
@@ -39,7 +44,12 @@ object ConversationReadService {
                                 members = conversationMemberDAO.readAllByConversation(conversationID = private[i].conversationID),
                                 unreadMessages = unreadMessages,
                                 userName = simplifiedUser.name,
-                                latestMessage = conversationData.latestMessage
+                                latestMessage = conversationData.latestMessage,
+                                latestMessageContent = messageDAO.readLastMessage(conversationID = private[i].conversationID, userID = requester)?.let {
+                                    decryption.decrypt(myKey = AESMessageKey.key ,
+                                        it
+                                    )
+                                }
                             )
                         )
                     }
@@ -59,7 +69,12 @@ object ConversationReadService {
                                 members = conversationMemberDAO.readAllByConversation(conversationID = memberIn[i].conversationID),
                                 unreadMessages =unreadMessages,
                                 userName = null,
-                                latestMessage = conversationData.latestMessage
+                                latestMessage = conversationData.latestMessage,
+                                latestMessageContent = messageDAO.readLastMessage(conversationID = memberIn[i].conversationID, userID = requester)?.let {
+                                    decryption.decrypt(myKey = AESMessageKey.key ,
+                                        it
+                                    )
+                                }
                         )
                         )
                     }

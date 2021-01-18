@@ -6,6 +6,7 @@ import br.meetingplace.server.modules.community.dto.response.CommunityInfoDTO
 import br.meetingplace.server.modules.community.dto.response.CommunityRelatedUsersDTO
 import br.meetingplace.server.modules.community.dto.response.SimplifiedCommunityDTO
 import br.meetingplace.server.modules.community.dto.response.UserCommunitiesDTO
+import br.meetingplace.server.modules.topic.dao.topic.TI
 import br.meetingplace.server.modules.user.dao.user.UI
 
 object CommunityReadService {
@@ -32,7 +33,7 @@ object CommunityReadService {
             listOf()
         }
     }
-    suspend fun readCommunityByID(communityID: String, requester: String, communityDAO: CI, communityMemberDAO: CMI): CommunityInfoDTO? {
+    suspend fun readCommunityByID(communityID: String, requester: String, communityDAO: CI,topicDAO: TI, communityMemberDAO: CMI): CommunityInfoDTO? {
         return try {
             val community = communityDAO.read(communityID)
 
@@ -50,7 +51,11 @@ object CommunityReadService {
                     relatedCommunityName = parentCommunity?.name,
                     imageURL = community.imageURL,
                     backgroundImageURL = community.backgroundImageURL,
-                    role = member?.role
+                    role = member?.role,
+                    followers =  communityMemberDAO.readFollowersQuantity(community.id),
+                    members =  communityMemberDAO.readMembersQuantity(community.id),
+                    mods = communityMemberDAO.readModsQuantity(community.id),
+                    topics = topicDAO.readTopicsQuantityByCommunity(community.id)
                 )
             }
             else

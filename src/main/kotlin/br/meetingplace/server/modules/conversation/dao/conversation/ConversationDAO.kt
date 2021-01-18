@@ -130,7 +130,7 @@ object ConversationDAO: CI {
             creationDate = it[ConversationEntity.creationDate],
             about = it[ConversationEntity.about],
             isGroup = it[ConversationEntity.isGroup],
-            latestMessage = it[ConversationEntity.latestMessage]
+            latestMessage = it[ConversationEntity.latestMessage],
             )
     }
 

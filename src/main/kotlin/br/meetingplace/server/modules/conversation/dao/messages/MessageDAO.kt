@@ -8,6 +8,22 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object MessageDAO: MI{
+    override suspend fun readLastMessage(conversationID: String, userID: String): String? {
+        return try {
+            val result = transaction {
+                MessageEntity.select {
+                    (MessageEntity.conversationID eq conversationID) and
+                    (MessageEntity.creationDate.lessEq(System.currentTimeMillis())) and
+                    (MessageEntity.creatorID neq userID)
+                }.map { mapMessage(it) }.firstOrNull()
+            }
+            result?.content
+        }catch (normal: Exception){
+            null
+        }catch (psql: PSQLException){
+            null
+        }
+    }
     override suspend fun readLastPage(conversationID: String): List<MessageDTO> {
         return try {
 
@@ -16,9 +32,6 @@ object MessageDAO: MI{
                     (MessageEntity.conversationID eq conversationID)
                 }.orderBy(MessageEntity.page, SortOrder.DESC).map{ mapMessage(it) }.firstOrNull()
             }
-
-
-
             return if(lastPage != null){
                 transaction {
                     MessageEntity.select {

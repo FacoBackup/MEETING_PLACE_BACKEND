@@ -13,6 +13,8 @@ interface TI {
                mainTopicID: String?,
                approved:Boolean,
                userName: String): HttpStatusCode
+    suspend fun readTopicsQuantityByUser(userID: String): Long
+    suspend fun readTopicsQuantityByCommunity(communityID: String): Long
     suspend fun check(topicID: String): Boolean
     suspend fun readBySubject(subjectID: String,timePeriod: Long, community: Boolean): List<TopicDTO>
 

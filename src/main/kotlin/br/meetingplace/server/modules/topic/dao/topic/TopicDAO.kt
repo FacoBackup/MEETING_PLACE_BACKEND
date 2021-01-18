@@ -38,12 +38,41 @@ object TopicDAO: TI {
                         }
                     }
 
-                }.limit(10).map { mapTopic(it) }
+                }.limit(5).map { mapTopic(it) }
             }
         }catch (e: Exception){
             listOf()
         }catch(psql: PSQLException){
             listOf()
+        }
+    }
+
+    override suspend fun readTopicsQuantityByCommunity(communityID: String): Long {
+        return try{
+            transaction {
+                TopicEntity.select{
+                    (TopicEntity.communityID eq communityID) and
+                            (TopicEntity.mainTopicID eq null)
+                }.count()
+            }
+        }catch (e: Exception){
+            0
+        }catch(psql: PSQLException){
+            0
+        }
+    }
+    override suspend fun readTopicsQuantityByUser(userID: String): Long {
+        return try{
+            transaction {
+                TopicEntity.select{
+                    (TopicEntity.creatorID eq userID) and
+                            (TopicEntity.mainTopicID eq null)
+                }.count()
+            }
+        }catch (e: Exception){
+            0
+        }catch(psql: PSQLException){
+            0
         }
     }
     override suspend fun create(header: String,

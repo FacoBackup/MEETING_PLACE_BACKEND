@@ -27,6 +27,14 @@ import io.ktor.routing.*
 
 fun Route.topicRouter() {
     route("/api") {
+        patch ("/archive/topic") {
+            val data = call.receive<RequestTopic>()
+            call.respond(HttpStatusCode.NotImplemented)
+        }
+        patch ("/read/archive") {
+            val data = call.receive<RequestTopics>()
+            call.respond(HttpStatusCode.NotImplemented)
+        }
         put("/topic"){
             val data = call.receive<TopicUpdateDTO>()
             val log = call.log
@@ -68,7 +76,8 @@ fun Route.topicRouter() {
                     topicDAO = TopicDAO,
                     topicStatusDAO = TopicStatusDAO,
                     userDAO = UserDAO,
-                    communityDAO = CommunityDAO
+                    communityDAO = CommunityDAO,
+                    communityMemberDAO = CommunityMemberDAO
                     ))
             else call.respond(HttpStatusCode.Unauthorized)
         }

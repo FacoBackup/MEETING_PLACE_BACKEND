@@ -10,8 +10,11 @@ interface CMI {
     suspend fun readByCommunity(communityID: String): List<CommunityMemberDTO>
     suspend fun readByUser(userID: String): List<CommunityMemberDTO>
     suspend fun readMods(communityID: String): List<CommunityMemberDTO>
+    suspend fun readModsQuantity(communityID: String):Long
     suspend fun readFollowers(communityID: String): List<CommunityMemberDTO>
+    suspend fun readFollowersQuantity(communityID: String):Long
     suspend fun readMembers(communityID: String): List<CommunityMemberDTO>
+    suspend fun readMembersQuantity(communityID: String):Long
     suspend fun check(communityID: String, userID: String): HttpStatusCode
     suspend fun update(communityID: String, userID: String, role: String): HttpStatusCode
     suspend fun delete(communityID: String, userID: String): HttpStatusCode
