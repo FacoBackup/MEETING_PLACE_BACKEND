@@ -6,6 +6,7 @@ import io.ktor.http.*
 interface COI {
     suspend fun create(userID: String, secondUserID: String, conversationID: String): HttpStatusCode
     suspend fun read(userID: String, secondUserID: String): ConversationOwnersDTO?
+    suspend fun readByConversation(conversationID: String): ConversationOwnersDTO?
     suspend fun check(userID: String, secondUserID: String): Boolean
     suspend fun readAll(userID: String): List<ConversationOwnersDTO>
 }

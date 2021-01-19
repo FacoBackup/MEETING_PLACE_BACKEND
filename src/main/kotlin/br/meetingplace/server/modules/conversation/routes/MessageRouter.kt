@@ -29,17 +29,35 @@ fun Route.messageRouter(){
     route("/api"){
 
         //NOTIFICATIONS
+        get("/fetch/quantity/message/notifications"){
+            val log = call.log
+            if(log != null)
+                call.respond(MessageNotificationDAO.readUnseenQuantity(log.userID))
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
         get("/fetch/new/message/notifications") {
             val log = call.log
             if(log != null)
-                call.respond(MessageNotificationReadService.readLatestNotifications(log.userID, MessageNotificationDAO, userDAO = UserDAO, conversationDAO = ConversationDAO))
+                call.respond(MessageNotificationReadService.readLatestNotifications(
+                    log.userID,
+                    conversationOwnersDAO= ConversationOwnersDAO ,
+                    messageNotificationDAO = MessageNotificationDAO,
+                    userDAO = UserDAO,
+                    conversationDAO = ConversationDAO))
             else call.respond(HttpStatusCode.Unauthorized)
         }
         patch("/fetch/page/message/notifications") {
             val data = call.receive<RequestMessagesDTO>()
             val log = call.log
             if(log != null && data.page != null)
-                call.respond(MessageNotificationReadService.readByPage(log.userID, page = data.page,MessageNotificationDAO, userDAO = UserDAO, conversationDAO = ConversationDAO))
+                call.respond(MessageNotificationReadService.readByPage(
+                    log.userID,
+                    page = data.page,
+                    MessageNotificationDAO,
+                    userDAO = UserDAO,
+                    conversationDAO = ConversationDAO,
+                    conversationOwnersDAO= ConversationOwnersDAO
+                ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
         //NOTIFICATIONS

@@ -9,6 +9,7 @@ import br.meetingplace.server.modules.conversation.entities.conversation.Convers
 import br.meetingplace.server.modules.conversation.entities.messages.MessageEntity
 import br.meetingplace.server.modules.conversation.entities.messages.MessageOpinionEntity
 import br.meetingplace.server.modules.conversation.entities.messages.MessageStatusEntity
+import br.meetingplace.server.modules.conversation.entities.notification.MessageNotificationEntity
 import br.meetingplace.server.modules.topic.entities.TopicEntity
 import br.meetingplace.server.modules.topic.entities.TopicOpinionEntity
 import br.meetingplace.server.modules.topic.entities.TopicStatusEntity
@@ -43,6 +44,7 @@ object DBSettings {
                     MessageEntity,
                     MessageOpinionEntity,
                     MessageStatusEntity,
+                    MessageNotificationEntity,
                     CommunityEntity,
                     CommunityMemberEntity,
                     TopicEntity,

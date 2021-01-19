@@ -56,6 +56,20 @@ object ConversationOwnersDAO: COI {
             listOf()
         }
     }
+
+    override suspend fun readByConversation(conversationID: String): ConversationOwnersDTO? {
+        return try{
+            transaction{
+                ConversationOwnersEntity.select {
+                    ConversationOwnersEntity.conversationID eq conversationID
+                }.map{ mapConversationOwners(it = it) }.firstOrNull()
+            }
+        }catch (e: Exception) {
+            null
+        }catch (psql: PSQLException){
+            null
+        }
+    }
     override suspend fun read(userID: String, secondUserID: String): ConversationOwnersDTO? {
         return try{
             transaction{

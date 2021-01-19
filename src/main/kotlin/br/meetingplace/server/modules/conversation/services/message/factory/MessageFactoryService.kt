@@ -43,7 +43,7 @@ object MessageFactoryService {
                         //BOOLEAN BECAUSE IT PUTS THE CURRENT TIME IF TRUE
                         conversationDAO.update(conversationID =  data.conversationID, latestMessage = true,null,null,null)
                         for(i in conversationMembers.indices){
-                            messageNotificationDAO.create(conversationMembers[i].userID, subjectID = data.conversationID,isGroup = true, System.currentTimeMillis())
+                            messageNotificationDAO.create(conversationMembers[i].userID, conversationID = data.conversationID, messageID = messageID,isGroup = true, creationDate = System.currentTimeMillis())
                             messageStatusDAO.create(conversationID = data.conversationID, userID = conversationMembers[i].userID, messageID = messageID)
                         }
                         response
@@ -79,7 +79,7 @@ object MessageFactoryService {
                                 conversationID = conversation.conversationID,
                                 messageID = messageID)
 
-                            messageNotificationDAO.create(conversation.conversationID, subjectID = data.receiverID,isGroup = false, System.currentTimeMillis())
+                            messageNotificationDAO.create(conversationID = conversation.conversationID, messageID = messageID,isGroup = false,creationDate= System.currentTimeMillis(), requester = data.receiverID)
                             conversationDAO.update(conversationID =  conversation.conversationID, latestMessage =true,null,null,null)
                             messageStatusDAO.create(conversationID = conversation.conversationID, userID = requester, messageID = messageID)
                             messageStatusDAO.create(conversationID = conversation.conversationID, userID = data.receiverID, messageID = messageID)
@@ -115,7 +115,7 @@ object MessageFactoryService {
                                         conversationID = id,
                                         messageID = messageID
                                     )
-                                    messageNotificationDAO.create(id, subjectID = data.receiverID,isGroup = false, System.currentTimeMillis())
+                                    messageNotificationDAO.create( conversationID = id,isGroup = false, creationDate = System.currentTimeMillis(), messageID = messageID, requester = data.receiverID)
                                     conversationDAO.update(conversationID = id, latestMessage = true,null,null,null)
                                     messageStatusDAO.create(conversationID = id, userID = requester, messageID = messageID)
                                     messageStatusDAO.create(conversationID = id, userID = data.receiverID, messageID = messageID)

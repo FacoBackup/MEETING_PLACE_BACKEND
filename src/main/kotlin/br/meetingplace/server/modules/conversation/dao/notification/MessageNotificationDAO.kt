@@ -13,10 +13,10 @@ import org.postgresql.util.PSQLException
 object MessageNotificationDAO: MNI {
     override suspend fun create(
         requester: String,
-        subjectID: String,
-        isGroup: Boolean,
-
-        creationDate: Long
+        messageID: String,
+        conversationID: String,
+        creationDate: Long,
+        isGroup: Boolean
     ): HttpStatusCode {
         return try {
             transaction {
@@ -30,19 +30,18 @@ object MessageNotificationDAO: MNI {
                 }.limit(1, offset = if(size > 0) size-1 else size).map{ mapMessageNotification(it) }
 
                 lastPageQuantity = if(lastPage.isNotEmpty()) MessageNotificationEntity.select{
-                        (MessageNotificationEntity.userID eq requester) and (MessageNotificationEntity.page eq lastPage[0].page)
-                    }.count().toInt()
-                    else
-                        -1
+                    (MessageNotificationEntity.userID eq requester) and (MessageNotificationEntity.page eq lastPage[0].page)
+                }.count().toInt()
+                else
+                    -1
                 currentPage = if(lastPageQuantity == -1) 1 else if(lastPageQuantity in 1..18) lastPage[0].page else lastPage[0].page+1
 
                 MessageNotificationEntity.insert {
                     it[this.creationDate] = creationDate
-
-                    when(isGroup){
-                        true -> it[subjectAsGroupID] = subjectID
-                        false -> it[subjectAsUserID] = subjectID
-                    }
+                    it[this.conversationID] = conversationID
+                    it[this.messageID] = messageID
+                    it[seenAt] = null
+                    it[this.isGroup] = isGroup
                     it[userID] = requester
                     it[page] = currentPage
                 }
@@ -54,7 +53,6 @@ object MessageNotificationDAO: MNI {
             HttpStatusCode.InternalServerError
         }
     }
-
     override suspend fun readLastPage(requester: String): List<MessageNotificationDTO> {
         return try {
             val lastPage = transaction {
@@ -63,15 +61,25 @@ object MessageNotificationDAO: MNI {
                 }.orderBy(MessageEntity.page, SortOrder.DESC).map{ mapMessageNotification(it) }.firstOrNull()
             }
 
-
-
             return if(lastPage != null){
-                transaction {
+                val result = transaction {
                     MessageNotificationEntity.select {
                         (MessageNotificationEntity.userID eq requester) and
                                 (MessageNotificationEntity.page eq lastPage.page)
                     }.map { mapMessageNotification(it) }
                 }
+                for(i in result.indices){
+                    if(result[i].seenAt == null)
+                        transaction {
+                            MessageNotificationEntity.update({
+                                (MessageNotificationEntity.messageID eq result[i].messageID) and
+                                        (MessageNotificationEntity.conversationID eq result[i].conversationID)
+                            }) {
+                                it[seenAt] = System.currentTimeMillis()
+                            }
+                        }
+                }
+                result
             }
             else
                 listOf()
@@ -81,14 +89,43 @@ object MessageNotificationDAO: MNI {
             listOf()
         }
     }
-    override suspend fun read(requester: String, page: Long): List<MessageNotificationDTO> {
+
+    override suspend fun readUnseenQuantity(requester: String): Long {
         return try {
             transaction {
+                MessageNotificationEntity.select {
+                    (MessageNotificationEntity.userID eq requester) and
+                            (MessageNotificationEntity.seenAt eq null)
+                }.count()
+            }
+
+        }catch (e: Exception){
+            0
+        }catch (psql: PSQLException){
+            0
+        }
+    }
+
+    override suspend fun read(requester: String, page: Long): List<MessageNotificationDTO> {
+        return try {
+            val result = transaction {
                 MessageNotificationEntity.select {
                     (MessageNotificationEntity.userID eq requester) and
                             (MessageNotificationEntity.page eq page)
                 }.orderBy(MessageNotificationEntity.creationDate, SortOrder.DESC).map { mapMessageNotification(it) }
             }
+            for(i in result.indices){
+                if(result[i].seenAt == null)
+                    transaction {
+                        MessageNotificationEntity.update({
+                            (MessageNotificationEntity.messageID eq result[i].messageID) and
+                                    (MessageNotificationEntity.conversationID eq result[i].conversationID)
+                        }) {
+                            it[seenAt] = System.currentTimeMillis()
+                        }
+                    }
+            }
+            result
         }catch (e: Exception){
             listOf()
         }catch (psql: PSQLException){
@@ -98,12 +135,15 @@ object MessageNotificationDAO: MNI {
     }
     private fun mapMessageNotification(it: ResultRow): MessageNotificationDTO{
         return MessageNotificationDTO(
-            subjectID = if(!it[MessageNotificationEntity.subjectAsGroupID].isNullOrBlank()) it[MessageNotificationEntity.subjectAsGroupID]!! else it[MessageNotificationEntity.subjectAsUserID]!!,
-            isGroup = !it[MessageNotificationEntity.subjectAsGroupID].isNullOrBlank(),
             subjectName = null,
-            subjectImageURL = null,
+            subjectImageURL =null,
+            seenAt = it[MessageNotificationEntity.seenAt],
+            conversationID =it[MessageNotificationEntity.conversationID],
+            messageID = it[MessageNotificationEntity.messageID],
             creationDate = it[MessageNotificationEntity.creationDate],
-            page = it[MessageNotificationEntity.page]
+            page = it[MessageNotificationEntity.page],
+            isGroup = it[MessageNotificationEntity.isGroup],
+            subjectID = null
         )
     }
 }
