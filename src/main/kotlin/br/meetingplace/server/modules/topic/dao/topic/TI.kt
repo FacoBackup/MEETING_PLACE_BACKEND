@@ -25,4 +25,5 @@ interface TI {
                header: String?,
                body: String?): HttpStatusCode
     suspend fun delete(topicID: String): HttpStatusCode
+    suspend fun readQuantityComments(topicID: String): Long
 }

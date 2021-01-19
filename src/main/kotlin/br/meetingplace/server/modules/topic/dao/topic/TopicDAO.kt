@@ -9,6 +9,20 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 object TopicDAO: TI {
+    override suspend fun readQuantityComments(topicID: String): Long {
+        return try {
+            transaction {
+                TopicEntity.select {
+                    (TopicEntity.mainTopicID eq topicID)
+                }.count()
+            }
+        }catch (normal: Exception){
+            0
+        }catch (psql: PSQLException){
+            0
+        }
+    }
+
     override suspend fun read(topicID: String): TopicDTO? {
         return try {
             transaction {

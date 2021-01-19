@@ -3,6 +3,7 @@ package br.meetingplace.server.modules.topic.services.read
 import br.meetingplace.server.methods.AESInterface
 import br.meetingplace.server.modules.community.dao.CI
 import br.meetingplace.server.modules.community.dao.member.CMI
+import br.meetingplace.server.modules.topic.dao.opinion.TOI
 import br.meetingplace.server.modules.topic.dao.seen.TVI
 import br.meetingplace.server.modules.topic.dao.topic.TI
 import br.meetingplace.server.modules.topic.dto.response.TopicDTO
@@ -14,7 +15,7 @@ import br.meetingplace.server.modules.user.dao.user.UI
 object TopicReadService {
     private const val key = AESTopicKey.key
 
-    suspend fun readTimelineByTimePeriod(requester: String, timePeriod: Long,userDAO: UI, communityMemberDAO: CMI, communityDAO: CI, topicDAO: TI, userSocialDAO: SI, decryption: AESInterface, topicStatusDAO: TVI): List<TopicDataDTO>{
+    suspend fun readTimelineByTimePeriod(requester: String, timePeriod: Long,topicOpinionDAO: TOI, userDAO: UI, communityMemberDAO: CMI, communityDAO: CI, topicDAO: TI, userSocialDAO: SI, decryption: AESInterface, topicStatusDAO: TVI): List<TopicDataDTO>{
         return try{
 
             val following = userSocialDAO.readAll(requester, following = true)
@@ -51,7 +52,11 @@ object TopicReadService {
                         creatorImageURL = user.imageURL,
                         creatorName = user.name,
                         communityName = communityEntity?.name,
-                        communityImageURL = communityEntity?.imageURL
+                        communityImageURL = communityEntity?.imageURL,
+                        likes= topicOpinionDAO.readQuantity(encryptedTopics[j].id, true),
+                        dislikes = topicOpinionDAO.readQuantity(encryptedTopics[j].id, false),
+                        comments = topicDAO.readQuantityComments(encryptedTopics[j].id),
+                        archived = false
                     ))
                     if(!topicStatusDAO.check(topicID = encryptedTopics[j].id, userID = requester))
                         topicStatusDAO.create(topicID = encryptedTopics[j].id, userID = requester)
@@ -65,7 +70,7 @@ object TopicReadService {
         }
     }
 
-    suspend fun readSubjectTopicsByTimePeriod(communityDAO: CI, userDAO: UI, community: Boolean, subjectID: String, timePeriod: Long,topicDAO: TI, decryption: AESInterface):List<TopicDataDTO>{
+    suspend fun readSubjectTopicsByTimePeriod(communityDAO: CI, userDAO: UI, topicOpinionDAO: TOI, community: Boolean, subjectID: String, timePeriod: Long,topicDAO: TI, decryption: AESInterface):List<TopicDataDTO>{
         return try{
              val topics = topicDAO.readByTimePeriod(subjectID, since = timePeriod, community = community)
              val decryptedTopics = mutableListOf<TopicDataDTO>()
@@ -89,7 +94,11 @@ object TopicReadService {
                          creatorImageURL = user.imageURL,
                          creatorName = user.name,
                          communityName = communityEntity?.name,
-                         communityImageURL = communityEntity?.imageURL
+                         communityImageURL = communityEntity?.imageURL,
+                         likes= topicOpinionDAO.readQuantity(topics[j].id, true),
+                         dislikes = topicOpinionDAO.readQuantity(topics[j].id, false),
+                         comments = topicDAO.readQuantityComments(topics[j].id),
+                         archived = false
                      ))
                  }
              }

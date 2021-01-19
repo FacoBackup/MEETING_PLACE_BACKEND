@@ -61,7 +61,8 @@ fun Route.topicRouter() {
                     topicDAO =  TopicDAO,
                     decryption = AES,
                     userDAO = UserDAO,
-                    communityDAO = CommunityDAO
+                    communityDAO = CommunityDAO,
+                    topicOpinionDAO = TopicOpinionDAO
                 ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
@@ -77,7 +78,8 @@ fun Route.topicRouter() {
                     topicStatusDAO = TopicStatusDAO,
                     userDAO = UserDAO,
                     communityDAO = CommunityDAO,
-                    communityMemberDAO = CommunityMemberDAO
+                    communityMemberDAO = CommunityMemberDAO,
+                    topicOpinionDAO = TopicOpinionDAO
                     ))
             else call.respond(HttpStatusCode.Unauthorized)
         }

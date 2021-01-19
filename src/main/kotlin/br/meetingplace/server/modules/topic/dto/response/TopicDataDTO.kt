@@ -13,5 +13,9 @@ data class TopicDataDTO(
     val imageURL: String?,
     val communityID: String?,
     val communityName: String?,
-    val communityImageURL: String?
+    val communityImageURL: String?,
+    val likes: Long,
+    val dislikes: Long,
+    val comments: Long,
+    val archived: Boolean
 )

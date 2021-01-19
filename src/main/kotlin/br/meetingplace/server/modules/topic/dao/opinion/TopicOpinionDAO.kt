@@ -8,8 +8,22 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object TopicOpinionDAO:TOI {
+    override suspend fun readQuantity(topicID: String, likes: Boolean): Long {
+        return try {
+            transaction {
+                TopicOpinionEntity.select {
+                    (TopicOpinionEntity.topicID eq topicID) and
+                            (TopicOpinionEntity.liked eq likes)
+                }.count()
+            }
 
-    override fun create(topicID: String, userID: String, liked: Boolean): HttpStatusCode {
+        }catch (normal: Exception){
+            0
+        }catch (psql: PSQLException){
+            0
+        }
+    }
+    override suspend fun create(topicID: String, userID: String, liked: Boolean): HttpStatusCode {
         return try {
             transaction {
                 TopicOpinionEntity.insert {
@@ -26,7 +40,7 @@ object TopicOpinionDAO:TOI {
         }
     }
 
-    override fun delete(topicID: String, userID: String): HttpStatusCode {
+    override suspend fun delete(topicID: String, userID: String): HttpStatusCode {
         return try {
             transaction {
                 TopicOpinionEntity.deleteWhere {
@@ -42,7 +56,7 @@ object TopicOpinionDAO:TOI {
         }
     }
 
-    override fun read(topicID: String, userID: String): TopicOpinionDTO? {
+    override suspend fun read(topicID: String, userID: String): TopicOpinionDTO? {
         return try {
             transaction {
                 TopicOpinionEntity.select {
@@ -56,7 +70,7 @@ object TopicOpinionDAO:TOI {
             null
         }
     }
-    override fun readAll(topicID: String): List<TopicOpinionDTO> {
+    override suspend fun readAll(topicID: String): List<TopicOpinionDTO> {
         return try {
             transaction {
                 TopicOpinionEntity.select {
@@ -70,7 +84,7 @@ object TopicOpinionDAO:TOI {
         }
     }
 
-    override fun update(topicID: String, userID: String, liked: Boolean): HttpStatusCode {
+    override suspend fun update(topicID: String, userID: String, liked: Boolean): HttpStatusCode {
         return try {
             transaction {
                 TopicOpinionEntity.update({
