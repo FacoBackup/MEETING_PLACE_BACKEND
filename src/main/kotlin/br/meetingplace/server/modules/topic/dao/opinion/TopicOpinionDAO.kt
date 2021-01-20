@@ -8,6 +8,22 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object TopicOpinionDAO:TOI {
+    override suspend fun check(userID: String, topicID: String, liked: Boolean):Boolean {
+        return try {
+            transaction {
+                TopicOpinionEntity.select {
+                    (TopicOpinionEntity.topicID eq topicID) and
+                    (TopicOpinionEntity.userID eq userID) and
+                    (TopicOpinionEntity.liked eq liked)
+                }.firstOrNull()
+            } != null
+
+        }catch (normal: Exception){
+            false
+        }catch (psql: PSQLException){
+            false
+        }
+    }
     override suspend fun readQuantity(topicID: String, likes: Boolean): Long {
         return try {
             transaction {

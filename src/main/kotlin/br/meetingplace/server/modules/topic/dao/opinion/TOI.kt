@@ -10,4 +10,5 @@ interface TOI {
     suspend fun update(topicID: String, userID: String, liked: Boolean): HttpStatusCode
     suspend fun delete(topicID: String, userID: String): HttpStatusCode
     suspend fun readQuantity(topicID: String,likes: Boolean): Long
+    suspend fun check(userID: String, topicID: String, liked: Boolean): Boolean
 }

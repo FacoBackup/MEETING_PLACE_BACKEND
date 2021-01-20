@@ -4,6 +4,7 @@ package br.meetingplace.server.modules.topic.routes
 import br.meetingplace.server.methods.AES
 import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
+import br.meetingplace.server.modules.topic.dao.archive.TopicArchiveDAO
 import br.meetingplace.server.modules.topic.dao.topic.TopicDAO
 import br.meetingplace.server.modules.topic.dao.opinion.TopicOpinionDAO
 import br.meetingplace.server.modules.topic.dao.seen.TopicStatusDAO
@@ -11,6 +12,7 @@ import br.meetingplace.server.modules.topic.dto.requests.RequestTopic
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopics
 import br.meetingplace.server.modules.topic.dto.requests.TopicUpdateDTO
+import br.meetingplace.server.modules.topic.services.archive.TopicArchiveService
 import br.meetingplace.server.modules.topic.services.delete.TopicDeleteService
 import br.meetingplace.server.modules.topic.services.factory.TopicFactoryService
 import br.meetingplace.server.modules.topic.services.opinion.TopicOpinionService
@@ -27,9 +29,12 @@ import io.ktor.routing.*
 
 fun Route.topicRouter() {
     route("/api") {
-        patch ("/archive/topic") {
+        put ("/archive/topic") {
             val data = call.receive<RequestTopic>()
-            call.respond(HttpStatusCode.NotImplemented)
+            val log = call.log
+            if(log != null)
+                call.respond(TopicArchiveService.archiveTopic(topicID = data.topicID, requester = log.userID, topicArchiveDAO = TopicArchiveDAO))
+            else call.respond(HttpStatusCode.Unauthorized)
         }
         patch ("/read/archive") {
             val data = call.receive<RequestTopics>()
@@ -62,7 +67,9 @@ fun Route.topicRouter() {
                     decryption = AES,
                     userDAO = UserDAO,
                     communityDAO = CommunityDAO,
-                    topicOpinionDAO = TopicOpinionDAO
+                    topicOpinionDAO = TopicOpinionDAO,
+                    requester = log.userID,
+                    topicArchiveDAO = TopicArchiveDAO
                 ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
@@ -79,7 +86,8 @@ fun Route.topicRouter() {
                     userDAO = UserDAO,
                     communityDAO = CommunityDAO,
                     communityMemberDAO = CommunityMemberDAO,
-                    topicOpinionDAO = TopicOpinionDAO
+                    topicOpinionDAO = TopicOpinionDAO,
+                    topicArchiveDAO = TopicArchiveDAO
                     ))
             else call.respond(HttpStatusCode.Unauthorized)
         }

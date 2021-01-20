@@ -17,5 +17,7 @@ data class TopicDataDTO(
     val likes: Long,
     val dislikes: Long,
     val comments: Long,
-    val archived: Boolean
+    val archived: Boolean,
+    val liked: Boolean,
+    val disliked: Boolean
 )
