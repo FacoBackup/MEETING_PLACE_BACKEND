@@ -10,7 +10,7 @@ object TopicEntity: Table("topics") {
 
     var id = varchar("topic_id", 36)
     var header = text("header")
-    var body= text("body")
+    var body= text("body").nullable()
     var approved = bool("approved")
     val footer= varchar("footer", 128)
     val creatorID = varchar("creator_id",320).references(UserEntity.email)

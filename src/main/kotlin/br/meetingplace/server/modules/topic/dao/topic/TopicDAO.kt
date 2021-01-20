@@ -90,7 +90,7 @@ object TopicDAO: TI {
         }
     }
     override suspend fun create(header: String,
-                        body: String,
+                        body: String?,
                         imageURL: String?,
                         communityID: String?,
                         userID:String,
@@ -205,8 +205,8 @@ object TopicDAO: TI {
                         it[this.approved] = approved
                     if(!header.isNullOrBlank())
                         it[this.header] = header
-                    if(!body.isNullOrBlank())
-                        it[this.body] = body
+
+                    it[this.body] = body
                 }
             }
             HttpStatusCode.OK

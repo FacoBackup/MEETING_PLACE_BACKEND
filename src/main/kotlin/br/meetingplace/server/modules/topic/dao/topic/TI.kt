@@ -6,7 +6,7 @@ import io.ktor.http.*
 interface TI {
     suspend fun read(topicID: String): TopicDTO?
     suspend fun create(header: String,
-               body: String,
+               body: String?,
                imageURL: String?,
                communityID: String?,
                userID:String,
