@@ -194,18 +194,18 @@ object UserDAO: UI {
                 UserEntity.update({UserEntity.email eq userID}){
                     if(!name.isNullOrBlank())
                         it[this.userName] = name
-                    if(!about.isNullOrBlank())
-                        it[this.about] = about
-                    if(!nationality.isNullOrBlank())
-                        it[this.nationality] = nationality
-                    if(!phoneNumber.isNullOrBlank())
-                        it[this.phoneNumber] = phoneNumber
-                    if(!city.isNullOrBlank())
-                        it[this.cityOfBirth] = city
-                    if(!imageURL.isNullOrBlank())
-                        it[this.imageURL] = imageURL
-                    if(!backgroundImageURL.isNullOrBlank())
-                        it[this.backgroundImageURL] = backgroundImageURL
+
+                    it[this.about] = about
+
+                    it[this.nationality] = nationality
+
+                    it[this.phoneNumber] = phoneNumber
+
+                    it[this.cityOfBirth] = city
+
+                    it[this.imageURL] = imageURL
+
+                    it[this.backgroundImageURL] = backgroundImageURL
                 }
             }
             HttpStatusCode.OK

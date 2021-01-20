@@ -32,18 +32,6 @@ fun Route.userRouter() {
         }
         patch("/get/profile") {
             val data = call.receive<RequestUser>()
-            println()
-            println()
-            println()
-
-            println(data)
-
-            println()
-            println()
-            println()
-
-
-
             val log = call.log
             if(log != null){
                 val response = UserReadService.read(data.userID, topicDAO = TopicDAO, userDAO = UserDAO, userSocialDAO = UserSocialDAO)
@@ -143,7 +131,7 @@ fun Route.userRouter() {
                 else call.respond(HttpStatusCode.Unauthorized)
 
             }
-            patch(UserPaths.PROFILE) {
+            put("/profile") {
                 val data = call.receive<RequestProfileUpdate>()
                 val log = call.log
                 if(log != null)
