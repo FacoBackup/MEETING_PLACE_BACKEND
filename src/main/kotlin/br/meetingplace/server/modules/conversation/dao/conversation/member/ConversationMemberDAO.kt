@@ -9,7 +9,7 @@ import org.postgresql.util.PSQLException
 
 object ConversationMemberDAO: CMI {
 
-    override suspend fun create(userID: String, conversationID: String, admin: Boolean): HttpStatusCode {
+    override suspend fun create(userID: Long, conversationID: Long, admin: Boolean): HttpStatusCode {
         return try {
             transaction {
                 ConversationMemberEntity.insert {
@@ -25,7 +25,7 @@ object ConversationMemberDAO: CMI {
             HttpStatusCode.InternalServerError
         }
     }
-    override suspend fun delete(userID: String, conversationID: String): HttpStatusCode {
+    override suspend fun delete(userID: Long, conversationID: Long): HttpStatusCode {
         return try {
             transaction {
                 ConversationMemberEntity.deleteWhere { (ConversationMemberEntity.conversationID eq conversationID) and (ConversationMemberEntity.userID eq userID) }
@@ -38,7 +38,7 @@ object ConversationMemberDAO: CMI {
         }
     }
 
-    override suspend fun readAllByConversation(conversationID: String): List<ConversationMemberDTO> {
+    override suspend fun readAllByConversation(conversationID: Long): List<ConversationMemberDTO> {
         return try {
             transaction {
                 ConversationMemberEntity.select { ConversationMemberEntity.conversationID eq conversationID}
@@ -50,7 +50,7 @@ object ConversationMemberDAO: CMI {
             listOf()
         }
     }
-    override suspend fun check(conversationID: String, userID: String): Boolean {
+    override suspend fun check(conversationID: Long, userID: Long): Boolean {
         return try {
             !transaction {
                 ConversationMemberEntity.select { (ConversationMemberEntity.conversationID eq conversationID) and (ConversationMemberEntity.userID eq userID) }.empty()
@@ -62,7 +62,7 @@ object ConversationMemberDAO: CMI {
         }
     }
 
-    override suspend fun readAllByUser(userID: String): List<ConversationMemberDTO> {
+    override suspend fun readAllByUser(userID: Long): List<ConversationMemberDTO> {
         return try {
             transaction {
                 ConversationMemberEntity.select { ConversationMemberEntity.userID eq userID }
@@ -74,7 +74,7 @@ object ConversationMemberDAO: CMI {
             listOf()
         }
     }
-    override suspend fun read(userID: String, conversationID: String): ConversationMemberDTO? {
+    override suspend fun read(userID: Long, conversationID: Long): ConversationMemberDTO? {
         return try {
             transaction {
                 ConversationMemberEntity.select { (ConversationMemberEntity.conversationID eq conversationID) and (ConversationMemberEntity.userID eq userID) }.map { mapGroupMembers(it) }.firstOrNull()
@@ -86,7 +86,7 @@ object ConversationMemberDAO: CMI {
         }
     }
 
-    override suspend fun update(userID: String, conversationID: String, admin: Boolean): HttpStatusCode {
+    override suspend fun update(userID: Long, conversationID: Long, admin: Boolean): HttpStatusCode {
         return try {
             transaction {
                 ConversationMemberEntity.update({ (ConversationMemberEntity.conversationID eq conversationID) and (ConversationMemberEntity.userID eq userID) }) {

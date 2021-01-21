@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object MessageOpinionDAO:MOI {
-    override fun create(messageID: String, userID: String, liked: Boolean): HttpStatusCode {
+    override fun create(messageID: Long, userID: Long, liked: Boolean): HttpStatusCode {
         return try {
             transaction {
                 MessageOpinionEntity.insert {
@@ -25,7 +25,7 @@ object MessageOpinionDAO:MOI {
         }
     }
 
-    override fun delete(messageID: String, userID: String): HttpStatusCode {
+    override fun delete(messageID: Long, userID: Long): HttpStatusCode {
         return try {
             transaction {
                 MessageOpinionEntity.deleteWhere {
@@ -41,7 +41,7 @@ object MessageOpinionDAO:MOI {
         }
     }
 
-    override fun read(messageID: String, userID: String): MessageOpinionsDTO? {
+    override fun read(messageID: Long, userID: Long): MessageOpinionsDTO? {
         return try {
             transaction {
                 MessageOpinionEntity.select {
@@ -56,7 +56,7 @@ object MessageOpinionDAO:MOI {
         }
     }
 
-    override fun update(messageID: String, userID: String, liked: Boolean): HttpStatusCode {
+    override fun update(messageID: Long, userID: Long, liked: Boolean): HttpStatusCode {
        return try {
            transaction {
                MessageOpinionEntity.update({ (MessageOpinionEntity.messageID eq messageID) and (MessageOpinionEntity.userID eq userID) }){

@@ -4,11 +4,11 @@ import br.meetingplace.server.modules.conversation.dto.response.conversation.Con
 import io.ktor.http.*
 
 interface CMI {
-    suspend fun create(userID: String, conversationID: String, admin: Boolean): HttpStatusCode
-    suspend fun read(userID: String, conversationID: String): ConversationMemberDTO?
-    suspend fun readAllByUser(userID: String): List<ConversationMemberDTO>
-    suspend fun readAllByConversation(conversationID: String): List<ConversationMemberDTO>
-    suspend fun check(conversationID: String, userID: String): Boolean
-    suspend fun update(userID: String, conversationID: String, admin: Boolean): HttpStatusCode
-    suspend fun delete(userID: String, conversationID: String): HttpStatusCode
+    suspend fun create(userID: Long, conversationID: Long, admin: Boolean): HttpStatusCode
+    suspend fun read(userID: Long, conversationID: Long): ConversationMemberDTO?
+    suspend fun readAllByUser(userID: Long): List<ConversationMemberDTO>
+    suspend fun readAllByConversation(conversationID: Long): List<ConversationMemberDTO>
+    suspend fun check(conversationID: Long, userID: Long): Boolean
+    suspend fun update(userID: Long, conversationID: Long, admin: Boolean): HttpStatusCode
+    suspend fun delete(userID: Long, conversationID: Long): HttpStatusCode
 }

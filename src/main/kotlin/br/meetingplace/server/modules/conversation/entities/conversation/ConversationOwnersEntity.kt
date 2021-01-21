@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 object ConversationOwnersEntity: Table("conversation_owners") {
-    val primaryUserID = varchar("primary_id", 320).references(UserEntity.email, onDelete = ReferenceOption.CASCADE)
-    val conversationID = varchar("conversation_id", 36).references(ConversationEntity.id, onDelete = ReferenceOption.CASCADE)
-    val secondaryUserID = varchar("secondary_id", 320).references(UserEntity.email, onDelete = null)
+    val primaryUserID = long("primary_user_pk").references(UserEntity.id, onDelete = ReferenceOption.CASCADE)
+    val conversationID = long("conversation_id").references(ConversationEntity.id, onDelete = ReferenceOption.CASCADE)
+    val secondaryUserID = long("secondary_user_pk").references(UserEntity.id, onDelete = ReferenceOption.CASCADE)
 }

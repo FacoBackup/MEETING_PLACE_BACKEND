@@ -6,10 +6,10 @@ import io.ktor.http.*
 
 object UserDeleteService {
 
-    suspend fun delete(requester: String, data: RequestUser, userDAO: UI): HttpStatusCode {
+    suspend fun delete(requester: Long, data: RequestUser, userDAO: UI): HttpStatusCode {
         return try{
             val userRequester = userDAO.readByID(requester)
-            if( userRequester != null && userRequester.admin)
+            if( userRequester != null && data.userID != null)
                 userDAO.delete(data.userID)
             else
                 HttpStatusCode.FailedDependency

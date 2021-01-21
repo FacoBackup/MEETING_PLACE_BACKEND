@@ -19,7 +19,7 @@ object TopicFactoryService {
                     println("STEP 1")
                     return if (user != null && data.mainTopicID.isNullOrBlank()) {
                         val encryptedHeader = encryption.encrypt(myKey = key, data.header)
-                        val encryptedBody= encryption.encrypt(myKey = key, data.body)
+                        val encryptedBody= data.body?.let { encryption.encrypt(myKey = key, it) }
 
                         if(encryptedBody.isNullOrBlank() || encryptedHeader.isNullOrBlank())
                             return HttpStatusCode.InternalServerError
@@ -38,7 +38,7 @@ object TopicFactoryService {
                     val member = communityMemberDAO.read(data.communityID, userID = requester)
                     return if (user != null && member != null && data.mainTopicID.isNullOrBlank()) {
                         val encryptedHeader = encryption.encrypt(myKey = key, data.header)
-                        val encryptedBody= encryption.encrypt(myKey = key, data.body)
+                        val encryptedBody= data.body?.let { encryption.encrypt(myKey = key, it) }
 
                         if(encryptedBody.isNullOrBlank() || encryptedHeader.isNullOrBlank())
                             return HttpStatusCode.InternalServerError
@@ -66,7 +66,7 @@ object TopicFactoryService {
                 true -> {
                     return if (user != null && !data.mainTopicID.isNullOrBlank() && topicDAO.check(data.mainTopicID)) {
                         val encryptedHeader = encryption.encrypt(myKey = key, data.header)
-                        val encryptedBody= encryption.encrypt(myKey = key, data.body)
+                        val encryptedBody= data.body?.let { encryption.encrypt(myKey = key, it) }
                         val encryptedImageURL = data.imageURL?.let { encryption.encrypt(myKey = key, it) }
                         if(encryptedBody.isNullOrBlank() || encryptedHeader.isNullOrBlank())
                             return HttpStatusCode.InternalServerError
@@ -87,7 +87,7 @@ object TopicFactoryService {
                     return if (mainTopic  != null && mainTopic.approved  && user != null && member != null) {
 
                         val encryptedHeader = encryption.encrypt(myKey = key, data.header)
-                        val encryptedBody= encryption.encrypt(myKey = key, data.body)
+                        val encryptedBody= data.body?.let { encryption.encrypt(myKey = key, it) }
                         val encryptedImageURL = data.imageURL?.let { encryption.encrypt(myKey = key, it) }
                         if(encryptedBody.isNullOrBlank() || encryptedHeader.isNullOrBlank())
                             return HttpStatusCode.InternalServerError

@@ -9,10 +9,10 @@ import io.ktor.http.*
 
 object CommunityFactoryService {
 
-    suspend fun create(requester: String,data: RequestCommunityCreation, communityDAO: CI, communityMemberDAO: CMI): HttpStatusCode {
+    suspend fun create(requester: Long,data: RequestCommunityCreation, communityDAO: CI, communityMemberDAO: CMI): HttpStatusCode {
 
         return try {
-            return if(!data.relatedCommunityID.isNullOrBlank() && communityDAO.read(data.relatedCommunityID) != null){
+            return if(data.relatedCommunityID != null && communityDAO.read(data.relatedCommunityID) != null){
                 communityDAO.create(data)
                 val community = communityDAO.readByExactName(data.name)
                 return if(community != null)
@@ -20,7 +20,7 @@ object CommunityFactoryService {
                 else
                     HttpStatusCode.InternalServerError
             }
-            else if(data.relatedCommunityID.isNullOrBlank()){
+            else if(data.relatedCommunityID != null){
                 communityDAO.create(data)
                 val community = communityDAO.readByExactName(data.name)
                 return if(community != null)

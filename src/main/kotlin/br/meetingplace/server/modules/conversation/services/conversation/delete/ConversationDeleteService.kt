@@ -6,11 +6,11 @@ import br.meetingplace.server.modules.conversation.dto.requests.conversation.Req
 import io.ktor.http.*
 
 object ConversationDeleteService{
-    suspend fun delete(requester: String, data: RequestConversation, conversationMemberDAO: CMI, groupDAO: CI): HttpStatusCode {
+    suspend fun delete(requester: Long, data: RequestConversation, conversationMemberDAO: CMI, conversationDAO: CI): HttpStatusCode {
         return try{
-            val member = conversationMemberDAO.read(userID = requester, conversationID = data.conversationID)
+            val member = data.conversationID?.let { conversationMemberDAO.read(userID = requester, conversationID = it) }
             if(member != null && member.admin)
-                groupDAO.delete(data.conversationID)
+                conversationDAO.delete(data.conversationID)
             else HttpStatusCode.FailedDependency
         }catch (normal: Exception){
             HttpStatusCode.InternalServerError

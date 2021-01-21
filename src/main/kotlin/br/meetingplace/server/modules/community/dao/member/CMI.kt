@@ -5,17 +5,17 @@ import br.meetingplace.server.modules.community.dto.response.CommunityMemberDTO
 import io.ktor.http.*
 
 interface CMI {
-    suspend fun create(userID: String, communityID: String, role: String): HttpStatusCode
-    suspend fun read(communityID: String, userID: String): CommunityMemberDTO?
-    suspend fun readByCommunity(communityID: String): List<CommunityMemberDTO>
-    suspend fun readByUser(userID: String): List<CommunityMemberDTO>
-    suspend fun readMods(communityID: String): List<CommunityMemberDTO>
-    suspend fun readModsQuantity(communityID: String):Long
-    suspend fun readFollowers(communityID: String): List<CommunityMemberDTO>
-    suspend fun readFollowersQuantity(communityID: String):Long
-    suspend fun readMembers(communityID: String): List<CommunityMemberDTO>
-    suspend fun readMembersQuantity(communityID: String):Long
-    suspend fun check(communityID: String, userID: String): HttpStatusCode
-    suspend fun update(communityID: String, userID: String, role: String): HttpStatusCode
-    suspend fun delete(communityID: String, userID: String): HttpStatusCode
+    suspend fun create(userID: Long, communityID: Long, role: String): HttpStatusCode
+    suspend fun read(communityID: Long, userID: Long): CommunityMemberDTO?
+    suspend fun readByCommunity(communityID: Long): List<CommunityMemberDTO>
+    suspend fun readByUser(userID: Long): List<CommunityMemberDTO>
+    suspend fun readMods(communityID: Long): List<CommunityMemberDTO>
+    suspend fun readModsQuantity(communityID: Long):Long
+    suspend fun readFollowers(communityID: Long): List<CommunityMemberDTO>
+    suspend fun readFollowersQuantity(communityID: Long):Long
+    suspend fun readMembers(communityID: Long): List<CommunityMemberDTO>
+    suspend fun readMembersQuantity(communityID: Long):Long
+    suspend fun check(communityID: Long, userID: Long): HttpStatusCode
+    suspend fun update(communityID: Long, userID: Long, role: String): HttpStatusCode
+    suspend fun delete(communityID: Long, userID: Long): HttpStatusCode
 }

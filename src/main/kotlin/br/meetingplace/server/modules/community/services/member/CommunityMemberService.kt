@@ -7,7 +7,7 @@ import io.ktor.http.*
 
 object CommunityMemberService {
 
-    suspend fun promoteMember(requester: String,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
+    suspend fun promoteMember(requester: Long,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
         return try {
             val userMember = communityMemberDAO.read(communityID = data.communityID, userID = requester)
             val member = communityMemberDAO.read(communityID = data.communityID, userID = data.memberID)
@@ -32,7 +32,7 @@ object CommunityMemberService {
         }
     }
 
-    suspend  fun lowerMember(requester: String,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
+    suspend  fun lowerMember(requester: Long,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
         return try {
             val userMember = communityMemberDAO.read(communityID = data.communityID, userID = requester)
             val member = communityMemberDAO.read(communityID = data.communityID, userID = data.memberID)
@@ -56,7 +56,7 @@ object CommunityMemberService {
             HttpStatusCode.InternalServerError
         }
     }
-    suspend  fun removeMember(requester: String,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
+    suspend  fun removeMember(requester: Long,data: RequestCommunityMember, communityMemberDAO: CMI): HttpStatusCode{
         return try {
             val requesterMember = communityMemberDAO.read(communityID = data.communityID, userID = requester)
             val member = communityMemberDAO.read(communityID = data.communityID, userID = data.memberID)

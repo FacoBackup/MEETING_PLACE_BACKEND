@@ -10,7 +10,7 @@ import br.meetingplace.server.modules.user.dto.response.UserSimplifiedDTO
 import io.ktor.http.*
 
 object UserSocialService {
-    suspend fun readFollowers(requester: String, userSocialDAO: SI, userDAO: UI): List<UserSimplifiedDTO>{
+    suspend fun readFollowers(requester: Long, userSocialDAO: SI, userDAO: UI): List<UserSimplifiedDTO>{
         return try {
             if(userDAO.check(requester)){
                 val followers = userSocialDAO.readAll(userID = requester, following = false)
@@ -29,7 +29,7 @@ object UserSocialService {
         }
 
     }
-    suspend fun readFollowing(requester: String, userSocialDAO: SI, userDAO: UI): List<UserSimplifiedDTO>{
+    suspend fun readFollowing(requester: Long, userSocialDAO: SI, userDAO: UI): List<UserSimplifiedDTO>{
         return try {
             if(userDAO.check(requester)){
                 val following = userSocialDAO.readAll(userID = requester, following = true)
@@ -48,7 +48,7 @@ object UserSocialService {
         }
 
     }
-    suspend fun follow(requester: String,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI, communityDAO: CI, userDAO: UI): HttpStatusCode {
+    suspend fun follow(requester: Long,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI, communityDAO: CI, userDAO: UI): HttpStatusCode {
         return try {
             when(data.community){
                 true-> {
@@ -67,7 +67,7 @@ object UserSocialService {
         }
     }
 
-    suspend fun unfollow(requester: String,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI): HttpStatusCode {
+    suspend fun unfollow(requester: Long,data: RequestSocial, userSocialDAO:SI, communityMemberDAO: CMI): HttpStatusCode {
         return try {
             when(data.community){
                 true-> communityMemberDAO.delete(data.subjectID, userID = requester)

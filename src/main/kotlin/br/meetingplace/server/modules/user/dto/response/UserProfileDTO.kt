@@ -4,7 +4,6 @@ data class UserProfileDTO(
     val email: String,
     val name: String,
     val gender: String,
-    val admin: Boolean,
     val birthDate:Long,
     val imageURL: String?,
     val about: String?,

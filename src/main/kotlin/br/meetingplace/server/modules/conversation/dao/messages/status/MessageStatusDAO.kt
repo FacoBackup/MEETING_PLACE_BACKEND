@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object MessageStatusDAO: MSI {
-    override suspend fun create(conversationID: String, userID: String, messageID: String): HttpStatusCode {
+    override suspend fun create(conversationID: Long, userID: Long, messageID: Long): HttpStatusCode {
         return try{
             transaction {
                 MessageStatusEntity.insert {
@@ -27,7 +27,7 @@ object MessageStatusDAO: MSI {
         }
     }
 
-    override suspend fun seenByEveryoneByMessage(messageID: String, conversationID: String): Boolean {
+    override suspend fun seenByEveryoneByMessage(messageID: Long, conversationID: Long): Boolean {
         return try {
             transaction {
                 MessageStatusEntity.select {
@@ -42,7 +42,7 @@ object MessageStatusDAO: MSI {
             false
         }
     }
-    override suspend fun readAllUnseenMessages(conversationID: String, userID: String): List<MessageStatusDTO> {
+    override suspend fun readAllUnseenMessages(conversationID: Long, userID: Long): List<MessageStatusDTO> {
         return try {
             transaction {
                 MessageStatusEntity.select {
@@ -57,7 +57,7 @@ object MessageStatusDAO: MSI {
         }
     }
 
-    override suspend fun unseenMessagesCount(conversationID: String, userID: String): Long {
+    override suspend fun unseenMessagesCount(conversationID: Long, userID: Long): Long {
         return try{
             transaction {
                 MessageStatusEntity.select{
@@ -72,7 +72,7 @@ object MessageStatusDAO: MSI {
             0
         }
     }
-    override suspend fun update(conversationID: String, userID: String, messageID: String): HttpStatusCode {
+    override suspend fun update(conversationID: Long, userID: Long, messageID: Long): HttpStatusCode {
         return try{
             transaction {
                 MessageStatusEntity.update({ (MessageStatusEntity.conversationID eq conversationID) and

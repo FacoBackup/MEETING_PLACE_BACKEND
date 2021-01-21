@@ -7,7 +7,6 @@ import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
-import java.util.*
 
 object CommunityDAO: CI {
 
@@ -16,12 +15,12 @@ object CommunityDAO: CI {
             transaction {
                 CommunityEntity.insert {
                     it[name] = data.name
-                    it[id] = UUID.randomUUID().toString()
-                    it[imageURL] = data.imageURL
+
+                    it[pic] = data.pic
                     it[creationDate] =  System.currentTimeMillis()
                     it[about] = data.about
-                    it[relatedCommunityID]= data.relatedCommunityID
-                    it[backgroundImageURL] = data.backgroundImageURL
+                    it[mainCommunityID]= data.relatedCommunityID
+                    it[background] = data.background
                 }
             }
             HttpStatusCode.Created
@@ -32,11 +31,11 @@ object CommunityDAO: CI {
         }
     }
 
-    override suspend fun readParentCommunities(communityID: String): List<CommunityDTO> {
+    override suspend fun readRelatedCommunities(id: Long): List<CommunityDTO> {
         return try{
             transaction {
                 CommunityEntity.select{
-                    CommunityEntity.relatedCommunityID eq communityID
+                    CommunityEntity.mainCommunityID eq id
                 }.map { mapCommunityDTO(it) }
             }
         }catch (normal: Exception){
@@ -45,7 +44,7 @@ object CommunityDAO: CI {
             listOf()
         }
     }
-    override suspend fun check(id: String): Boolean {
+    override suspend fun check(id: Long): Boolean {
         return try{
             !transaction {
                 CommunityEntity.select { CommunityEntity.id eq id }.empty()
@@ -56,7 +55,7 @@ object CommunityDAO: CI {
             false
         }
     }
-    override suspend fun delete(id: String): HttpStatusCode {
+    override suspend fun delete(id: Long): HttpStatusCode {
         return try{
             transaction {
                 CommunityEntity.deleteWhere { CommunityEntity.id eq id }
@@ -69,7 +68,7 @@ object CommunityDAO: CI {
         }
     }
 
-    override suspend fun read(id: String): CommunityDTO? {
+    override suspend fun read(id: Long): CommunityDTO? {
         return try{
             transaction {
                 CommunityEntity.select { CommunityEntity.id eq id }.map { mapCommunityDTO(it) }.firstOrNull()
@@ -108,16 +107,16 @@ object CommunityDAO: CI {
             listOf()
         }
     }
-    override suspend fun update(communityID: String, imageURL: String?, backgroundImageURL: String?, about: String?):HttpStatusCode {
+    override suspend fun update(communityID: Long, imageURL: String?, backgroundImageURL: String?, about: String?):HttpStatusCode {
         return try{
             transaction {
                 CommunityEntity.update( { CommunityEntity.id eq communityID } ){
                     if(!about.isNullOrBlank())
                         it[this.about] = about
                     if(!backgroundImageURL.isNullOrBlank())
-                        it[this.backgroundImageURL] = backgroundImageURL
+                        it[this.background] = backgroundImageURL
                     if(!imageURL.isNullOrBlank())
-                        it[this.imageURL] = imageURL
+                        it[this.pic] = imageURL
                 }
             }
             HttpStatusCode.OK
@@ -133,10 +132,10 @@ object CommunityDAO: CI {
             name = it[CommunityEntity.name],
             id = it[CommunityEntity.id],
             about = it[CommunityEntity.about],
-            imageURL =  it[CommunityEntity.imageURL],
+            pic =  it[CommunityEntity.pic],
             creationDate = it[CommunityEntity.creationDate],
-            relatedCommunityID = it[CommunityEntity.relatedCommunityID],
-            backgroundImageURL = it[CommunityEntity.backgroundImageURL]
+            parentCommunityID = it[CommunityEntity.mainCommunityID],
+            background = it[CommunityEntity.background]
             )
     }
 

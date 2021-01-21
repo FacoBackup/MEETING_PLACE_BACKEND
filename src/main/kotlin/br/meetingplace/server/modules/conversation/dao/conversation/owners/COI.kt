@@ -4,9 +4,9 @@ import br.meetingplace.server.modules.conversation.dto.response.conversation.Con
 import io.ktor.http.*
 
 interface COI {
-    suspend fun create(userID: String, secondUserID: String, conversationID: String): HttpStatusCode
-    suspend fun read(userID: String, secondUserID: String): ConversationOwnersDTO?
-    suspend fun readByConversation(conversationID: String): ConversationOwnersDTO?
-    suspend fun check(userID: String, secondUserID: String): Boolean
-    suspend fun readAll(userID: String): List<ConversationOwnersDTO>
+    suspend fun create(userID: Long, secondUserID: Long, conversationID: Long): HttpStatusCode
+    suspend fun read(userID: Long, secondUserID: Long): ConversationOwnersDTO?
+    suspend fun readByConversation(conversationID: Long): ConversationOwnersDTO?
+    suspend fun check(userID: Long, secondUserID: Long): Boolean
+    suspend fun readAll(userID: Long): List<ConversationOwnersDTO>
 }

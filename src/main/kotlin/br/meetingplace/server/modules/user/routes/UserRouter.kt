@@ -33,7 +33,7 @@ fun Route.userRouter() {
         patch("/get/profile") {
             val data = call.receive<RequestUser>()
             val log = call.log
-            if(log != null){
+            if(log != null && data.userID != null){
                 val response = UserReadService.read(data.userID, topicDAO = TopicDAO, userDAO = UserDAO, userSocialDAO = UserSocialDAO)
                 if(response == null)
                     call.respond(HttpStatusCode.NoContent)
@@ -58,38 +58,38 @@ fun Route.userRouter() {
             patch("/verify/follower"){
                 val data = call.receive<RequestUser>()
                 val log = call.log
-                if(log != null)
+                if(log != null && data.userID != null)
                     call.respond(UserSocialDAO.check(followedID = log.userID, userID = data.userID))
                 else call.respond(false)
             }
             patch("/verify/following"){
                 val data = call.receive<RequestUser>()
                 val log = call.log
-                if(log != null)
+                if(log != null && data.userID != null)
                     call.respond(UserSocialDAO.check(followedID = data.userID, userID = log.userID))
                 else call.respond(false)
             }
             patch("/get/followers"){
                 val log = call.log
                 val data = call.receive<RequestUser>()
-                if(log != null)
+                if(log != null && data.userID != null)
                     call.respond(UserSocialService.readFollowers(data.userID, UserSocialDAO, UserDAO))
                 else call.respond(HttpStatusCode.Unauthorized)
             }
             patch("/get/following"){
                 val log = call.log
                 val data = call.receive<RequestUser>()
-                if(log != null)
+                if(log != null && data.userID != null)
                     call.respond(UserSocialService.readFollowing(data.userID, UserSocialDAO, UserDAO))
                 else call.respond(HttpStatusCode.Unauthorized)
             }
             patch("/get/simplified/user/profile"){
                 val data = call.receive<RequestUser>()
                 val log = call.log
-                if(log != null){
+                if(log != null && data.userID != null){
                     val user = UserDAO.readByID(data.userID)
                     if(user != null)
-                        call.respond(UserSearchDTO(name= user.name,email = user.email,imageURL = user.imageURL,isFollowing = false))
+                        call.respond(UserSearchDTO(name= user.name,email = user.email,imageURL = user.imageURL,isFollowing = false, userID = data.userID))
                     else
                         call.respond(HttpStatusCode.NoContent)
                 }
@@ -99,8 +99,8 @@ fun Route.userRouter() {
             patch("/search/user"){
                 val data = call.receive<RequestUser>()
                 val log = call.log
-                if(log != null)
-                    call.respond(UserSearchService.searchUser(requester = log.userID, userID = data.userID, UserDAO, UserSocialDAO))
+                if(log != null && data.userName != null)
+                    call.respond(UserSearchService.searchUser(requester = log.userID, userName = data.userName, UserDAO, UserSocialDAO))
                 else call.respond(HttpStatusCode.Unauthorized)
             }
             get(UserPaths.USER) {
@@ -116,7 +116,7 @@ fun Route.userRouter() {
             }
             get(UserPaths.USER +"/name") {
                 val data = call.receive<RequestUser>()
-                val user = UserDAO.readAllByAttribute(name = data.userID, null,null,null,null)
+                val user = UserDAO.readAllByAttribute(name = data.userName, null,null,null,null)
                 if (user.isEmpty())
                     call.respond(HttpStatusCode.NotFound)
                 else

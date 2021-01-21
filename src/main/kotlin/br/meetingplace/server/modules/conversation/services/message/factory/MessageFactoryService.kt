@@ -19,9 +19,8 @@ import java.util.*
 object MessageFactoryService {
     private const val key = AESMessageKey.key
 
-    suspend fun createGroupMessage(requester: String, data: RequestMessageCreation,messageNotificationDAO: MNI, messageStatusDAO: MSI, conversationMemberDAO: CMI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface): HttpStatusCode {
+    suspend fun createGroupMessage(requester: Long, data: RequestMessageCreation,messageNotificationDAO: MNI, messageStatusDAO: MSI, conversationMemberDAO: CMI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface): HttpStatusCode {
         return try {
-            lateinit var messageID: String
             lateinit var conversationMembers: List<ConversationMemberDTO>
             if(userDAO.check(requester)) {
                 val group =  conversationDAO.read(data.conversationID)
@@ -31,22 +30,25 @@ object MessageFactoryService {
                     if(encryptedMessage.isNullOrBlank())
                         return HttpStatusCode.InternalServerError
                     else{
-                        messageID = UUID.randomUUID().toString()
+
                         conversationMembers = conversationMemberDAO.readAllByConversation(conversationID = data.conversationID)
                         val response = messageDAO.create(
                             message = encryptedMessage,
                             imageURL = encryptedImageURL,
                             creator = requester,
-                            conversationID = data.conversationID,
-                            messageID = messageID)
+                            conversationID = data.conversationID)
 
-                        //BOOLEAN BECAUSE IT PUTS THE CURRENT TIME IF TRUE
-                        conversationDAO.update(conversationID =  data.conversationID, latestMessage = true,null,null,null)
-                        for(i in conversationMembers.indices){
-                            messageNotificationDAO.create(conversationMembers[i].userID, conversationID = data.conversationID, messageID = messageID,isGroup = true, creationDate = System.currentTimeMillis())
-                            messageStatusDAO.create(conversationID = data.conversationID, userID = conversationMembers[i].userID, messageID = messageID)
+                       if(response != null){
+                           conversationDAO.update(conversationID =  data.conversationID, latestMessage = true,null,null,null)
+                           for(i in conversationMembers.indices){
+                               messageNotificationDAO.create(conversationMembers[i].userID, conversationID = data.conversationID, messageID = response,isGroup = true, creationDate = System.currentTimeMillis())
+                               messageStatusDAO.create(conversationID = data.conversationID, userID = conversationMembers[i].userID, messageID = response)
+                           }
+                           HttpStatusCode.Created
                         }
-                        response
+                        else
+                            HttpStatusCode.InternalServerError
+
                     }
                 }
                 else HttpStatusCode.FailedDependency
@@ -57,10 +59,9 @@ object MessageFactoryService {
         }
     }
 
-    suspend fun createUserMessage(requester: String, data: RequestMessageCreation, messageNotificationDAO: MNI, messageStatusDAO: MSI, conversationOwnerDAO: COI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface):HttpStatusCode{
+    suspend fun createUserMessage(requester: Long, data: RequestMessageCreation, messageNotificationDAO: MNI, messageStatusDAO: MSI, conversationOwnerDAO: COI, userDAO: UI, conversationDAO: CI, messageDAO: MI, encryption: AESInterface):HttpStatusCode{
 
         return try{
-            lateinit var messageID: String
             if(data.receiverID != null){
                 val conversation = conversationOwnerDAO.read(userID = requester, secondUserID = data.receiverID)
                 when(conversation != null){
@@ -70,20 +71,23 @@ object MessageFactoryService {
                         if(encryptedMessage.isNullOrBlank())
                             return HttpStatusCode.ExpectationFailed
                         else{
-                            messageID = UUID.randomUUID().toString()
 
                             val response = messageDAO.create(
                                 message = encryptedMessage,
                                 imageURL = encryptedImageURL,
                                 creator = requester,
-                                conversationID = conversation.conversationID,
-                                messageID = messageID)
+                                conversationID = conversation.conversationID)
 
-                            messageNotificationDAO.create(conversationID = conversation.conversationID, messageID = messageID,isGroup = false,creationDate= System.currentTimeMillis(), requester = data.receiverID)
-                            conversationDAO.update(conversationID =  conversation.conversationID, latestMessage =true,null,null,null)
-                            messageStatusDAO.create(conversationID = conversation.conversationID, userID = requester, messageID = messageID)
-                            messageStatusDAO.create(conversationID = conversation.conversationID, userID = data.receiverID, messageID = messageID)
-                            response
+                            return if(response != null){
+                                messageNotificationDAO.create(conversationID = conversation.conversationID, messageID = response,isGroup = false,creationDate= System.currentTimeMillis(), requester = data.receiverID)
+                                conversationDAO.update(conversationID =  conversation.conversationID, latestMessage =true,null,null,null)
+                                messageStatusDAO.create(conversationID = conversation.conversationID, userID = requester, messageID = response)
+                                messageStatusDAO.create(conversationID = conversation.conversationID, userID = data.receiverID, messageID = response)
+                                HttpStatusCode.Created
+                            }
+                            else
+                                HttpStatusCode.InternalServerError
+
                         }
 
                     }
@@ -91,38 +95,40 @@ object MessageFactoryService {
                         if(userDAO.check(data.receiverID)){
                             val encryptedMessage = encryption.encrypt(myKey = key, data.message)
                             val encryptedImageURL = data.imageURL?.let { encryption.encrypt(myKey = key, it) }
-                            val id = UUID.randomUUID().toString()
-                            conversationDAO.create(
+
+                            val id = conversationDAO.create(
                                 data = RequestConversationCreation(
-                                    name=requester+data.receiverID,
+                                    name="private",
                                     imageURL = null,
                                     about = null,
-                                    isGroup = false),
-                                    id = id)
+                                    isGroup = false))
 
-                            if(conversationDAO.check(id)) {
+                            if(id != null && conversationDAO.check(id)) {
                                 conversationOwnerDAO.create(userID = requester, secondUserID = data.receiverID,id)
 
                                 if (encryptedMessage.isNullOrBlank())
                                     return HttpStatusCode.InternalServerError
                                 else{
-                                    messageID = UUID.randomUUID().toString()
 
                                     val response = messageDAO.create(
                                         message = encryptedMessage,
                                         imageURL = encryptedImageURL,
                                         creator = requester,
-                                        conversationID = id,
-                                        messageID = messageID
+                                        conversationID = id
                                     )
-                                    messageNotificationDAO.create( conversationID = id,isGroup = false, creationDate = System.currentTimeMillis(), messageID = messageID, requester = data.receiverID)
-                                    conversationDAO.update(conversationID = id, latestMessage = true,null,null,null)
-                                    messageStatusDAO.create(conversationID = id, userID = requester, messageID = messageID)
-                                    messageStatusDAO.create(conversationID = id, userID = data.receiverID, messageID = messageID)
-                                    response
+                                    if(response != null){
+                                        messageNotificationDAO.create( conversationID = id,isGroup = false, creationDate = System.currentTimeMillis(), messageID = response, requester = data.receiverID)
+                                        conversationDAO.update(conversationID = id, latestMessage = true,null,null,null)
+                                        messageStatusDAO.create(conversationID = id, userID = requester, messageID = response)
+                                        messageStatusDAO.create(conversationID = id, userID = data.receiverID, messageID = response)
+                                        HttpStatusCode.Created
+                                    }
+                                    else
+                                        HttpStatusCode.InternalServerError
+
                                 }
                             }
-                            else HttpStatusCode.BadGateway
+                            else HttpStatusCode.InternalServerError
                         }
                         else HttpStatusCode.FailedDependency
                     }

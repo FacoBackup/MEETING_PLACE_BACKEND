@@ -2,12 +2,12 @@ package br.meetingplace.server.modules.conversation.dto.response.messages
 
 data class MessageDTO(val content: String,
                       val imageURL: String?,
-                      val id: String,
-                      val creatorID: String,
-                      val receiverAsUserID: String?,
-                      val conversationID: String,
-                      val type: Short,
-                      val valid: Long,
+                      val id: Long,
+                      val creatorID: Long,
+                      val receiverAsUserID: Long?,
+                      val conversationID: Long,
+                      val isShared: Boolean,
+                      val isQuoted:Boolean,
                       val creationDate: Long,
                       val seenByEveryone: Boolean,
                       val page: Long

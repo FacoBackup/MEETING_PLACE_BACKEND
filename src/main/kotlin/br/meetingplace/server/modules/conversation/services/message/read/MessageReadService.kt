@@ -23,8 +23,8 @@ object MessageReadService {
 ////        }
 //    }
     suspend fun readGroupAllMessages(
-        requester: String,
-        conversationID: String,
+        requester: Long,
+        conversationID: Long,
         messageStatusDAO: MSI,
         messageDAO: MI,
         decryption: AESInterface,
@@ -48,9 +48,9 @@ object MessageReadService {
                             imageURL = decryptedImageURL,
                             id = encryptedMessages[i].id,
                             creatorID = encryptedMessages[i].creatorID,
-                            type = encryptedMessages[i].type,
+                            isQuoted = encryptedMessages[i].isQuoted,
+                            isShared = encryptedMessages[i].isShared,
                             conversationID = encryptedMessages[i].conversationID,
-                            valid = encryptedMessages[i].valid,
                             creationDate = encryptedMessages[i].creationDate,
                             seenByEveryone = encryptedMessages[i].seenByEveryone,
                             receiverAsUserID = null,
@@ -74,7 +74,7 @@ object MessageReadService {
         }
     }
     suspend fun readUserMessages(
-        requester: String,
+        requester: Long,
         data: RequestMessagesDTO,
         messageStatusDAO: MSI,
         messageDAO: MI, decryption: AESInterface,
@@ -112,9 +112,9 @@ object MessageReadService {
                                 imageURL = messageImage,
                                 id = newMessages[i].id,
                                 creatorID = newMessages[i].creatorID,
-                                type = newMessages[i].type,
+                                isQuoted = newMessages[i].isQuoted,
+                                isShared = newMessages[i].isShared,
                                 conversationID = newMessages[i].conversationID,
-                                valid = newMessages[i].valid,
                                 creationDate = newMessages[i].creationDate,
                                 seenByEveryone = newMessages[i].seenByEveryone,
                                 receiverAsUserID = if(conversation.secondaryUserID != requester) conversation.secondaryUserID else conversation.primaryUserID,
@@ -137,9 +137,9 @@ object MessageReadService {
 
 
     suspend fun readNewUserMessages(
-        requester: String,
+        requester: Long,
         userDAO: UI,
-        userID: String,
+        userID: Long,
         messageStatusDAO: MSI,
         messageDAO: MI, decryption: AESInterface,
         conversationOwnerDAO: COI): List<MessageDTO>{
@@ -165,9 +165,9 @@ object MessageReadService {
                                     imageURL = messageImage,
                                     id = encryptedMessage.id,
                                     creatorID = encryptedMessage.creatorID,
-                                    type = encryptedMessage.type,
+                                    isQuoted = encryptedMessage.isQuoted,
+                                    isShared = encryptedMessage.isShared,
                                     conversationID = encryptedMessage.conversationID,
-                                    valid = encryptedMessage.valid,
                                     creationDate = encryptedMessage.creationDate,
                                     seenByEveryone = encryptedMessage.seenByEveryone,
                                     receiverAsUserID = if(conversation.secondaryUserID != requester) conversation.secondaryUserID else conversation.primaryUserID,
@@ -193,8 +193,8 @@ object MessageReadService {
         }
     }
     suspend fun readUserAllMessages(
-        requester: String,
-        userID: String,
+        requester: Long,
+        userID: Long,
         messageStatusDAO: MSI,
         messageDAO: MI,
         decryption: AESInterface,
@@ -218,9 +218,9 @@ object MessageReadService {
                             imageURL = decryptedImageURL,
                             id = encryptedMessages[i].id,
                             creatorID = encryptedMessages[i].creatorID,
-                            type = encryptedMessages[i].type,
+                            isQuoted = encryptedMessages[i].isQuoted,
+                            isShared = encryptedMessages[i].isShared,
                             conversationID = encryptedMessages[i].conversationID,
-                            valid = encryptedMessages[i].valid,
                             creationDate = encryptedMessages[i].creationDate,
                             seenByEveryone = encryptedMessages[i].seenByEveryone,
                             receiverAsUserID = if(conversation != null && conversation.secondaryUserID != requester) conversation.secondaryUserID else if(conversation != null && conversation.primaryUserID != requester) conversation.primaryUserID else null,

@@ -9,7 +9,7 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 object TopicDAO: TI {
-    override suspend fun readQuantityComments(topicID: String): Long {
+    override suspend fun readQuantityComments(topicID: Long): Long {
         return try {
             transaction {
                 TopicEntity.select {
@@ -23,7 +23,7 @@ object TopicDAO: TI {
         }
     }
 
-    override suspend fun read(topicID: String): TopicDTO? {
+    override suspend fun read(topicID: Long): TopicDTO? {
         return try {
             transaction {
                 TopicEntity.select {
@@ -37,7 +37,7 @@ object TopicDAO: TI {
         }
     }
 
-    override suspend fun readByTimePeriod(subjectID: String, since: Long, community: Boolean): List<TopicDTO> {
+    override suspend fun readByTimePeriod(subjectID: Long, since: Long, community: Boolean): List<TopicDTO> {
         return try{
             transaction {
                 TopicEntity.select{
@@ -61,7 +61,7 @@ object TopicDAO: TI {
         }
     }
 
-    override suspend fun readTopicsQuantityByCommunity(communityID: String): Long {
+    override suspend fun readTopicsQuantityByCommunity(communityID: Long): Long {
         return try{
             transaction {
                 TopicEntity.select{
@@ -75,7 +75,7 @@ object TopicDAO: TI {
             0
         }
     }
-    override suspend fun readTopicsQuantityByUser(userID: String): Long {
+    override suspend fun readTopicsQuantityByUser(userID: Long): Long {
         return try{
             transaction {
                 TopicEntity.select{
@@ -92,20 +92,19 @@ object TopicDAO: TI {
     override suspend fun create(header: String,
                         body: String?,
                         imageURL: String?,
-                        communityID: String?,
-                        userID:String,
-                        mainTopicID: String?,
-                        approved:Boolean,
-                        userName: String): HttpStatusCode {
+                        communityID: Long?,
+                        userID:Long,
+                        mainTopicID: Long?,
+                        approved:Boolean): HttpStatusCode {
         return try {
             transaction {
                 TopicEntity.insert {
-                    it[id] = UUID.randomUUID().toString()
+
                     it[this.header] = header
                     it[this.body] = body
-                    it[this.imageURL] = imageURL
+                    it[this.image] = imageURL
                     it[TopicEntity.approved] = approved
-                    it[footer] = userName
+
                     it[creatorID] = userID
                     it[this.mainTopicID] = mainTopicID
                     it[this.communityID] = communityID
@@ -114,15 +113,15 @@ object TopicDAO: TI {
             }
             HttpStatusCode.Created
         }catch (normal: Exception){
-            println("NORMAL EXCEPTION" + normal.message)
-            HttpStatusCode.InternalServerError
+
+            HttpStatusCode.ExpectationFailed
         }catch (psql: PSQLException){
-            println("PSQL EXCEPTION" + psql.message)
-            HttpStatusCode.InternalServerError
+
+            HttpStatusCode.ExpectationFailed
         }
     }
 
-    override suspend fun delete(topicID: String):HttpStatusCode{
+    override suspend fun delete(topicID: Long):HttpStatusCode{
         return try {
             transaction {
                 TopicEntity.deleteWhere {
@@ -131,13 +130,13 @@ object TopicDAO: TI {
             }
             HttpStatusCode.OK
         }catch (normal: Exception){
-            HttpStatusCode.InternalServerError
+            HttpStatusCode.ExpectationFailed
         }catch (psql: PSQLException){
-            HttpStatusCode.InternalServerError
+            HttpStatusCode.ExpectationFailed
         }
     }
 
-    override suspend fun check(topicID: String): Boolean {
+    override suspend fun check(topicID: Long): Boolean {
         return try {
             return !transaction {
                 TopicEntity.select {
@@ -149,7 +148,7 @@ object TopicDAO: TI {
             false
         }
     }
-    override suspend fun readBySubject(subjectID: String, timePeriod: Long, community: Boolean): List<TopicDTO> {
+    override suspend fun readBySubject(subjectID: Long, timePeriod: Long, community: Boolean): List<TopicDTO> {
         return try {
             transaction {
                 TopicEntity.select {
@@ -176,7 +175,7 @@ object TopicDAO: TI {
             listOf()
         }
     }
-    override suspend fun readAllComments(topicID: String): List<TopicDTO> {
+    override suspend fun readAllComments(topicID: Long): List<TopicDTO> {
         return try {
             transaction {
                 TopicEntity.select {
@@ -190,7 +189,7 @@ object TopicDAO: TI {
         }
     }
     override suspend fun update(
-        topicID: String,
+        topicID: Long,
         approved: Boolean?,
         header: String?,
         body: String?
@@ -211,9 +210,9 @@ object TopicDAO: TI {
             }
             HttpStatusCode.OK
         }catch (normal: Exception){
-            HttpStatusCode.InternalServerError
+            HttpStatusCode.ExpectationFailed
         }catch (psql: PSQLException){
-            HttpStatusCode.InternalServerError
+            HttpStatusCode.ExpectationFailed
         }
     }
     private fun mapTopic(it: ResultRow): TopicDTO {
@@ -226,6 +225,6 @@ object TopicDAO: TI {
             mainTopicID =  it[TopicEntity.mainTopicID],
             creationDate =  it[TopicEntity.creationDate],
             communityID = it[TopicEntity.communityID],
-            imageURL = it[TopicEntity.imageURL])
+            imageURL = it[TopicEntity.image])
     }
 }

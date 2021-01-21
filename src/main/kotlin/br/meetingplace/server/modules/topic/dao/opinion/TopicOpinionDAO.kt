@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object TopicOpinionDAO:TOI {
-    override suspend fun check(userID: String, topicID: String, liked: Boolean):Boolean {
+    override suspend fun check(userID: Long, topicID: Long, liked: Boolean):Boolean {
         return try {
             transaction {
                 TopicOpinionEntity.select {
@@ -24,7 +24,7 @@ object TopicOpinionDAO:TOI {
             false
         }
     }
-    override suspend fun readQuantity(topicID: String, likes: Boolean): Long {
+    override suspend fun readQuantity(topicID: Long, likes: Boolean): Long {
         return try {
             transaction {
                 TopicOpinionEntity.select {
@@ -39,7 +39,7 @@ object TopicOpinionDAO:TOI {
             0
         }
     }
-    override suspend fun create(topicID: String, userID: String, liked: Boolean): HttpStatusCode {
+    override suspend fun create(topicID: Long, userID: Long, liked: Boolean): HttpStatusCode {
         return try {
             transaction {
                 TopicOpinionEntity.insert {
@@ -56,7 +56,7 @@ object TopicOpinionDAO:TOI {
         }
     }
 
-    override suspend fun delete(topicID: String, userID: String): HttpStatusCode {
+    override suspend fun delete(topicID: Long, userID: Long): HttpStatusCode {
         return try {
             transaction {
                 TopicOpinionEntity.deleteWhere {
@@ -72,7 +72,7 @@ object TopicOpinionDAO:TOI {
         }
     }
 
-    override suspend fun read(topicID: String, userID: String): TopicOpinionDTO? {
+    override suspend fun read(topicID: Long, userID: Long): TopicOpinionDTO? {
         return try {
             transaction {
                 TopicOpinionEntity.select {
@@ -86,7 +86,7 @@ object TopicOpinionDAO:TOI {
             null
         }
     }
-    override suspend fun readAll(topicID: String): List<TopicOpinionDTO> {
+    override suspend fun readAll(topicID: Long): List<TopicOpinionDTO> {
         return try {
             transaction {
                 TopicOpinionEntity.select {
@@ -100,7 +100,7 @@ object TopicOpinionDAO:TOI {
         }
     }
 
-    override suspend fun update(topicID: String, userID: String, liked: Boolean): HttpStatusCode {
+    override suspend fun update(topicID: Long, userID: Long, liked: Boolean): HttpStatusCode {
         return try {
             transaction {
                 TopicOpinionEntity.update({

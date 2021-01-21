@@ -8,15 +8,14 @@ import org.jetbrains.exposed.sql.Table
 
 object TopicEntity: Table("topics") {
 
-    var id = varchar("topic_id", 36)
+    var id = long("topic_pk").autoIncrement()
     var header = text("header")
     var body= text("body").nullable()
     var approved = bool("approved")
-    val footer= varchar("footer", 128)
-    val creatorID = varchar("creator_id",320).references(UserEntity.email)
-    val mainTopicID = varchar("main_topic_id",36).references(id, onDelete = ReferenceOption.CASCADE).nullable()
+    val creatorID = long("creator_pk").references(UserEntity.id, onDelete = ReferenceOption.CASCADE)
+    val mainTopicID = long("main_topic_pk").references(id, onDelete = ReferenceOption.CASCADE).nullable()
     val creationDate = long("creation_date")
-    val communityID = varchar("community_id", 36).references(CommunityEntity.id).nullable()
-    val imageURL = text("image_url").nullable()
+    val communityID = long("community_pk").references(CommunityEntity.id).nullable()
+    val image = text("image").nullable()
     override val primaryKey = PrimaryKey(id)
 }

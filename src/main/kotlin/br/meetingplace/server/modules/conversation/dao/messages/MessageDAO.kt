@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object MessageDAO: MI{
-    override suspend fun readLastMessage(conversationID: String, userID: String): String? {
+    override suspend fun readLastMessage(conversationID: Long, userID: Long): String? {
         return try {
             val result = transaction {
                 MessageEntity.select {
@@ -24,7 +24,7 @@ object MessageDAO: MI{
             null
         }
     }
-    override suspend fun readLastPage(conversationID: String): List<MessageDTO> {
+    override suspend fun readLastPage(conversationID: Long): List<MessageDTO> {
         return try {
 
             val lastPage = transaction {
@@ -48,7 +48,7 @@ object MessageDAO: MI{
             listOf()
         }
     }
-    override suspend fun readByPage(conversationID: String, page: Long): List<MessageDTO> {
+    override suspend fun readByPage(conversationID: Long, page: Long): List<MessageDTO> {
         return try {
             transaction {
                 MessageEntity.select {
@@ -63,7 +63,7 @@ object MessageDAO: MI{
         }
     }
 
-    override suspend fun create(message: String, imageURL: String?, conversationID: String, creator: String, messageID: String): HttpStatusCode {
+    override suspend fun create(message: String, imageURL: String?, conversationID: Long, creator: Long): Long? {
         return try {
             transaction {
                 val lastPageQuantity: Int
@@ -84,33 +84,31 @@ object MessageDAO: MI{
                 currentPage = if(lastPageQuantity == -1) 1 else if(lastPageQuantity in 1..18) lastPage[0].page else lastPage[0].page+1
 
                 MessageEntity.insert {
-                    it[this.id] = messageID
-                    it[valid] = 0
                     it[content] = message
                     it[this.creatorID] = creator
-                    it[this.imageURL] = imageURL
-                    it[type] = 0
+                    it[this.image] = imageURL
+                    it[isShared] = false
+                    it[isQuoted] = false
                     it[this.conversationID] = conversationID
                     it[creationDate] = System.currentTimeMillis()
                     it[this.seenByEveryone] = false
                     it[page] = currentPage
-                }
+                } get MessageEntity.id
             }
-            HttpStatusCode.Created
+
         }catch (normal: Exception){
-            HttpStatusCode.InternalServerError
+            null
         }catch (psql: PSQLException){
-            HttpStatusCode.InternalServerError
+            null
         }
     }
 
-    override suspend fun update(messageID: String): HttpStatusCode {
+    override suspend fun update(messageID: Long): HttpStatusCode {
         return try {
             transaction {
                 MessageEntity.update( {
                     MessageEntity.id eq messageID
                 }){
-                    it[valid] = System.currentTimeMillis()
                     it[this.seenByEveryone] = true
                 }
             }
@@ -121,7 +119,7 @@ object MessageDAO: MI{
             HttpStatusCode.InternalServerError
         }
     }
-    override suspend fun delete(messageID: String): HttpStatusCode {
+    override suspend fun delete(messageID: Long): HttpStatusCode {
         return try {
             transaction {
                 MessageEntity.deleteWhere {
@@ -136,7 +134,7 @@ object MessageDAO: MI{
         }
     }
 
-    override suspend fun check(messageID: String): Boolean {
+    override suspend fun check(messageID: Long): Boolean {
         return try {
             !transaction {
                 MessageEntity.select {
@@ -149,13 +147,9 @@ object MessageDAO: MI{
             false
         }
     }
-    override suspend fun read(messageID: String): MessageDTO? {
+    override suspend fun read(messageID: Long): MessageDTO? {
         return try {
-            transaction {
-                MessageEntity.deleteWhere {
-                    ((MessageEntity.valid.less(System.currentTimeMillis().toInt())) and (MessageEntity.valid neq 0))   or (MessageEntity.valid eq System.currentTimeMillis())
-                }
-            }
+
             transaction {
                 MessageEntity.select {
                     MessageEntity.id eq messageID
@@ -167,14 +161,9 @@ object MessageDAO: MI{
             null
         }
     }
-    override suspend fun readAllConversation(userID: String, conversationID: String): List<MessageDTO> {
+    override suspend fun readAllConversation(userID: Long, conversationID: Long): List<MessageDTO> {
         return try {
             val conversation  = mutableListOf<MessageDTO>()
-            transaction {
-                MessageEntity.deleteWhere {
-                    ((MessageEntity.valid.less(System.currentTimeMillis().toInt())) and (MessageEntity.valid neq 0))   or (MessageEntity.valid eq System.currentTimeMillis())
-                }
-            }
             conversation.addAll(transaction {
                 MessageEntity.select {
                     MessageEntity.conversationID eq conversationID
@@ -190,11 +179,12 @@ object MessageDAO: MI{
     private fun mapMessage(it: ResultRow): MessageDTO {
         return MessageDTO(
             content = it[MessageEntity.content],
-            imageURL = it[MessageEntity.imageURL],
+            imageURL = it[MessageEntity.image],
             id = it[MessageEntity.id],
-            valid = it[MessageEntity.valid],
+
             creatorID = it[MessageEntity.creatorID],
-            type =  it[MessageEntity.type],
+            isShared =  it[MessageEntity.isShared],
+            isQuoted = it[MessageEntity.isQuoted],
             conversationID = it[MessageEntity.conversationID],
             creationDate = it[MessageEntity.creationDate],
             seenByEveryone = it[MessageEntity.seenByEveryone],

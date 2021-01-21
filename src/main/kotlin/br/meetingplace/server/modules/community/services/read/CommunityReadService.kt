@@ -10,10 +10,10 @@ import br.meetingplace.server.modules.topic.dao.topic.TI
 import br.meetingplace.server.modules.user.dao.user.UI
 
 object CommunityReadService {
-    suspend fun readAllRelatedCommunities(requester: String, communityID: String, communityDAO: CI, communityMemberDAO: CMI): List<SimplifiedCommunityDTO>{
+    suspend fun readAllRelatedCommunities(requester: Long, communityID: Long, communityDAO: CI, communityMemberDAO: CMI): List<SimplifiedCommunityDTO>{
         return try {
             val response = mutableListOf<SimplifiedCommunityDTO>()
-            val relatedCommunities = communityDAO.readParentCommunities(communityID)
+            val relatedCommunities = communityDAO.readRelatedCommunities(communityID)
 
             for(i in relatedCommunities.indices){
                 val communityMember = communityMemberDAO.read(communityID = relatedCommunities[i].id, userID = requester)
@@ -24,7 +24,7 @@ object CommunityReadService {
                         about = community.about,
                         communityID = community.id,
                         role = communityMember?.role,
-                        imageURL = community.imageURL
+                        imageURL = community.pic
                     ))
             }
 
@@ -33,12 +33,12 @@ object CommunityReadService {
             listOf()
         }
     }
-    suspend fun readCommunityByID(communityID: String, requester: String, communityDAO: CI,topicDAO: TI, communityMemberDAO: CMI): CommunityInfoDTO? {
+    suspend fun readCommunityByID(communityID: Long, requester: Long, communityDAO: CI,topicDAO: TI, communityMemberDAO: CMI): CommunityInfoDTO? {
         return try {
             val community = communityDAO.read(communityID)
 
             if(community != null){
-                val parentCommunity = community.relatedCommunityID?.let { communityDAO.read(it) }
+                val mainCommunity = community.parentCommunityID?.let { communityDAO.read(it) }
                 val member = communityMemberDAO.read(communityID, requester)
 
                 CommunityInfoDTO(
@@ -46,11 +46,11 @@ object CommunityReadService {
                     about = community.about,
                     communityID =community.id,
                     creationDate =community.creationDate,
-                    relatedCommunityID = community.relatedCommunityID,
-                    relatedCommunityImageURL = parentCommunity?.imageURL,
-                    relatedCommunityName = parentCommunity?.name,
-                    imageURL = community.imageURL,
-                    backgroundImageURL = community.backgroundImageURL,
+                    mainCommunityID = community.parentCommunityID,
+                    mainCommunityPic = mainCommunity?.pic,
+                    mainCommunityName = mainCommunity?.name,
+                    pic = community.pic,
+                    background = community.background,
                     role = member?.role,
                     followers =  communityMemberDAO.readFollowersQuantity(community.id),
                     members =  communityMemberDAO.readMembersQuantity(community.id),
@@ -64,20 +64,20 @@ object CommunityReadService {
             null
         }
     }
-    suspend fun readAllUserCommunities(userID: String, communityDAO: CI, communityMemberDAO: CMI): List<UserCommunitiesDTO>{
+    suspend fun readAllUserCommunities(requester: Long, communityDAO: CI, communityMemberDAO: CMI): List<UserCommunitiesDTO>{
         return try {
             val communities = mutableListOf<UserCommunitiesDTO>()
-            val relatedCommunities = communityMemberDAO.readByUser(userID)
+            val relatedCommunities = communityMemberDAO.readByUser(requester)
             for(i in relatedCommunities.indices){
                 val community = communityDAO.read(relatedCommunities[i].communityID)
                 if(community != null){
                     communities.add(UserCommunitiesDTO(
                         name = community.name,
                         about = community.about,
-                        relatedCommunityName = community.relatedCommunityID?.let { communityDAO.read(id = it) }?.name,
+                        relatedCommunityName = community.parentCommunityID?.let { communityDAO.read(id = it) }?.name,
                         role = relatedCommunities[i].role,
                         communityID = community.id,
-                        imageURL = community.imageURL
+                        imageURL = community.pic
                     ))
                 }
 
@@ -87,7 +87,7 @@ object CommunityReadService {
             listOf()
         }
     }
-    suspend fun readFollowers(communityID: String,communityDAO: CI, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
+    suspend fun readFollowers(communityID: Long, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
         return try {
             val followers = communityMemberDAO.readFollowers(communityID)
             val response = mutableListOf<CommunityRelatedUsersDTO>()
@@ -100,7 +100,7 @@ object CommunityReadService {
                         userID = followers[i].userID,
                         communityID = communityID,
                         role = communityMember.role,
-                        userImageURL = user.imageURL,
+                        userPic = user.imageURL,
                         communityName = null,
                         userEmail = user.email,
                         affiliatedCommunityID = communityID
@@ -111,7 +111,7 @@ object CommunityReadService {
             listOf()
         }
     }
-    suspend fun readMods(communityID: String,communityDAO: CI, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
+    suspend fun readMods(communityID: Long, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
         return try {
             val mods = communityMemberDAO.readMods(communityID)
             val response = mutableListOf<CommunityRelatedUsersDTO>()
@@ -124,7 +124,7 @@ object CommunityReadService {
                         userID = mods[i].userID,
                         communityID = communityID,
                         role = communityMember.role,
-                        userImageURL = user.imageURL,
+                        userPic = user.imageURL,
                         communityName = null,
                         userEmail = user.email,
                         affiliatedCommunityID = communityID
@@ -135,7 +135,7 @@ object CommunityReadService {
             listOf()
         }
     }
-    suspend fun readMembers(communityID: String,communityDAO: CI, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
+    suspend fun readMembers(communityID: Long, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
         return try {
             val members = communityMemberDAO.readMembers(communityID)
             val response = mutableListOf<CommunityRelatedUsersDTO>()
@@ -148,7 +148,7 @@ object CommunityReadService {
                         userID = members[i].userID,
                         communityID = communityID,
                         role = communityMember.role,
-                        userImageURL = user.imageURL,
+                        userPic = user.imageURL,
                         communityName = null,
                         userEmail = user.email,
                         affiliatedCommunityID = communityID
@@ -161,11 +161,11 @@ object CommunityReadService {
         }
     }
 
-    suspend fun readUsersRelatedToCommunity(communityID: String,communityDAO: CI, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
+    suspend fun readUsersRelatedToCommunity(communityID: Long,communityDAO: CI, communityMemberDAO: CMI, userDAO: UI): List<CommunityRelatedUsersDTO>{
         return try {
             val membersMainCommunity = communityMemberDAO.readByCommunity(communityID)
             val response = mutableListOf<CommunityRelatedUsersDTO>()
-            val parentCommunities = communityDAO.readParentCommunities(communityID)
+            val parentCommunities = communityDAO.readRelatedCommunities(communityID)
 
             for(j in parentCommunities.indices){
                 val members = communityMemberDAO.readByCommunity(parentCommunities[j].id)
@@ -178,7 +178,7 @@ object CommunityReadService {
                             userID = members[i].userID,
                             communityID = parentCommunities[j].id,
                             role = communityMember.role,
-                            userImageURL = user.imageURL,
+                            userPic = user.imageURL,
                             communityName = parentCommunities[j].name,
                             userEmail = user.email,
                             affiliatedCommunityID = parentCommunities[j].id
@@ -194,7 +194,7 @@ object CommunityReadService {
                         userID = membersMainCommunity[i].userID,
                         communityID = communityID,
                         role = communityMember.role,
-                        userImageURL = user.imageURL,
+                        userPic = user.imageURL,
                         communityName = null,
                         userEmail = user.email,
                         affiliatedCommunityID = communityID
@@ -205,7 +205,7 @@ object CommunityReadService {
             listOf()
         }
     }
-    suspend fun readCommunityByName(requester: String, name: String, communityDAO: CI, communityMemberDAO: CMI): List<UserCommunitiesDTO>{
+    suspend fun readCommunityByName(requester: Long, name: String, communityDAO: CI, communityMemberDAO: CMI): List<UserCommunitiesDTO>{
         return try {
             val communities = communityDAO.readByName(name)
             val response = mutableListOf<UserCommunitiesDTO>()
@@ -214,10 +214,10 @@ object CommunityReadService {
                 response.add(UserCommunitiesDTO(
                     name = communities[i].name,
                     about = communities[i].about,
-                    relatedCommunityName = communities[i].relatedCommunityID?.let { communityDAO.read(id = it) }?.name,
+                    relatedCommunityName = communities[i].parentCommunityID?.let { communityDAO.read(id = it) }?.name,
                     role = communityMember?.role ?: "",
                     communityID = communities[i].id,
-                    imageURL = communities[i].imageURL
+                    imageURL = communities[i].pic
                 ))
             }
             response

@@ -4,11 +4,11 @@ import br.meetingplace.server.modules.topic.dto.response.TopicOpinionDTO
 import io.ktor.http.*
 
 interface TOI {
-    suspend fun create(topicID: String, userID: String, liked: Boolean): HttpStatusCode
-    suspend fun readAll(topicID: String): List<TopicOpinionDTO>
-    suspend fun read(topicID: String, userID: String): TopicOpinionDTO?
-    suspend fun update(topicID: String, userID: String, liked: Boolean): HttpStatusCode
-    suspend fun delete(topicID: String, userID: String): HttpStatusCode
-    suspend fun readQuantity(topicID: String,likes: Boolean): Long
-    suspend fun check(userID: String, topicID: String, liked: Boolean): Boolean
+    suspend fun create(topicID: Long, userID: Long, liked: Boolean): HttpStatusCode
+    suspend fun readAll(topicID: Long): List<TopicOpinionDTO>
+    suspend fun read(topicID: Long, userID: Long): TopicOpinionDTO?
+    suspend fun update(topicID: Long, userID: Long, liked: Boolean): HttpStatusCode
+    suspend fun delete(topicID: Long, userID: Long): HttpStatusCode
+    suspend fun readQuantity(topicID: Long,likes: Boolean): Long
+    suspend fun check(userID: Long, topicID: Long, liked: Boolean): Boolean
 }

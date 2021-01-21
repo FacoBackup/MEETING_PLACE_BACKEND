@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 object CommunityMemberEntity: Table("community_members"){
-    val communityID = varchar("community_id", 36).references(CommunityEntity.id, onDelete = ReferenceOption.CASCADE)
-    var role = varchar("role", 24)
-    val userID = varchar("user_id",320).references(UserEntity.email, onDelete = ReferenceOption.CASCADE)
+    val communityID = long("community_pk").references(CommunityEntity.id, onDelete = ReferenceOption.CASCADE)
+    var role = varchar("user_role", 24)
+    val userID = long("user_pk").references(UserEntity.id, onDelete = ReferenceOption.CASCADE)
 }

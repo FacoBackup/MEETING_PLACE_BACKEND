@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object TopicStatusDAO: TVI {
-    override suspend fun create(userID: String, topicID: String): HttpStatusCode {
+    override suspend fun create(userID: Long, topicID: Long): HttpStatusCode {
         return try{
             transaction{
                 TopicStatusEntity.insert{
@@ -27,24 +27,7 @@ object TopicStatusDAO: TVI {
             HttpStatusCode.InternalServerError
         }
     }
-//
-//    override suspend fun update(topicID: String, userID: String): HttpStatusCode {
-//        return try{
-//            transaction{
-//                TopicStatusEntity.update({(TopicStatusEntity.userID eq userID) and (TopicStatusEntity.topicID eq topicID)}){
-//
-//                    it[this.seenAt] = System.currentTimeMillis()
-//                    it[this.seen] = true
-//                }
-//            }
-//            HttpStatusCode.Created
-//        }catch (e: Exception){
-//            HttpStatusCode.InternalServerError
-//        }catch (psql: PSQLException){
-//            HttpStatusCode.InternalServerError
-//        }
-//    }
-    override suspend fun check(topicID: String, userID: String): Boolean {
+    override suspend fun check(topicID: Long, userID: Long): Boolean {
         return try{
             transaction{
                 TopicStatusEntity.select{
@@ -59,27 +42,4 @@ object TopicStatusDAO: TVI {
             false
         }
     }
-//
-//    override suspend fun readAllUnseenTopics(userID: String): List<TopicStatusDTO> {
-//        return try{
-//            transaction{
-//                TopicStatusEntity.select{
-//                    (TopicStatusEntity.userID eq userID) and
-//                    (TopicStatusEntity.seen eq false)
-//                }.map { mapTopicStatus(it) }
-//            }
-//        }catch (e: Exception){
-//            listOf()
-//        }catch (psql: PSQLException){
-//            listOf()
-//        }
-//    }
-//    private fun mapTopicStatus(it: ResultRow): TopicStatusDTO {
-//        return TopicStatusDTO(
-//            topicID = it[TopicStatusEntity.topicID],
-//            userID = it[TopicStatusEntity.userID],
-//            seen = it[TopicStatusEntity.seen],
-//            seenAt = it[TopicStatusEntity.seenAt]
-//        )
-//    }
 }

@@ -7,7 +7,7 @@ import br.meetingplace.server.modules.community.dto.requests.RequestCommunityUpd
 import io.ktor.http.*
 
 object CommunityUpdateService {
-    suspend  fun updateCommunity(requester: String,data: RequestCommunityUpdate, community: CI, member: CMI): HttpStatusCode {
+    suspend  fun updateCommunity(requester: Long,data: RequestCommunityUpdate, community: CI, member: CMI): HttpStatusCode {
         return try {
             val memberData = member.read(communityID = data.communityID, userID = requester)
 

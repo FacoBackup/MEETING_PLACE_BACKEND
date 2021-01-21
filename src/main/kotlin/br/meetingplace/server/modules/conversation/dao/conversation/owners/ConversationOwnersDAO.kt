@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object ConversationOwnersDAO: COI {
-    override suspend fun create(userID: String, secondUserID: String, conversationID: String): HttpStatusCode {
+    override suspend fun create(userID: Long, secondUserID: Long, conversationID: Long): HttpStatusCode {
         return try{
             transaction{
                 ConversationOwnersEntity.insert {
@@ -25,7 +25,7 @@ object ConversationOwnersDAO: COI {
         }
     }
 
-    override suspend fun check(userID: String, secondUserID: String): Boolean {
+    override suspend fun check(userID: Long, secondUserID: Long): Boolean {
         return try{
             transaction{
                     ConversationOwnersEntity.select {
@@ -42,7 +42,7 @@ object ConversationOwnersDAO: COI {
             false
         }
     }
-    override suspend fun readAll(userID: String): List<ConversationOwnersDTO> {
+    override suspend fun readAll(userID: Long): List<ConversationOwnersDTO> {
         return try{
             transaction{
                 ConversationOwnersEntity.select {
@@ -57,7 +57,7 @@ object ConversationOwnersDAO: COI {
         }
     }
 
-    override suspend fun readByConversation(conversationID: String): ConversationOwnersDTO? {
+    override suspend fun readByConversation(conversationID: Long): ConversationOwnersDTO? {
         return try{
             transaction{
                 ConversationOwnersEntity.select {
@@ -70,7 +70,7 @@ object ConversationOwnersDAO: COI {
             null
         }
     }
-    override suspend fun read(userID: String, secondUserID: String): ConversationOwnersDTO? {
+    override suspend fun read(userID: Long, secondUserID: Long): ConversationOwnersDTO? {
         return try{
             transaction{
                 ConversationOwnersEntity.select {

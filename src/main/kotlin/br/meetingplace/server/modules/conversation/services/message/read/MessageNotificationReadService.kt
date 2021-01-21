@@ -8,7 +8,7 @@ import br.meetingplace.server.modules.conversation.dto.response.notification.Mes
 import br.meetingplace.server.modules.user.dao.user.UI
 
 object MessageNotificationReadService {
-    suspend fun readByPage(requester: String, page: Long, messageNotificationDAO: MNI, userDAO: UI,conversationOwnersDAO: COI, conversationDAO: CI): List<MessageNotificationDTO>{
+    suspend fun readByPage(requester: Long, page: Long, messageNotificationDAO: MNI, userDAO: UI,conversationOwnersDAO: COI, conversationDAO: CI): List<MessageNotificationDTO>{
         return try {
             val notifications = messageNotificationDAO.read(requester, page)
             val response = mutableListOf<MessageNotificationDTO>()
@@ -21,7 +21,7 @@ object MessageNotificationReadService {
                         response.add(
                             MessageNotificationDTO(
                                 subjectImageURL = user.imageURL,
-                                subjectID = user.email,
+                                subjectID = user.id,
                                 subjectName = user.name,
                                 isGroup = false,
                                 page = notifications[i].page,
@@ -56,7 +56,7 @@ object MessageNotificationReadService {
         }
     }
 
-    suspend fun readLatestNotifications (requester: String, messageNotificationDAO: MNI, userDAO: UI, conversationDAO: CI, conversationOwnersDAO: COI): List<MessageNotificationDTO>{
+    suspend fun readLatestNotifications (requester: Long, messageNotificationDAO: MNI, userDAO: UI, conversationDAO: CI, conversationOwnersDAO: COI): List<MessageNotificationDTO>{
         return try {
             val notifications = messageNotificationDAO.readLastPage(requester)
             val response = mutableListOf<MessageNotificationDTO>()
@@ -69,7 +69,7 @@ object MessageNotificationReadService {
                         response.add(
                             MessageNotificationDTO(
                                 subjectImageURL = user.imageURL,
-                                subjectID = user.email,
+                                subjectID = user.id,
                                 subjectName = user.name,
                                 isGroup = false,
                                 page = notifications[i].page,

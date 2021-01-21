@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object CommunityMemberDAO: CMI {
-    override suspend fun readFollowersQuantity(communityID: String): Long {
+    override suspend fun readFollowersQuantity(communityID: Long): Long {
         return try{
             transaction {
                 CommunityMemberEntity.select {
@@ -23,7 +23,7 @@ object CommunityMemberDAO: CMI {
         }
     }
 
-    override suspend fun readMembersQuantity(communityID: String): Long {
+    override suspend fun readMembersQuantity(communityID: Long): Long {
         return try{
             transaction {
                 CommunityMemberEntity.select {
@@ -38,7 +38,7 @@ object CommunityMemberDAO: CMI {
         }
     }
 
-    override suspend fun readModsQuantity(communityID: String): Long {
+    override suspend fun readModsQuantity(communityID: Long): Long {
         return try{
             transaction {
                 CommunityMemberEntity.select {
@@ -52,7 +52,7 @@ object CommunityMemberDAO: CMI {
             0
         }
     }
-    override suspend fun readFollowers(communityID: String): List<CommunityMemberDTO> {
+    override suspend fun readFollowers(communityID: Long): List<CommunityMemberDTO> {
         return try{
             transaction {
                 CommunityMemberEntity.select {
@@ -67,7 +67,7 @@ object CommunityMemberDAO: CMI {
         }
     }
 
-    override suspend fun readMembers(communityID: String): List<CommunityMemberDTO> {
+    override suspend fun readMembers(communityID: Long): List<CommunityMemberDTO> {
         return try{
             transaction {
                 CommunityMemberEntity.select {
@@ -82,7 +82,7 @@ object CommunityMemberDAO: CMI {
         }
     }
 
-    override suspend fun readMods(communityID: String): List<CommunityMemberDTO> {
+    override suspend fun readMods(communityID: Long): List<CommunityMemberDTO> {
         return try{
             transaction {
                 CommunityMemberEntity.select {
@@ -96,7 +96,7 @@ object CommunityMemberDAO: CMI {
             listOf()
         }
     }
-    override suspend fun readByUser(userID: String): List<CommunityMemberDTO> {
+    override suspend fun readByUser(userID: Long): List<CommunityMemberDTO> {
         return try{
             transaction {
                 CommunityMemberEntity.select {
@@ -109,7 +109,7 @@ object CommunityMemberDAO: CMI {
             listOf()
         }
     }
-    override suspend fun create(userID: String, communityID: String, role: String): HttpStatusCode {
+    override suspend fun create(userID: Long, communityID: Long, role: String): HttpStatusCode {
         return try{
             transaction {
                 CommunityMemberEntity.insert {
@@ -126,7 +126,7 @@ object CommunityMemberDAO: CMI {
         }
     }
 
-    override suspend fun delete(communityID: String, userID: String): HttpStatusCode {
+    override suspend fun delete(communityID: Long, userID: Long): HttpStatusCode {
         return try{
             transaction {
                 CommunityMemberEntity.deleteWhere { (CommunityMemberEntity.communityID eq communityID) and (CommunityMemberEntity.userID eq userID) }
@@ -140,7 +140,7 @@ object CommunityMemberDAO: CMI {
         }
     }
 
-    override suspend fun check(communityID: String, userID: String): HttpStatusCode {
+    override suspend fun check(communityID: Long, userID: Long): HttpStatusCode {
         return try{
             if(transaction {
                 CommunityMemberEntity.select { (CommunityMemberEntity.communityID eq communityID) and (CommunityMemberEntity.userID eq userID) }.empty()
@@ -153,7 +153,7 @@ object CommunityMemberDAO: CMI {
         }
     }
 
-    override suspend fun readByCommunity(communityID: String): List<CommunityMemberDTO> {
+    override suspend fun readByCommunity(communityID: Long): List<CommunityMemberDTO> {
         return try{
             return transaction {
                 CommunityMemberEntity.select { CommunityMemberEntity.communityID eq communityID }
@@ -165,7 +165,7 @@ object CommunityMemberDAO: CMI {
             listOf()
         }
     }
-    override suspend fun read(communityID: String, userID: String): CommunityMemberDTO? {
+    override suspend fun read(communityID: Long, userID: Long): CommunityMemberDTO? {
         return try{
             return transaction {
                 CommunityMemberEntity.select { (CommunityMemberEntity.communityID eq communityID) and
@@ -179,7 +179,7 @@ object CommunityMemberDAO: CMI {
         }
     }
 
-    override suspend fun update(communityID: String, userID: String, role: String): HttpStatusCode {
+    override suspend fun update(communityID: Long, userID: Long, role: String): HttpStatusCode {
         return try{
             transaction {
                 CommunityMemberEntity.update( {  (CommunityMemberEntity.communityID eq communityID) and (CommunityMemberEntity.userID eq userID) } ){
@@ -194,7 +194,9 @@ object CommunityMemberDAO: CMI {
         }
     }
     private fun mapCommunityMemberDTO(it: ResultRow): CommunityMemberDTO {
-        return CommunityMemberDTO(communityID = it[CommunityMemberEntity.communityID], role = it[CommunityMemberEntity.role],
+        return CommunityMemberDTO(
+            communityID = it[CommunityMemberEntity.communityID],
+            role = it[CommunityMemberEntity.role],
             userID = it[CommunityMemberEntity.userID])
     }
 }

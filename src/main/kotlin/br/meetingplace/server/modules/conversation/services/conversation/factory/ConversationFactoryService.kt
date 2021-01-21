@@ -9,12 +9,14 @@ import java.util.*
 
 object ConversationFactoryService {
 
-    suspend fun create(requester: String, conversationMemberDAO: CMI, data: RequestConversationCreation, conversationDAO: CI, userDAO: UI) : HttpStatusCode {
+    suspend fun create(requester: Long, conversationMemberDAO: CMI, data: RequestConversationCreation, conversationDAO: CI, userDAO: UI) : HttpStatusCode {
         return try {
             if (userDAO.check(requester)){
-                val id = UUID.randomUUID().toString()
-                conversationDAO.create(data, id = id)
-                conversationMemberDAO.create(userID= requester, conversationID = id, admin = true)
+                val id = conversationDAO.create(data)
+                if(id != null)
+                    conversationMemberDAO.create(userID= requester, conversationID = id, admin = true)
+                else
+                    HttpStatusCode.InternalServerError
             }
             else HttpStatusCode.FailedDependency
         }catch (e: Exception){

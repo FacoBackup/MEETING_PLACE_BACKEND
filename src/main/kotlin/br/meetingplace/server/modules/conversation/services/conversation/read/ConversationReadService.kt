@@ -13,7 +13,7 @@ import br.meetingplace.server.modules.user.dao.user.UI
 object ConversationReadService {
 
     suspend fun readConversations(
-        requester: String,
+        requester: Long,
         conversationMemberDAO: CMI,
         conversationDAO: CI, userDAO: UI,
         conversationOwnerDAO: COI,

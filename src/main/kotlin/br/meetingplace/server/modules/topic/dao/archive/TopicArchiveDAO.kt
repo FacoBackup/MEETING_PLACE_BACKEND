@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object TopicArchiveDAO: TAI {
-    override suspend fun create(topicID: String, requester: String): HttpStatusCode {
+    override suspend fun create(topicID: Long, requester: Long): HttpStatusCode {
         return try{
             transaction {
                 TopicArchiveEntity.insert {
@@ -27,7 +27,7 @@ object TopicArchiveDAO: TAI {
         }
     }
 
-    override suspend fun check(topicID: String, requester: String): Boolean {
+    override suspend fun check(topicID: Long, requester: Long): Boolean {
         return try{
             transaction {
                 TopicArchiveEntity.select {
@@ -42,7 +42,7 @@ object TopicArchiveDAO: TAI {
         }
     }
 
-    override suspend fun delete(topicID: String, requester: String): HttpStatusCode {
+    override suspend fun delete(topicID: Long, requester: Long): HttpStatusCode {
         return try{
             transaction {
                 TopicArchiveEntity.deleteWhere {

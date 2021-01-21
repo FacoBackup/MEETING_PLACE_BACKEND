@@ -6,9 +6,9 @@ import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 object MessageStatusEntity: Table("message_status") {
-    val userID = varchar("user_id" ,320).references(UserEntity.email, onDelete = ReferenceOption.CASCADE)
-    val conversationID = varchar("conversation_id" ,320).references(ConversationEntity.id, onDelete = ReferenceOption.CASCADE)
-    val messageID = varchar("message_id" ,320).references(MessageEntity.id, onDelete = ReferenceOption.CASCADE)
+    val userID = long("user_pk" ).references(UserEntity.id, onDelete = ReferenceOption.CASCADE)
+    val conversationID = long("conversation_pk" ).references(ConversationEntity.id, onDelete = ReferenceOption.CASCADE)
+    val messageID = long("message_pk" ).references(MessageEntity.id, onDelete = ReferenceOption.CASCADE)
     val seen = bool("seen")
     val seenAt = long("seen_at").nullable()
 }

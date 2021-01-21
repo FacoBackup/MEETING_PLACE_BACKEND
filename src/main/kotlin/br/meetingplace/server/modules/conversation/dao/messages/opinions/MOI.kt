@@ -4,9 +4,9 @@ import br.meetingplace.server.modules.conversation.dto.response.messages.Message
 import io.ktor.http.*
 
 interface MOI {
-    fun create(messageID: String, userID: String, liked: Boolean): HttpStatusCode
-    fun read(messageID: String, userID: String): MessageOpinionsDTO?
-    fun update(messageID: String, userID: String, liked: Boolean): HttpStatusCode
-    fun delete(messageID: String, userID: String): HttpStatusCode
+    fun create(messageID: Long, userID: Long, liked: Boolean): HttpStatusCode
+    fun read(messageID: Long, userID: Long): MessageOpinionsDTO?
+    fun update(messageID: Long, userID: Long, liked: Boolean): HttpStatusCode
+    fun delete(messageID: Long, userID: Long): HttpStatusCode
 
 }

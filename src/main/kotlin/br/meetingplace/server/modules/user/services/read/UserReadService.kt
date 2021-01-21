@@ -6,7 +6,7 @@ import br.meetingplace.server.modules.user.dao.user.UI
 import br.meetingplace.server.modules.user.dto.response.UserProfileDTO
 
 object UserReadService {
-    suspend fun read(userID: String, userSocialDAO: SI, userDAO: UI, topicDAO: TI): UserProfileDTO?{
+    suspend fun read(userID: Long, userSocialDAO: SI, userDAO: UI, topicDAO: TI): UserProfileDTO?{
         return try{
             val user = userDAO.readByID(userID)
             if(user != null){
@@ -28,8 +28,7 @@ object UserReadService {
                     imageURL = user.imageURL,
                     birthDate = user.birthDate,
                     phoneNumber = user.phoneNumber,
-                    gender = user.gender,
-                    admin = user.admin
+                    gender = user.gender
                 )
 
             }

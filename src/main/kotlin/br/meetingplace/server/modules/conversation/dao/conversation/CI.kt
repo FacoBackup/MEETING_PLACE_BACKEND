@@ -5,10 +5,10 @@ import br.meetingplace.server.modules.conversation.dto.response.conversation.Con
 import io.ktor.http.*
 
 interface CI {
-    suspend fun create(data: RequestConversationCreation, id: String): HttpStatusCode
-    suspend fun read(conversationID: String): ConversationDTO?
-    suspend fun check(conversationID: String): Boolean
-    suspend fun update(conversationID: String, latestMessage: Boolean, name: String?, about: String?, imageURL: String?): HttpStatusCode
-    suspend fun delete(conversationID: String): HttpStatusCode
-    suspend fun readByName(input: String, userID: String):List<ConversationDTO>
+    suspend fun create(data: RequestConversationCreation): Long?
+    suspend fun read(conversationID: Long): ConversationDTO?
+    suspend fun check(conversationID: Long): Boolean
+    suspend fun update(conversationID: Long, latestMessage: Boolean, name: String?, about: String?, imageURL: String?): HttpStatusCode
+    suspend fun delete(conversationID: Long): HttpStatusCode
+    suspend fun readByName(input: String, userID: Long):List<ConversationDTO>
 }

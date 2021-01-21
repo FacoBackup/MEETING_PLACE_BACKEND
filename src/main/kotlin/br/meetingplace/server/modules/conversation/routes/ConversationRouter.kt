@@ -19,14 +19,14 @@ fun Route.conversationRouter(){
         patch ("/conversation/search"){
             val data = call.receive<RequestConversation>()
             val log = call.log
-            if(log != null)
-                call.respond(ConversationDAO.readByName(input = data.conversationID, log.userID))
+            if(log != null && data.conversationName != null)
+                call.respond(ConversationDAO.readByName(input = data.conversationName, log.userID))
             else call.respond(HttpStatusCode.Unauthorized)
         }
         patch("/conversation/by/owner"){
             val data = call.receive<RequestUser>()
             val log = call.log
-            if(log != null){
+            if(log != null  && data.userID != null){
                 val result = ConversationOwnersDAO.read(userID = data.userID, log.userID)
                 if(result != null)
                     call.respond(result)

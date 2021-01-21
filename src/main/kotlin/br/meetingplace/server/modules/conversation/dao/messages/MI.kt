@@ -4,13 +4,13 @@ import br.meetingplace.server.modules.conversation.dto.response.messages.Message
 import io.ktor.http.*
 
 interface MI {
-    suspend fun create(message: String, imageURL: String?, conversationID: String, creator: String, messageID: String): HttpStatusCode
-    suspend fun read(messageID: String): MessageDTO?
-    suspend fun check(messageID: String): Boolean
-    suspend fun readByPage(conversationID: String, page: Long): List<MessageDTO>
-    suspend fun readLastPage(conversationID: String): List<MessageDTO>
-    suspend fun readLastMessage(conversationID: String, userID: String): String?
-    suspend fun readAllConversation(userID: String, conversationID: String): List<MessageDTO>
-    suspend fun delete(messageID: String): HttpStatusCode
-    suspend fun update(messageID: String): HttpStatusCode
+    suspend fun create(message: String, imageURL: String?, conversationID: Long, creator: Long): Long?
+    suspend fun read(messageID: Long): MessageDTO?
+    suspend fun check(messageID: Long): Boolean
+    suspend fun readByPage(conversationID: Long, page: Long): List<MessageDTO>
+    suspend fun readLastPage(conversationID: Long): List<MessageDTO>
+    suspend fun readLastMessage(conversationID: Long, userID: Long): String?
+    suspend fun readAllConversation(userID: Long, conversationID: Long): List<MessageDTO>
+    suspend fun delete(messageID: Long): HttpStatusCode
+    suspend fun update(messageID: Long): HttpStatusCode
 }

@@ -12,9 +12,9 @@ import org.postgresql.util.PSQLException
 
 object MessageNotificationDAO: MNI {
     override suspend fun create(
-        requester: String,
-        messageID: String,
-        conversationID: String,
+        requester: Long,
+        messageID: Long,
+        conversationID: Long,
         creationDate: Long,
         isGroup: Boolean
     ): HttpStatusCode {
@@ -53,7 +53,7 @@ object MessageNotificationDAO: MNI {
             HttpStatusCode.InternalServerError
         }
     }
-    override suspend fun readLastPage(requester: String): List<MessageNotificationDTO> {
+    override suspend fun readLastPage(requester: Long): List<MessageNotificationDTO> {
         return try {
             val lastPage = transaction {
                 MessageNotificationEntity.select {
@@ -90,7 +90,7 @@ object MessageNotificationDAO: MNI {
         }
     }
 
-    override suspend fun readUnseenQuantity(requester: String): Long {
+    override suspend fun readUnseenQuantity(requester: Long): Long {
         return try {
             transaction {
                 MessageNotificationEntity.select {
@@ -106,7 +106,7 @@ object MessageNotificationDAO: MNI {
         }
     }
 
-    override suspend fun read(requester: String, page: Long): List<MessageNotificationDTO> {
+    override suspend fun read(requester: Long, page: Long): List<MessageNotificationDTO> {
         return try {
             val result = transaction {
                 MessageNotificationEntity.select {

@@ -6,7 +6,7 @@ import io.ktor.http.*
 
 object MessageDeleteService {
 
-    suspend fun deleteMessage(requester: String, data: RequestMessage, messageDAO: MI): HttpStatusCode {
+    suspend fun deleteMessage(requester: Long, data: RequestMessage, messageDAO: MI): HttpStatusCode {
         return try {
             val message = messageDAO.read(messageID = data.messageID)
             if(message != null && message.creatorID == requester)

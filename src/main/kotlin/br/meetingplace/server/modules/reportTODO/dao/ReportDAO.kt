@@ -2,7 +2,7 @@ package br.meetingplace.server.modules.reportTODO.dao
 
 import br.meetingplace.server.modules.reportTODO.dto.requests.RequestReportCreation
 import br.meetingplace.server.modules.reportTODO.dto.response.ReportDTO
-import br.meetingplace.server.modules.reportTODO.entities.Report
+import br.meetingplace.server.modules.reportTODO.entities.ReportEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -11,11 +11,10 @@ import org.postgresql.util.PSQLException
 import java.util.*
 
 object ReportDAO: RI {
-    override fun create(requester: String, data: RequestReportCreation): HttpStatusCode {
+    override fun create(requester: Long, data: RequestReportCreation): HttpStatusCode {
         return try {
             transaction {
-                Report.insert {
-                    it[id] = UUID.randomUUID().toString()
+                ReportEntity.insert {
                     it[creatorID] = requester
                     it[topicID] = data.topicID
                     it[communityID] = data.communityID
@@ -33,11 +32,11 @@ object ReportDAO: RI {
         }
     }
 
-    override fun delete(reportID: String): HttpStatusCode {
+    override fun delete(reportID: Long): HttpStatusCode {
         return try {
             transaction {
-                Report.deleteWhere {
-                    Report.id eq reportID
+                ReportEntity.deleteWhere {
+                    ReportEntity.id eq reportID
                 }
             }
             HttpStatusCode.OK
@@ -48,11 +47,11 @@ object ReportDAO: RI {
         }
     }
 
-    override fun read(reportID: String): ReportDTO? {
+    override fun read(reportID: Long): ReportDTO? {
         return try {
             transaction {
-                Report.select {
-                    Report.id eq reportID
+                ReportEntity.select {
+                    ReportEntity.id eq reportID
                 }.map { mapReport(it) }.firstOrNull()
             }
         }catch (normal: Exception){
@@ -62,11 +61,11 @@ object ReportDAO: RI {
         }
     }
 
-    override fun check(reportID: String): Boolean {
+    override fun check(reportID: Long): Boolean {
         return try {
             !transaction {
-                Report.select {
-                    Report.id eq reportID
+                ReportEntity.select {
+                    ReportEntity.id eq reportID
                 }.empty()
             }
         }catch (normal: Exception){
@@ -75,12 +74,12 @@ object ReportDAO: RI {
             false
         }
     }
-    override fun readAll(communityID: String, done: Boolean): List<ReportDTO> {
+    override fun readAll(communityID: Long, done: Boolean): List<ReportDTO> {
         return try {
             transaction {
-                Report.select {
-                    (Report.communityID eq communityID) and
-                    (Report.done eq done)
+                ReportEntity.select {
+                    (ReportEntity.communityID eq communityID) and
+                    (ReportEntity.done eq done)
                 }.map { mapReport(it) }
             }
         }catch (normal: Exception){
@@ -90,10 +89,10 @@ object ReportDAO: RI {
         }
     }
 
-    override fun update(reportID: String, reason: String?, response: String?, done: Boolean?): HttpStatusCode {
+    override fun update(reportID: Long, reason: String?, response: String?, done: Boolean?): HttpStatusCode {
         return try {
             transaction {
-                Report.update({Report.id eq reportID}){
+                ReportEntity.update({ReportEntity.id eq reportID}){
                     if(!reason.isNullOrBlank())
                         it[this.reason] = reason
                     if(!response.isNullOrBlank())
@@ -110,9 +109,16 @@ object ReportDAO: RI {
         }
     }
     private fun mapReport(it: ResultRow): ReportDTO {
-        return ReportDTO(reportID =  it[Report.id], creationDate =  it[Report.creationDate].toString("dd-MM-yyyy"),
-            creatorID = it[Report.creatorID] , reason =  it[Report.reason],
-            response =  it[Report.response],done = it[Report.done],
-            communityID =  it[Report.communityID], topicID = it[Report.topicID])
+        return ReportDTO(
+            reportID =  it[ReportEntity.id],
+            creationDate =  it[ReportEntity.creationDate].toString("dd-MM-yyyy"),
+            creatorID = it[ReportEntity.creatorID] ,
+            reason =  it[ReportEntity.reason],
+            response =  it[ReportEntity.response],
+            done = it[ReportEntity.done],
+            communityID =  it[ReportEntity.communityID],
+            topicID = it[ReportEntity.topicID],
+            responseCreatorID = it[ReportEntity.responseCreator]
+            )
     }
 }

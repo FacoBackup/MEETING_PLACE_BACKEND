@@ -56,11 +56,11 @@ fun Route.communityRouter() {
         patch("/get/members"){
             val data = call.receive<RequestCommunity>()
             val log = call.log
-            if(log != null){
+            if(log != null && data.communityID != null){
                 call.respond(CommunityReadService.readMembers(
                     userDAO=UserDAO,
                     communityID = data.communityID,
-                    communityDAO = CommunityDAO,
+
                     communityMemberDAO = CommunityMemberDAO))
 
             }
@@ -69,11 +69,11 @@ fun Route.communityRouter() {
         patch("/get/mods"){
             val data = call.receive<RequestCommunity>()
             val log = call.log
-            if(log != null){
+            if(log != null && data.communityID != null){
                 call.respond(CommunityReadService.readMods(
                     userDAO=UserDAO,
                     communityID = data.communityID,
-                    communityDAO = CommunityDAO,
+
                     communityMemberDAO = CommunityMemberDAO))
 
             }
@@ -82,11 +82,11 @@ fun Route.communityRouter() {
         patch("/get/followers/community"){
             val data = call.receive<RequestCommunity>()
             val log = call.log
-            if(log != null){
+            if(log != null && data.communityID != null){
                 call.respond(CommunityReadService.readFollowers(
                     userDAO=UserDAO,
                     communityID = data.communityID,
-                    communityDAO = CommunityDAO,
+
                     communityMemberDAO = CommunityMemberDAO))
 
             }
@@ -95,7 +95,7 @@ fun Route.communityRouter() {
         patch("/get/community/by/id"){
             val data = call.receive<RequestCommunity>()
             val log = call.log
-            if(log != null){
+            if(log != null && data.communityID != null){
                 val response = CommunityReadService.readCommunityByID(
                     requester = log.userID,
                     communityID = data.communityID,
@@ -113,7 +113,7 @@ fun Route.communityRouter() {
         patch("/get/all/related/communities"){
             val data = call.receive<RequestCommunity>()
             val log = call.log
-            if(log != null)
+            if(log != null && data.communityID != null)
                 call.respond(CommunityReadService.readAllRelatedCommunities(
                     communityMemberDAO = CommunityMemberDAO,
                     communityID = data.communityID,
@@ -126,14 +126,14 @@ fun Route.communityRouter() {
         patch ("/get/all/user/communities"){
             val data = call.receive<RequestUser>()
             val log = call.log
-            if(log != null)
-                call.respond(CommunityReadService.readAllUserCommunities(userID = data.userID, communityDAO = CommunityDAO, communityMemberDAO = CommunityMemberDAO))
+            if(log != null && data.userID != null)
+                call.respond(CommunityReadService.readAllUserCommunities(requester = data.userID, communityDAO = CommunityDAO, communityMemberDAO = CommunityMemberDAO))
             else call.respond(HttpStatusCode.Unauthorized)
         }
         patch("/get/community/related/users"){
             val data = call.receive<RequestCommunity>()
             val log = call.log
-            if(log != null)
+            if(log != null && data.communityID != null)
                 call.respond(CommunityReadService.readUsersRelatedToCommunity(
                     communityMemberDAO = CommunityMemberDAO,
                     communityID = data.communityID,
@@ -146,9 +146,13 @@ fun Route.communityRouter() {
         patch("/search/community") {
             val data= call.receive<RequestCommunity>()
             val log = call.log
-            if(log != null){
-                if(data.communityID.isNotBlank())
-                    call.respond(CommunityReadService.readCommunityByName(requester = log.userID, name= data.communityID, communityDAO = CommunityDAO, communityMemberDAO = CommunityMemberDAO))
+            if(log != null && data.communityName != null){
+
+                call.respond(CommunityReadService.readCommunityByName(
+                    requester = log.userID,
+                    name= data.communityName,
+                    communityDAO = CommunityDAO,
+                    communityMemberDAO = CommunityMemberDAO))
             }
 
             else call.respond(HttpStatusCode.Unauthorized)

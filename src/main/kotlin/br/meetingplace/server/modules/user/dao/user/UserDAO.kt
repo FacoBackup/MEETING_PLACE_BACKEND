@@ -23,12 +23,12 @@ object UserDAO: UI {
                    it[gender] = data.gender
                    it[nationality] = data.nationality
                    it[birth] = data.birthDate
-                   it[imageURL] = null
-                   it[backgroundImageURL] = null
+                   it[pic] = null
+                   it[background] = null
                    it[about] = null
-                   it[admin] = data.admin
                    it[cityOfBirth] = data.cityOfBirth
                    it[phoneNumber] = data.phoneNumber
+                   it[category] = null
                    it[joinedIn] = System.currentTimeMillis()
                }
             }
@@ -40,10 +40,10 @@ object UserDAO: UI {
         }
     }
 
-    override suspend fun delete(userID: String): HttpStatusCode {
+    override suspend fun delete(userID: Long): HttpStatusCode {
         return try {
             transaction {
-                UserEntity.deleteWhere { UserEntity.email eq userID }
+                UserEntity.deleteWhere { UserEntity.id eq userID }
             }
             HttpStatusCode.OK
         }catch (normal: Exception){
@@ -52,11 +52,11 @@ object UserDAO: UI {
             HttpStatusCode.InternalServerError
         }
     }
-    override suspend fun readSimplifiedUserByID(userID: String): UserSimplifiedDTO? {
+    override suspend fun readSimplifiedUserByID(userID: Long): UserSimplifiedDTO? {
         return try {
             transaction {
                 UserEntity.select {
-                    UserEntity.email eq userID
+                    UserEntity.id eq userID
                 }.map { mapSimplifiedUser(it) }.firstOrNull()
             }
         }catch (normal: Exception){
@@ -65,11 +65,11 @@ object UserDAO: UI {
             null
         }
     }
-    override suspend fun readByID(userID: String): UserDTO? {
+    override suspend fun readByID(userID: Long): UserDTO? {
         return try {
             transaction {
                 UserEntity.select {
-                    UserEntity.email eq userID
+                    UserEntity.id eq userID
                 }.map { mapUser(it) }.firstOrNull()
             }
         }catch (normal: Exception){
@@ -79,13 +79,13 @@ object UserDAO: UI {
         }
     }
 
-    override suspend fun readByName(name: String, requester: String): List<UserDTO> {
+    override suspend fun readByName(name: String, requester: Long): List<UserDTO> {
         return try {
             if(name.isNotBlank()){
                 transaction {
                     UserEntity.select{
                         (UserEntity.userName like "$name%") and
-                                (UserEntity.email neq requester)
+                                (UserEntity.id neq requester)
                     }.map { mapUser(it) }
                 }
             }
@@ -97,11 +97,11 @@ object UserDAO: UI {
             listOf()
         }
     }
-    override suspend fun readAuthUser(userID: String): UserAuthDTO? {
+    override suspend fun readAuthUser(userID: Long): UserAuthDTO? {
         return try {
             transaction {
                 UserEntity.select {
-                    UserEntity.email eq userID
+                    UserEntity.id eq userID
                 }.map { mapUserAuth(it) }.firstOrNull()
             }
         }catch (normal: Exception){
@@ -122,10 +122,10 @@ object UserDAO: UI {
         }
     }
 
-    override suspend fun check(userID: String): Boolean {
+    override suspend fun check(userID: Long): Boolean {
         return try {
             return !transaction {
-                UserEntity.select { UserEntity.email eq userID }.empty()
+                UserEntity.select { UserEntity.id eq userID }.empty()
             }
         }catch (normal: Exception){
             false
@@ -180,20 +180,23 @@ object UserDAO: UI {
     }
 
     override suspend fun update(
-        userID: String,
+        userID: Long,
         name: String?,
         imageURL: String?,
         about: String?,
         nationality: String?,
         phoneNumber: String?,
         city: String?,
-        backgroundImageURL: String?
+        backgroundImageURL: String?,
+        category: String?
     ): HttpStatusCode {
         return try {
             transaction {
-                UserEntity.update({UserEntity.email eq userID}){
+                UserEntity.update({UserEntity.id eq userID}){
                     if(!name.isNullOrBlank())
                         it[this.userName] = name
+
+                    it[this.category] = category
 
                     it[this.about] = about
 
@@ -203,9 +206,9 @@ object UserDAO: UI {
 
                     it[this.cityOfBirth] = city
 
-                    it[this.imageURL] = imageURL
+                    it[this.pic] = imageURL
 
-                    it[this.backgroundImageURL] = backgroundImageURL
+                    it[this.background] = backgroundImageURL
                 }
             }
             HttpStatusCode.OK
@@ -225,22 +228,22 @@ object UserDAO: UI {
             email = it[UserEntity.email],
             name = it[UserEntity.userName],
             birthDate= it[UserEntity.birth],
-            imageURL = it[UserEntity.imageURL],
-            backgroundImageURL = it[UserEntity.backgroundImageURL])
+            imageURL = it[UserEntity.pic],
+            backgroundImageURL = it[UserEntity.background])
     }
     private fun mapUser(it: ResultRow): UserDTO {
         return UserDTO(email = it[UserEntity.email],
             name = it[UserEntity.userName],
             gender = it[UserEntity.gender],
-            admin = it[UserEntity.admin],
             birthDate = it[UserEntity.birth],
-            imageURL = it[UserEntity.imageURL],
+            imageURL = it[UserEntity.pic],
             about = it[UserEntity.about],
             cityOfBirth = it[UserEntity.cityOfBirth],
             phoneNumber = it[UserEntity.phoneNumber],
             nationality = it[UserEntity.nationality],
-            backgroundImageURL = it[UserEntity.backgroundImageURL],
-            joinedIn = it[UserEntity.joinedIn]
+            backgroundImageURL = it[UserEntity.background],
+            joinedIn = it[UserEntity.joinedIn],
+            id = it[UserEntity.id]
             )
     }
 

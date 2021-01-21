@@ -13,31 +13,30 @@ import org.postgresql.util.PSQLException
 
 object ConversationDAO: CI {
 
-    override suspend fun create(data: RequestConversationCreation, id: String): HttpStatusCode {
+    override suspend fun create(data: RequestConversationCreation): Long? {
         return try {
 
             transaction {
                 ConversationEntity.insert {
-                    it[this.id] = id
                     it[creationDate] = System.currentTimeMillis()
                     it[imageURL] = data.imageURL
                     it[about] = data.about
                     it[name] = data.name
                     it[isGroup] = data.isGroup
                     it[latestMessage] = null
-                }
+                } get ConversationEntity.id
             }
-            HttpStatusCode.Created
+
         }catch (normal: Exception){
 
-            HttpStatusCode.InternalServerError
+           null
         }catch (psql: PSQLException){
 
-            HttpStatusCode.InternalServerError
+            null
         }
     }
 
-    override suspend fun check(conversationID: String): Boolean {
+    override suspend fun check(conversationID: Long): Boolean {
         return try {
             !transaction {
                 ConversationEntity.select { ConversationEntity.id eq conversationID }.empty()
@@ -49,7 +48,7 @@ object ConversationDAO: CI {
         }
     }
 
-    override suspend fun readByName(input: String, userID: String): List<ConversationDTO> {
+    override suspend fun readByName(input: String, userID: Long): List<ConversationDTO> {
         return try {
             val conversations = mutableListOf<ConversationDTO>()
 
@@ -77,7 +76,7 @@ object ConversationDAO: CI {
             listOf()
         }
     }
-    override suspend fun delete(conversationID: String): HttpStatusCode {
+    override suspend fun delete(conversationID: Long): HttpStatusCode {
         return try {
             transaction {
                 ConversationEntity.deleteWhere { ConversationEntity.id eq conversationID }
@@ -90,7 +89,7 @@ object ConversationDAO: CI {
         }
     }
 
-    override suspend fun read(conversationID: String): ConversationDTO? {
+    override suspend fun read(conversationID: Long): ConversationDTO? {
         return try {
             transaction {
                 ConversationEntity.select { ConversationEntity.id eq conversationID }.map { mapConversation(it) }.firstOrNull()
@@ -102,7 +101,7 @@ object ConversationDAO: CI {
         }
     }
 
-    override suspend fun update(conversationID: String, latestMessage: Boolean, name: String?, about: String?, imageURL: String?): HttpStatusCode {
+    override suspend fun update(conversationID: Long, latestMessage: Boolean, name: String?, about: String?, imageURL: String?): HttpStatusCode {
         return try {
             transaction {
                 ConversationEntity.update({ ConversationEntity.id eq conversationID}) {
@@ -124,7 +123,8 @@ object ConversationDAO: CI {
         }
     }
     private fun mapConversation(it: ResultRow): ConversationDTO {
-        return ConversationDTO( id = it[ConversationEntity.id],
+        return ConversationDTO(
+            id = it[ConversationEntity.id],
             name = it[ConversationEntity.name],
             imageURL = it[ConversationEntity.imageURL],
             creationDate = it[ConversationEntity.creationDate],

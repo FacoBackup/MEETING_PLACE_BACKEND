@@ -9,7 +9,7 @@ import io.ktor.http.*
 
 object AuthenticationService {
 
-    suspend fun signIn(data: RequestLog, userDAO: UserDAO, authenticationDAO: ALI): String? {
+    suspend fun signIn(data: RequestLog, userDAO: UserDAO): String? {
         return try {
             val user = userDAO.readAuthUser(data.userID)
 
@@ -23,10 +23,10 @@ object AuthenticationService {
         }
     }
 
-    suspend fun signOut(requester: String, ip: String, userDAO: UserDAO, authenticationDAO: ALI): HttpStatusCode{
+    suspend fun signOut(requester: Long, ip: String, userDAO: UserDAO, authenticationDAO: ALI): HttpStatusCode{
         return try {
             val logged = authenticationDAO.read(requester, ip)
-            if(userDAO.check(requester) && logged != null && logged.active){
+            if(userDAO.check(requester) && logged != null){
                 authenticationDAO.delete(userID = requester, ip = ip)
             }else HttpStatusCode.InternalServerError
         }catch (e: Exception){

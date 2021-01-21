@@ -7,13 +7,17 @@ import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 object MessageNotificationEntity: Table("message_notification") {
-    val messageID = varchar("message_id", 36).references(MessageEntity.id, onDelete = null)
-    val conversationID = varchar("conversation_id", 36).references(ConversationEntity.id,onDelete = ReferenceOption.CASCADE)
-    val userID = varchar("user_id", 320).references(UserEntity.email, onDelete = ReferenceOption.CASCADE)
+    private val notificationID = long("notification_pk").autoIncrement()
+
+    val messageID = long("message_pk").references(MessageEntity.id, onDelete = ReferenceOption.CASCADE)
+    val conversationID = long("conversation_pk").references(ConversationEntity.id,onDelete = ReferenceOption.CASCADE)
+    val userID = long("user_pk").references(UserEntity.id, onDelete = ReferenceOption.CASCADE)
 
     val isGroup = bool("is_group")
     val seenAt = long("seen_at").nullable()
-    val creationDate = long("creation_date")
+    val creationDate = long("date_of_creation")
 
     val page = long("page")
+
+    override val primaryKey = PrimaryKey(notificationID)
 }

@@ -47,7 +47,7 @@ object TopicReadService {
             }
             for(j in encryptedTopics.indices){
                 val header =decryption.decrypt(myKey = key, data = encryptedTopics[j].header)
-                val body = decryption.decrypt(myKey = key, data = encryptedTopics[j].body)
+                val body = encryptedTopics[j].body?.let { decryption.decrypt(myKey = key, data = it) }
 
                 val user = userDAO.readByID(encryptedTopics[j].creatorID)
                 val communityEntity = encryptedTopics[j].communityID?.let { communityDAO.read(it) }
@@ -100,7 +100,7 @@ object TopicReadService {
              val decryptedTopics = mutableListOf<TopicDataDTO>()
              for(j in topics.indices) {
                  val header = decryption.decrypt(myKey = key, data = topics[j].header)
-                 val body = decryption.decrypt(myKey = key, data = topics[j].body)
+                 val body = topics[j].body?.let { decryption.decrypt(myKey = key, data = it) }
                  //val imageURL = topics[j].imageURL?.let { decryption.decrypt(myKey = key, data = it) }
                  val user = userDAO.readByID(topics[j].creatorID)
                  val communityEntity = topics[j].communityID?.let { communityDAO.read(it) }
