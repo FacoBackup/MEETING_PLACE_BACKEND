@@ -46,13 +46,13 @@ fun Application.module(){
     install(Authentication){
         jwt {
             verifier(JWTSettings.jwtVerifier)
-            realm = "Intranet API"
+            realm = "MeetingPlaceBackEnd"
             validate {
-                val userID = it.payload.getClaim("userID").asString()
+                val userID = it.payload.getClaim("userID").asLong()
                 val ip = it.payload.getClaim("ip").asString()
                 val log = AccessLogDAO.read(userID, ip)
-                if(!userID.isNullOrBlank() && !ip.isNullOrBlank()) {
-                    log ?: AccessLogDTO(userID =  userID, ipAddress = ip, timeOfLogin = System.currentTimeMillis().toString(),active = true)
+                if(userID != null && !ip.isNullOrBlank()) {
+                    log ?: AccessLogDTO(userID =  userID, Ip = ip, online = true)
                 }
                 else null
             }

@@ -11,13 +11,12 @@ import io.ktor.http.*
 
 object TopicFactoryService {
     private const val key = AESTopicKey.key
-    suspend fun create(requester: String, data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
+    suspend fun create(requester: Long, data: RequestTopicCreation, topicDAO: TI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
         return try {
-            val user = userDAO.readByID(requester)
-            when (data.communityID.isNullOrBlank()) {
+            when (data.communityID == null) {
                 true -> {
-                    println("STEP 1")
-                    return if (user != null && data.mainTopicID.isNullOrBlank()) {
+
+                    return if (data.mainTopicID == null) {
                         val encryptedHeader = encryption.encrypt(myKey = key, data.header)
                         val encryptedBody= data.body?.let { encryption.encrypt(myKey = key, it) }
 
@@ -30,13 +29,12 @@ object TopicFactoryService {
                             communityID = null,
                             userID = requester,
                             mainTopicID = null,
-                            approved = true,
-                            userName = user.name)
+                            approved = true)
                     } else HttpStatusCode.FailedDependency
                 }
                 false -> {
-                    val member = communityMemberDAO.read(data.communityID, userID = requester)
-                    return if (user != null && member != null && data.mainTopicID.isNullOrBlank()) {
+                    val member = data.communityID?.let { communityMemberDAO.read(it, userID = requester) }
+                    return if ( member != null && data.mainTopicID != null) {
                         val encryptedHeader = encryption.encrypt(myKey = key, data.header)
                         val encryptedBody= data.body?.let { encryption.encrypt(myKey = key, it) }
 
@@ -49,8 +47,7 @@ object TopicFactoryService {
                             communityID = member.communityID,
                             userID = requester,
                             mainTopicID = null,
-                            approved = member.role == MemberType.MODERATOR.toString(),
-                            userName = user.name)
+                            approved = member.role == MemberType.MODERATOR.toString())
                     } else HttpStatusCode.FailedDependency
                 }
             }
@@ -59,12 +56,11 @@ object TopicFactoryService {
         }
     }
 
-    suspend fun createComment(requester: String, data: RequestTopicCreation, topicDAO: TI, userDAO: UI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
+    suspend fun createComment(requester: Long, data: RequestTopicCreation, topicDAO: TI, communityMemberDAO: CMI, encryption: AESInterface): HttpStatusCode {
         return try {
-            val user = userDAO.readByID(requester)
-            when (data.communityID.isNullOrBlank()) {
+            when (data.communityID == null) {
                 true -> {
-                    return if (user != null && !data.mainTopicID.isNullOrBlank() && topicDAO.check(data.mainTopicID)) {
+                    return if (data.mainTopicID != null && topicDAO.check(data.mainTopicID)) {
                         val encryptedHeader = encryption.encrypt(myKey = key, data.header)
                         val encryptedBody= data.body?.let { encryption.encrypt(myKey = key, it) }
                         val encryptedImageURL = data.imageURL?.let { encryption.encrypt(myKey = key, it) }
@@ -77,14 +73,13 @@ object TopicFactoryService {
                             communityID = null,
                             userID = requester,
                             mainTopicID = data.mainTopicID,
-                            approved = true,
-                            userName = user.name)
+                            approved = true)
                     } else HttpStatusCode.FailedDependency
                 }
                 false -> {
                     val member = communityMemberDAO.read(data.communityID, userID = requester)
                     val mainTopic = data.mainTopicID?.let { topicDAO.read(it) }
-                    return if (mainTopic  != null && mainTopic.approved  && user != null && member != null) {
+                    return if (mainTopic  != null && mainTopic.approved && member != null) {
 
                         val encryptedHeader = encryption.encrypt(myKey = key, data.header)
                         val encryptedBody= data.body?.let { encryption.encrypt(myKey = key, it) }
@@ -98,8 +93,7 @@ object TopicFactoryService {
                             communityID = member.communityID,
                             userID = requester,
                             mainTopicID = data.mainTopicID,
-                            approved = member.role == MemberType.MODERATOR.toString(),
-                            userName = user.name)
+                            approved = member.role == MemberType.MODERATOR.toString())
                     } else HttpStatusCode.FailedDependency
                 }
             }

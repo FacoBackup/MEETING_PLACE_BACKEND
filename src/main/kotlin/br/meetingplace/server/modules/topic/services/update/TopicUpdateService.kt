@@ -8,7 +8,7 @@ import io.ktor.http.*
 
 object TopicUpdateService {
     private const val key = AESTopicKey.key
-    suspend fun update(requester: String, topicID: String, body: String?, header: String? , topicDAO: TI, encryption: AESInterface): HttpStatusCode{
+    suspend fun update(requester: Long, topicID: Long, body: String?, header: String? , topicDAO: TI, encryption: AESInterface): HttpStatusCode{
         return try{
             val topic =  TopicDAO.read(topicID)
             if(topic != null && topic.creatorID == requester){

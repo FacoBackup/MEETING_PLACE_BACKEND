@@ -43,7 +43,7 @@ fun Route.userConversationRouter() {
 
         post<RequestUser>("/get/conversation/user") {
             val log = call.log
-            if(log != null){
+            if(log != null && it.userID != null){
                 val owners = ConversationOwnersDAO.read(userID = log.userID, secondUserID = it.userID)
                 if(owners != null) {
                     val conversation = ConversationDAO.read(conversationID = owners.conversationID)
@@ -58,7 +58,7 @@ fun Route.userConversationRouter() {
 
         post<RequestUser>("/get/all/user/messages") {
             val log = call.log
-            if(log != null){
+            if(log != null && it.userID != null){
                 val chats = MessageReadService.readUserAllMessages(
                     requester = log.userID,
                     userID = it.userID,

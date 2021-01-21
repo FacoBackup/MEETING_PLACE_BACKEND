@@ -8,7 +8,7 @@ import io.ktor.http.*
 
 interface UI {
     suspend fun create(data: RequestUserCreation): HttpStatusCode
-    suspend fun readAllByAttribute(name: String?, birthDate: Long?, phoneNumber: String?, nationality: String?, city: String?): List<UserDTO>
+    suspend fun readAllByAttribute(email: String? ,name: String?, birthDate: Long?, phoneNumber: String?, nationality: String?, city: String?): List<UserDTO>
     suspend fun check(userID: Long): Boolean
     suspend fun readByID(userID: Long): UserDTO?
     suspend fun readByName(name: String, requester: Long): List<UserDTO>

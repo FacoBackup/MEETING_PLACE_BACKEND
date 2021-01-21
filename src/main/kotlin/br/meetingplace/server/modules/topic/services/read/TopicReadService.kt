@@ -17,7 +17,7 @@ object TopicReadService {
     private const val key = AESTopicKey.key
 
     suspend fun readTimelineByTimePeriod(
-        requester: String,
+        requester: Long,
         timePeriod: Long,
         topicOpinionDAO: TOI,
         userDAO: UI,
@@ -65,7 +65,7 @@ object TopicReadService {
                         creatorImageURL = user.imageURL,
                         creatorName = user.name,
                         communityName = communityEntity?.name,
-                        communityImageURL = communityEntity?.imageURL,
+                        communityImageURL = communityEntity?.pic,
                         comments = topicDAO.readQuantityComments(encryptedTopics[j].id),
                         archived = topicArchiveDAO.check(requester = requester, topicID = encryptedTopics[j].id),
                         liked = topicOpinionDAO.check(userID = requester, topicID = encryptedTopics[j].id, liked = true),
@@ -84,12 +84,12 @@ object TopicReadService {
     }
 
     suspend fun readSubjectTopicsByTimePeriod(
-        requester: String,
+        requester: Long,
         communityDAO: CI,
         userDAO: UI,
         topicOpinionDAO: TOI,
         community: Boolean,
-        subjectID: String,
+        subjectID: Long,
         timePeriod: Long,
         topicDAO: TI,
         topicArchiveDAO: TAI,
@@ -118,7 +118,7 @@ object TopicReadService {
                          creatorImageURL = user.imageURL,
                          creatorName = user.name,
                          communityName = communityEntity?.name,
-                         communityImageURL = communityEntity?.imageURL,
+                         communityImageURL = communityEntity?.pic,
                          comments = topicDAO.readQuantityComments(topics[j].id),
                          archived = topicArchiveDAO.check(requester = requester, topicID = topics[j].id),
                          liked = topicOpinionDAO.check(userID = requester, topicID = topics[j].id, liked = true),

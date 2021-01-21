@@ -80,7 +80,7 @@ fun Route.groupConversationRouter(){
         }
         post<RequestConversation>("/get/conversation/group") {
             val log = call.log
-            if(log != null){
+            if(log != null && it.conversationID != null){
                 val conversation = ConversationDAO.read(conversationID = it.conversationID)
                 if (conversation != null)
                     call.respond(conversation)
@@ -107,7 +107,7 @@ fun Route.groupConversationRouter(){
 //        }
         post<RequestConversation>("/get/all/group/messages") {
             val log = call.log
-            if(log != null){
+            if(log != null && it.conversationID != null){
                 val chats = MessageReadService.readGroupAllMessages(requester = log.userID,
                     conversationID = it.conversationID,
                     decryption = AES,

@@ -17,7 +17,7 @@ object JWTSettings {
         .withIssuer(issuer)
         .build()
 
-    fun makeToken(userID: String, ip: String): String?{
+    fun makeToken(userID: Long, ip: String): String?{
 
         return try{
             JWT.create()

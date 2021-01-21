@@ -116,7 +116,7 @@ fun Route.userRouter() {
             }
             get(UserPaths.USER +"/name") {
                 val data = call.receive<RequestUser>()
-                val user = UserDAO.readAllByAttribute(name = data.userName, null,null,null,null)
+                val user = UserDAO.readAllByAttribute(null,name = data.userName, null,null,null,null)
                 if (user.isEmpty())
                     call.respond(HttpStatusCode.NotFound)
                 else

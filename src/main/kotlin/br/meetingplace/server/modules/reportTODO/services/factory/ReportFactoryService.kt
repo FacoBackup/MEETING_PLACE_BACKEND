@@ -9,7 +9,7 @@ import io.ktor.http.*
 
 object ReportFactoryService{
 
-    suspend fun createReport(requester: String, data: RequestReportCreation, reportDAO: RI, userDAO: UI, topicDAO: TI, communityMemberDAO: CMI): HttpStatusCode {
+    suspend fun createReport(requester: Long, data: RequestReportCreation, reportDAO: RI, userDAO: UI, topicDAO: TI, communityMemberDAO: CMI): HttpStatusCode {
         return try {
             val topic = topicDAO.read(data.topicID)
             return if(userDAO.check(requester) &&

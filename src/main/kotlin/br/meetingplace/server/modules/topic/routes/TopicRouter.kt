@@ -96,7 +96,12 @@ fun Route.topicRouter() {
             val log = call.log
 
             if(log != null)
-                call.respond(TopicFactoryService.create(requester = log.userID, it, TopicDAO, UserDAO, CommunityMemberDAO,AES))
+                call.respond(TopicFactoryService.create(
+                    requester = log.userID,
+                    it,
+                    topicDAO = TopicDAO,
+                    communityMemberDAO = CommunityMemberDAO,
+                    encryption = AES))
             else call.respond(HttpStatusCode.Unauthorized)
 
         }
@@ -113,8 +118,12 @@ fun Route.topicRouter() {
         post<RequestTopicCreation>("/topic/comment") {
             val log = call.log
             if(log != null)
-                call.respond(TopicFactoryService.createComment(requester = log.userID, it,
-                    TopicDAO, UserDAO, CommunityMemberDAO, AES))
+                call.respond(TopicFactoryService.createComment(
+                    requester = log.userID,
+                    data = it,
+                    topicDAO = TopicDAO,
+                    communityMemberDAO = CommunityMemberDAO,
+                    encryption = AES))
             else call.respond(HttpStatusCode.Unauthorized)
         }
         get ("/topic/comment"){

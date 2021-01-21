@@ -4,7 +4,7 @@ import br.meetingplace.server.modules.topic.dao.archive.TAI
 import io.ktor.http.*
 
 object TopicArchiveService {
-    suspend fun archiveTopic(topicID: String, requester: String, topicArchiveDAO: TAI): HttpStatusCode{
+    suspend fun archiveTopic(topicID: Long, requester: Long, topicArchiveDAO: TAI): HttpStatusCode{
         return try{
             return if(!topicArchiveDAO.check(topicID, requester)){
                 topicArchiveDAO.create(topicID, requester)

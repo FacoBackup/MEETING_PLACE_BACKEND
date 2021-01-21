@@ -136,6 +136,7 @@ object UserDAO: UI {
 
 
     override suspend fun readAllByAttribute(
+        email: String?,
         name: String?,
         birthDate: Long?,
         phoneNumber: String?,
@@ -144,6 +145,11 @@ object UserDAO: UI {
     ): List<UserDTO> {
         return try {
             val users  = mutableListOf<UserDTO>()
+            if(!email.isNullOrBlank()) users.add(transaction {
+                UserEntity.select {
+                    UserEntity.email eq email
+                }.map { mapUser(it) }.first()
+            })
             if(!name.isNullOrBlank()) users.add(transaction {
                 UserEntity.select {
                     UserEntity.userName eq name
@@ -221,7 +227,7 @@ object UserDAO: UI {
         }
     }
     private fun mapUserAuth (it: ResultRow): UserAuthDTO{
-        return UserAuthDTO(userID = it[UserEntity.email], password = it[UserEntity.password])
+        return UserAuthDTO(userID = it[UserEntity.id], password = it[UserEntity.password])
     }
     private fun mapSimplifiedUser(it: ResultRow): UserSimplifiedDTO{
         return UserSimplifiedDTO(
