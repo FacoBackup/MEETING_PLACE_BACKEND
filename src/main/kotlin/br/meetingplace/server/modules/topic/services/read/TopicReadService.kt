@@ -6,6 +6,7 @@ import br.meetingplace.server.modules.community.dao.member.CMI
 import br.meetingplace.server.modules.topic.dao.archive.TAI
 import br.meetingplace.server.modules.topic.dao.opinion.TOI
 import br.meetingplace.server.modules.topic.dao.seen.TVI
+import br.meetingplace.server.modules.topic.dao.timeline.item.TMII
 import br.meetingplace.server.modules.topic.dao.topic.TI
 import br.meetingplace.server.modules.topic.dto.response.TopicDTO
 import br.meetingplace.server.modules.topic.dto.response.TopicDataDTO
@@ -18,7 +19,7 @@ object TopicReadService {
 
     suspend fun readTimelineByTimePeriod(
         requester: Long,
-        timePeriod: Long,
+        maxID: Long,
         topicOpinionDAO: TOI,
         userDAO: UI,
         communityMemberDAO: CMI,
@@ -27,24 +28,19 @@ object TopicReadService {
         userSocialDAO: SI,
         decryption: AESInterface,
         topicArchiveDAO: TAI,
+        topicTimelineDAO: TMII,
         topicStatusDAO: TVI): List<TopicDataDTO>{
 
         return try{
-
-            val following = userSocialDAO.readAll(requester, following = true)
-
+            val topicIDs = topicTimelineDAO.readByMaxID(maxID = maxID, userID = requester)
             val encryptedTopics = mutableListOf<TopicDTO>()
-            val communities = communityMemberDAO.readByUser(requester)
+            for(i in topicIDs.indices){
+                val topic = topicDAO.read(topicIDs[i].topicID)
+                if(topic != null)
+                    encryptedTopics.add(topic)
+            }
             val decryptedTopics= mutableListOf<TopicDataDTO>()
 
-            encryptedTopics.addAll(topicDAO.readByTimePeriod(requester, timePeriod, false)) // at least 5 from user
-
-            for(i in following.indices){
-                encryptedTopics.addAll(topicDAO.readByTimePeriod(following[i].followedID, timePeriod, false)) // at least 5 from every follower
-            }
-            for(i in communities.indices){
-                encryptedTopics.addAll(topicDAO.readByTimePeriod(communities[i].communityID, timePeriod, true)) // at least 5 from every community
-            }
             for(j in encryptedTopics.indices){
                 val header =decryption.decrypt(myKey = key, data = encryptedTopics[j].header)
                 val body = encryptedTopics[j].body?.let { decryption.decrypt(myKey = key, data = it) }
@@ -90,18 +86,17 @@ object TopicReadService {
         topicOpinionDAO: TOI,
         community: Boolean,
         subjectID: Long,
-        timePeriod: Long,
+        maxID: Long,
         topicDAO: TI,
         topicArchiveDAO: TAI,
         decryption: AESInterface):List<TopicDataDTO>{
 
         return try{
-             val topics = topicDAO.readByTimePeriod(subjectID, since = timePeriod, community = community)
+             val topics = topicDAO.readByMaxID(subjectID, maxID = maxID, community = community)
              val decryptedTopics = mutableListOf<TopicDataDTO>()
              for(j in topics.indices) {
                  val header = decryption.decrypt(myKey = key, data = topics[j].header)
                  val body = topics[j].body?.let { decryption.decrypt(myKey = key, data = it) }
-                 //val imageURL = topics[j].imageURL?.let { decryption.decrypt(myKey = key, data = it) }
                  val user = userDAO.readByID(topics[j].creatorID)
                  val communityEntity = topics[j].communityID?.let { communityDAO.read(it) }
                  if (!header.isNullOrBlank() && !body.isNullOrBlank() && user != null){

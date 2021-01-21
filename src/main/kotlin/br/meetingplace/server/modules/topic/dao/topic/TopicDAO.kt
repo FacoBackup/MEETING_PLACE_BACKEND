@@ -37,6 +37,29 @@ object TopicDAO: TI {
         }
     }
 
+    override suspend fun readByMaxID(subjectID: Long, maxID: Long, community: Boolean): List<TopicDTO> {
+        return try{
+            transaction {
+                TopicEntity.select{
+                    when(community){
+                        true->{
+                            TopicEntity.id.less(maxID) and
+                                    (TopicEntity.communityID eq subjectID)
+                        }
+                        false->{
+                            TopicEntity.id.less(maxID) and
+                                    (TopicEntity.creatorID eq subjectID)
+                        }
+                    }
+
+                }.limit(5).map { mapTopic(it) }
+            }
+        }catch (e: Exception){
+            listOf()
+        }catch(psql: PSQLException){
+            listOf()
+        }
+    }
     override suspend fun readByTimePeriod(subjectID: Long, since: Long, community: Boolean): List<TopicDTO> {
         return try{
             transaction {
@@ -95,7 +118,7 @@ object TopicDAO: TI {
                         communityID: Long?,
                         userID:Long,
                         mainTopicID: Long?,
-                        approved:Boolean): HttpStatusCode {
+                        approved:Boolean): Long? {
         return try {
             transaction {
                 TopicEntity.insert {
@@ -109,15 +132,13 @@ object TopicDAO: TI {
                     it[this.mainTopicID] = mainTopicID
                     it[this.communityID] = communityID
                     it[creationDate] = System.currentTimeMillis()
-                }
+                } get TopicEntity.id
             }
-            HttpStatusCode.Created
+
         }catch (normal: Exception){
-
-            HttpStatusCode.ExpectationFailed
+            null
         }catch (psql: PSQLException){
-
-            HttpStatusCode.ExpectationFailed
+            null
         }
     }
 

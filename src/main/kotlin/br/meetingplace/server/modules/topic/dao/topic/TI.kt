@@ -12,12 +12,12 @@ interface TI {
             communityID: Long?,
             userID:Long,
             mainTopicID: Long?,
-            approved:Boolean): HttpStatusCode
+            approved:Boolean): Long?
     suspend fun readTopicsQuantityByUser(userID: Long): Long
     suspend fun readTopicsQuantityByCommunity(communityID: Long): Long
     suspend fun check(topicID: Long): Boolean
     suspend fun readBySubject(subjectID: Long,timePeriod: Long, community: Boolean): List<TopicDTO>
-
+    suspend fun readByMaxID(subjectID: Long, maxID: Long, community: Boolean): List<TopicDTO>
     suspend fun readAllComments(topicID: Long): List<TopicDTO>
     suspend fun readByTimePeriod(subjectID: Long, since: Long, community: Boolean): List<TopicDTO>
     suspend fun update(topicID: Long,
