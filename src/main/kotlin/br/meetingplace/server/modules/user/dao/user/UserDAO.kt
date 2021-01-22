@@ -19,6 +19,7 @@ object UserDAO: UI {
                UserEntity.insert {
                    it[email] = data.email.toLowerCase()
                    it[password] = hashString(encryption = "SHA-1",data.password)
+                   it[name] = data.name
                    it[userName] = data.userName
                    it[gender] = data.gender
                    it[nationality] = data.nationality
@@ -79,15 +80,19 @@ object UserDAO: UI {
         }
     }
 
-    override suspend fun readByName(name: String, requester: Long): List<UserDTO> {
+    override suspend fun searchUser(name: String, requester: Long): List<UserSimplifiedDTO> {
         return try {
             if(name.isNotBlank()){
+                val result = mutableListOf<UserSimplifiedDTO>()
                 transaction {
-                    UserEntity.select{
-                        (UserEntity.userName like "$name%") and
-                                (UserEntity.id neq requester)
-                    }.map { mapUser(it) }
+                    result.addAll(UserEntity.select{
+                        (UserEntity.userName like "%$name%") and (UserEntity.id neq requester)
+                    }.limit(5).orderBy(UserEntity.id, SortOrder.DESC).map { mapSimplifiedUser(it) })
+                    result.addAll(UserEntity.select{
+                        (UserEntity.name like "%$name%") and (UserEntity.id neq requester)
+                    }.limit(5).orderBy(UserEntity.id, SortOrder.DESC).map { mapSimplifiedUser(it) })
                 }
+                return result
             }
             else
                 listOf()
@@ -97,11 +102,33 @@ object UserDAO: UI {
             listOf()
         }
     }
-    override suspend fun readAuthUser(userID: Long): UserAuthDTO? {
+    override suspend fun searchUserByMaxID(name: String, requester: Long, maxID: Long): List<UserSimplifiedDTO> {
+        return try {
+            if(name.isNotBlank()){
+                val result = mutableListOf<UserSimplifiedDTO>()
+                transaction {
+                    result.addAll(UserEntity.select{
+                        (UserEntity.userName like "%$name%") and (UserEntity.id neq requester) and (UserEntity.id.less(maxID))
+                    }.limit(5).orderBy(UserEntity.id, SortOrder.DESC).map { mapSimplifiedUser(it) })
+                    result.addAll(UserEntity.select{
+                        (UserEntity.name like "%$name%") and (UserEntity.id neq requester) and (UserEntity.id.less(maxID))
+                    }.limit(5).orderBy(UserEntity.id, SortOrder.DESC).map { mapSimplifiedUser(it) })
+                }
+                return result
+            }
+            else
+                listOf()
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
+    override suspend fun readAuthUser(input: String): UserAuthDTO? {
         return try {
             transaction {
                 UserEntity.select {
-                    UserEntity.id eq userID
+                    (UserEntity.email eq input ) or (UserEntity.phoneNumber eq input) or (UserEntity.userName like  "%$input")
                 }.map { mapUserAuth(it) }.firstOrNull()
             }
         }catch (normal: Exception){
@@ -137,6 +164,7 @@ object UserDAO: UI {
 
     override suspend fun readAllByAttribute(
         email: String?,
+        userName: String?,
         name: String?,
         birthDate: Long?,
         phoneNumber: String?,
@@ -145,6 +173,11 @@ object UserDAO: UI {
     ): List<UserDTO> {
         return try {
             val users  = mutableListOf<UserDTO>()
+            if(!userName.isNullOrBlank()) users.add(transaction {
+                UserEntity.select {
+                    UserEntity.userName eq userName
+                }.map { mapUser(it) }.first()
+            })
             if(!email.isNullOrBlank()) users.add(transaction {
                 UserEntity.select {
                     UserEntity.email eq email
@@ -219,10 +252,8 @@ object UserDAO: UI {
             }
             HttpStatusCode.OK
         }catch (normal: Exception){
-            println("NORMAL EXCEPTION -> " + normal.message)
             HttpStatusCode.InternalServerError
         }catch (psql: PSQLException){
-            println("PSQL EXCEPTION -> " + psql.message)
             HttpStatusCode.InternalServerError
         }
     }
@@ -231,15 +262,18 @@ object UserDAO: UI {
     }
     private fun mapSimplifiedUser(it: ResultRow): UserSimplifiedDTO{
         return UserSimplifiedDTO(
+            userID =it[UserEntity.id],
             email = it[UserEntity.email],
             name = it[UserEntity.userName],
             birthDate= it[UserEntity.birth],
             imageURL = it[UserEntity.pic],
-            backgroundImageURL = it[UserEntity.background])
+            backgroundImageURL = it[UserEntity.background],
+            userName = it[UserEntity.userName]
+            )
     }
     private fun mapUser(it: ResultRow): UserDTO {
         return UserDTO(email = it[UserEntity.email],
-            name = it[UserEntity.userName],
+            name = it[UserEntity.name],
             gender = it[UserEntity.gender],
             birthDate = it[UserEntity.birth],
             imageURL = it[UserEntity.pic],
@@ -249,7 +283,8 @@ object UserDAO: UI {
             nationality = it[UserEntity.nationality],
             backgroundImageURL = it[UserEntity.background],
             joinedIn = it[UserEntity.joinedIn],
-            id = it[UserEntity.id]
+            id = it[UserEntity.id],
+            userName = it[UserEntity.userName]
             )
     }
 

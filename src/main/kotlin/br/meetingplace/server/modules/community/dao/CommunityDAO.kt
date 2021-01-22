@@ -132,10 +132,10 @@ object CommunityDAO: CI {
             name = it[CommunityEntity.name],
             id = it[CommunityEntity.id],
             about = it[CommunityEntity.about],
-            pic =  it[CommunityEntity.pic],
+            imageURL =  it[CommunityEntity.pic],
             creationDate = it[CommunityEntity.creationDate],
             parentCommunityID = it[CommunityEntity.mainCommunityID],
-            background = it[CommunityEntity.background]
+            backgroundImageURL = it[CommunityEntity.background]
             )
     }
 

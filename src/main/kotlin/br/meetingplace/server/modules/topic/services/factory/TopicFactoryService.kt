@@ -35,6 +35,7 @@ object TopicFactoryService {
                                 approved = true)
 
                             if(topicID != null){
+                                userTimelineDAO.create(topicID =  topicID, userID = requester)
                                 val followers = userSocialDAO.readAll(userID = requester, following= false)
 
                                 for(i in followers.indices){

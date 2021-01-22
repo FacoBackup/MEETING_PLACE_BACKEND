@@ -18,6 +18,7 @@ interface TI {
     suspend fun check(topicID: Long): Boolean
     suspend fun readBySubject(subjectID: Long,timePeriod: Long, community: Boolean): List<TopicDTO>
     suspend fun readByMaxID(subjectID: Long, maxID: Long, community: Boolean): List<TopicDTO>
+    suspend fun readNewestBySubject(subjectID: Long, community: Boolean): List<TopicDTO>
     suspend fun readAllComments(topicID: Long): List<TopicDTO>
     suspend fun readByTimePeriod(subjectID: Long, since: Long, community: Boolean): List<TopicDTO>
     suspend fun update(topicID: Long,

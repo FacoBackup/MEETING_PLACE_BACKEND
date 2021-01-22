@@ -14,6 +14,7 @@ import br.meetingplace.server.modules.topic.entities.TopicArchiveEntity
 import br.meetingplace.server.modules.topic.entities.TopicEntity
 import br.meetingplace.server.modules.topic.entities.TopicOpinionEntity
 import br.meetingplace.server.modules.topic.entities.TopicStatusEntity
+import br.meetingplace.server.modules.topic.entities.timeline.TimelineItemEntity
 import br.meetingplace.server.modules.user.entities.UserSocialEntity
 import br.meetingplace.server.modules.user.entities.UserEntity
 import org.jetbrains.exposed.sql.Database
@@ -51,6 +52,7 @@ object DBSettings {
                     TopicEntity,
                     TopicOpinionEntity,
                     TopicArchiveEntity,
+                    TimelineItemEntity,
                     ConversationOwnersEntity,
                     TopicStatusEntity
                 )

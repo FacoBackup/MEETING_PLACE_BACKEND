@@ -3,6 +3,7 @@ package br.meetingplace.server.modules.user.dto.response
 data class UserProfileDTO(
     val email: String,
     val name: String,
+    val userName: String,
     val gender: String,
     val birthDate:Long,
     val imageURL: String?,

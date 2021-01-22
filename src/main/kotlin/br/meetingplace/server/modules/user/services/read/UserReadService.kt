@@ -28,7 +28,8 @@ object UserReadService {
                     imageURL = user.imageURL,
                     birthDate = user.birthDate,
                     phoneNumber = user.phoneNumber,
-                    gender = user.gender
+                    gender = user.gender,
+                    userName = user.userName
                 )
 
             }

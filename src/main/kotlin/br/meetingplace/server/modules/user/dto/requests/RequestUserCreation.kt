@@ -1,6 +1,7 @@
 package br.meetingplace.server.modules.user.dto.requests
 
-data class RequestUserCreation(val userName: String,
+data class RequestUserCreation(val name: String,
+                                val userName: String,
                                val gender: String,
                                val nationality: String?,
                                val birthDate: Long,

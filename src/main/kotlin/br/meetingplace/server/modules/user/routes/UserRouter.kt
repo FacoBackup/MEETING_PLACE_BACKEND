@@ -100,7 +100,7 @@ fun Route.userRouter() {
                 val data = call.receive<RequestUser>()
                 val log = call.log
                 if(log != null && data.userName != null)
-                    call.respond(UserSearchService.searchUser(requester = log.userID, userName = data.userName, UserDAO, UserSocialDAO))
+                    call.respond(UserSearchService.searchUser(requester = log.userID, userName = data.userName, userDAO = UserDAO, userSocialDAO= UserSocialDAO, maxID = data.userID))
                 else call.respond(HttpStatusCode.Unauthorized)
             }
             get(UserPaths.USER) {
@@ -114,14 +114,14 @@ fun Route.userRouter() {
                 }
                 else call.respond(HttpStatusCode.Unauthorized)
             }
-            get(UserPaths.USER +"/name") {
-                val data = call.receive<RequestUser>()
-                val user = UserDAO.readAllByAttribute(null,name = data.userName, null,null,null,null)
-                if (user.isEmpty())
-                    call.respond(HttpStatusCode.NotFound)
-                else
-                    call.respond(user)
-            }
+//            get(UserPaths.USER +"/name") {
+//                val data = call.receive<RequestUser>()
+//                val user = UserDAO.readAllByAttribute(null,name = data.userName, null,null,null,null)
+//                if (user.isEmpty())
+//                    call.respond(HttpStatusCode.NotFound)
+//                else
+//                    call.respond(user)
+//            }
 
             delete(UserPaths.USER) {
                 val data = call.receive<RequestUser>()

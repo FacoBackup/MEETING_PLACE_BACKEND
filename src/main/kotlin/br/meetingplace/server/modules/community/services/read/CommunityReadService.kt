@@ -24,7 +24,7 @@ object CommunityReadService {
                         about = community.about,
                         communityID = community.id,
                         role = communityMember?.role,
-                        imageURL = community.pic
+                        imageURL = community.imageURL
                     ))
             }
 
@@ -47,10 +47,10 @@ object CommunityReadService {
                     communityID =community.id,
                     creationDate =community.creationDate,
                     mainCommunityID = community.parentCommunityID,
-                    mainCommunityPic = mainCommunity?.pic,
+                    mainCommunityPic = mainCommunity?.imageURL,
                     mainCommunityName = mainCommunity?.name,
-                    pic = community.pic,
-                    background = community.background,
+                    imageURL = community.imageURL,
+                    backgroundImageURL = community.backgroundImageURL,
                     role = member?.role,
                     followers =  communityMemberDAO.readFollowersQuantity(community.id),
                     members =  communityMemberDAO.readMembersQuantity(community.id),
@@ -77,7 +77,7 @@ object CommunityReadService {
                         relatedCommunityName = community.parentCommunityID?.let { communityDAO.read(id = it) }?.name,
                         role = relatedCommunities[i].role,
                         communityID = community.id,
-                        imageURL = community.pic
+                        imageURL = community.imageURL
                     ))
                 }
 
@@ -100,7 +100,7 @@ object CommunityReadService {
                         userID = followers[i].userID,
                         communityID = communityID,
                         role = communityMember.role,
-                        userPic = user.imageURL,
+                        userImageURL = user.imageURL,
                         communityName = null,
                         userEmail = user.email,
                         affiliatedCommunityID = communityID
@@ -124,7 +124,7 @@ object CommunityReadService {
                         userID = mods[i].userID,
                         communityID = communityID,
                         role = communityMember.role,
-                        userPic = user.imageURL,
+                        userImageURL = user.imageURL,
                         communityName = null,
                         userEmail = user.email,
                         affiliatedCommunityID = communityID
@@ -148,7 +148,7 @@ object CommunityReadService {
                         userID = members[i].userID,
                         communityID = communityID,
                         role = communityMember.role,
-                        userPic = user.imageURL,
+                        userImageURL = user.imageURL,
                         communityName = null,
                         userEmail = user.email,
                         affiliatedCommunityID = communityID
@@ -178,7 +178,7 @@ object CommunityReadService {
                             userID = members[i].userID,
                             communityID = parentCommunities[j].id,
                             role = communityMember.role,
-                            userPic = user.imageURL,
+                            userImageURL = user.imageURL,
                             communityName = parentCommunities[j].name,
                             userEmail = user.email,
                             affiliatedCommunityID = parentCommunities[j].id
@@ -194,7 +194,7 @@ object CommunityReadService {
                         userID = membersMainCommunity[i].userID,
                         communityID = communityID,
                         role = communityMember.role,
-                        userPic = user.imageURL,
+                        userImageURL = user.imageURL,
                         communityName = null,
                         userEmail = user.email,
                         affiliatedCommunityID = communityID
@@ -217,7 +217,7 @@ object CommunityReadService {
                     relatedCommunityName = communities[i].parentCommunityID?.let { communityDAO.read(id = it) }?.name,
                     role = communityMember?.role ?: "",
                     communityID = communities[i].id,
-                    imageURL = communities[i].pic
+                    imageURL = communities[i].imageURL
                 ))
             }
             response

@@ -17,22 +17,20 @@ import br.meetingplace.server.modules.user.dao.user.UI
 object TopicReadService {
     private const val key = AESTopicKey.key
 
-    suspend fun readTimelineByTimePeriod(
+    suspend fun readTimeline(
         requester: Long,
-        maxID: Long,
+        maxID: Long?,
         topicOpinionDAO: TOI,
         userDAO: UI,
-        communityMemberDAO: CMI,
         communityDAO: CI,
         topicDAO: TI,
-        userSocialDAO: SI,
         decryption: AESInterface,
         topicArchiveDAO: TAI,
         topicTimelineDAO: TMII,
         topicStatusDAO: TVI): List<TopicDataDTO>{
 
         return try{
-            val topicIDs = topicTimelineDAO.readByMaxID(maxID = maxID, userID = requester)
+            val topicIDs = if(maxID != null) topicTimelineDAO.readByMaxID(maxID = maxID, userID = requester) else  topicTimelineDAO.readNewest(userID = requester)
             val encryptedTopics = mutableListOf<TopicDTO>()
             for(i in topicIDs.indices){
                 val topic = topicDAO.read(topicIDs[i].topicID)
@@ -61,7 +59,7 @@ object TopicReadService {
                         creatorImageURL = user.imageURL,
                         creatorName = user.name,
                         communityName = communityEntity?.name,
-                        communityImageURL = communityEntity?.pic,
+                        communityImageURL = communityEntity?.imageURL,
                         comments = topicDAO.readQuantityComments(encryptedTopics[j].id),
                         archived = topicArchiveDAO.check(requester = requester, topicID = encryptedTopics[j].id),
                         liked = topicOpinionDAO.check(userID = requester, topicID = encryptedTopics[j].id, liked = true),
@@ -79,20 +77,20 @@ object TopicReadService {
         }
     }
 
-    suspend fun readSubjectTopicsByTimePeriod(
+    suspend fun readSubjectTopics(
         requester: Long,
         communityDAO: CI,
         userDAO: UI,
         topicOpinionDAO: TOI,
         community: Boolean,
         subjectID: Long,
-        maxID: Long,
+        maxID: Long?,
         topicDAO: TI,
         topicArchiveDAO: TAI,
         decryption: AESInterface):List<TopicDataDTO>{
 
         return try{
-             val topics = topicDAO.readByMaxID(subjectID, maxID = maxID, community = community)
+             val topics = if(maxID != null ) topicDAO.readByMaxID(subjectID, maxID = maxID, community = community) else topicDAO.readNewestBySubject(subjectID, community = community)
              val decryptedTopics = mutableListOf<TopicDataDTO>()
              for(j in topics.indices) {
                  val header = decryption.decrypt(myKey = key, data = topics[j].header)
@@ -113,7 +111,7 @@ object TopicReadService {
                          creatorImageURL = user.imageURL,
                          creatorName = user.name,
                          communityName = communityEntity?.name,
-                         communityImageURL = communityEntity?.pic,
+                         communityImageURL = communityEntity?.imageURL,
                          comments = topicDAO.readQuantityComments(topics[j].id),
                          archived = topicArchiveDAO.check(requester = requester, topicID = topics[j].id),
                          liked = topicOpinionDAO.check(userID = requester, topicID = topics[j].id, liked = true),

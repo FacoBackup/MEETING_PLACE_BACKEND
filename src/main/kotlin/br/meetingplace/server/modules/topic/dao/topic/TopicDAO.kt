@@ -37,6 +37,22 @@ object TopicDAO: TI {
         }
     }
 
+    override suspend fun readNewestBySubject(subjectID: Long, community: Boolean): List<TopicDTO> {
+        return try{
+            transaction {
+                TopicEntity.select{
+                    when(community){
+                        true-> (TopicEntity.communityID eq subjectID)
+                        false-> (TopicEntity.creatorID eq subjectID)
+                    }
+                }.limit(5).orderBy(TopicEntity.id, SortOrder.DESC).map { mapTopic(it) }
+            }
+        }catch (e: Exception){
+            listOf()
+        }catch(psql: PSQLException){
+            listOf()
+        }
+    }
     override suspend fun readByMaxID(subjectID: Long, maxID: Long, community: Boolean): List<TopicDTO> {
         return try{
             transaction {
@@ -52,7 +68,7 @@ object TopicDAO: TI {
                         }
                     }
 
-                }.limit(5).map { mapTopic(it) }
+                }.limit(5).orderBy(TopicEntity.id, SortOrder.DESC).map { mapTopic(it) }
             }
         }catch (e: Exception){
             listOf()

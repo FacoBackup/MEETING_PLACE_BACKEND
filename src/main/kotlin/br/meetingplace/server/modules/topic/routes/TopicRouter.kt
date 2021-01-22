@@ -8,6 +8,7 @@ import br.meetingplace.server.modules.topic.dao.archive.TopicArchiveDAO
 import br.meetingplace.server.modules.topic.dao.topic.TopicDAO
 import br.meetingplace.server.modules.topic.dao.opinion.TopicOpinionDAO
 import br.meetingplace.server.modules.topic.dao.seen.TopicStatusDAO
+import br.meetingplace.server.modules.topic.dao.timeline.item.TimelineItemDAO
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopic
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopics
@@ -59,8 +60,8 @@ fun Route.topicRouter() {
             val data = call.receive<RequestTopics>()
             val log = call.log
             if(log != null)
-                call.respond(TopicReadService.readSubjectTopicsByTimePeriod(
-                    timePeriod = data.timePeriod,
+                call.respond(TopicReadService.readSubjectTopics(
+                    maxID = data.maxID,
                     subjectID= data.subjectID,
                     community = data.community,
                     topicDAO =  TopicDAO,
@@ -77,18 +78,18 @@ fun Route.topicRouter() {
             val data = call.receive<RequestTopics>()
             val log = call.log
             if(log != null)
-                call.respond(TopicReadService.readTimelineByTimePeriod(requester = log.userID,
-                    timePeriod = data.timePeriod,
-                    userSocialDAO = UserSocialDAO,
+                call.respond(TopicReadService.readTimeline(requester = log.userID,
+                    maxID = data.maxID,
                     decryption = AES,
                     topicDAO = TopicDAO,
                     topicStatusDAO = TopicStatusDAO,
                     userDAO = UserDAO,
                     communityDAO = CommunityDAO,
-                    communityMemberDAO = CommunityMemberDAO,
                     topicOpinionDAO = TopicOpinionDAO,
-                    topicArchiveDAO = TopicArchiveDAO
-                    ))
+                    topicArchiveDAO = TopicArchiveDAO,
+                    topicTimelineDAO = TimelineItemDAO
+                ))
+
             else call.respond(HttpStatusCode.Unauthorized)
         }
         //FETCHING
@@ -101,7 +102,10 @@ fun Route.topicRouter() {
                     it,
                     topicDAO = TopicDAO,
                     communityMemberDAO = CommunityMemberDAO,
-                    encryption = AES))
+                    encryption = AES,
+                    userSocialDAO = UserSocialDAO,
+                    userTimelineDAO = TimelineItemDAO
+                ))
             else call.respond(HttpStatusCode.Unauthorized)
 
         }

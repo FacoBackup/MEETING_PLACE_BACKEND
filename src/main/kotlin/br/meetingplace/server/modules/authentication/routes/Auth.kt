@@ -2,6 +2,7 @@ package br.meetingplace.server.modules.authentication.routes
 
 import br.meetingplace.server.modules.authentication.dao.AccessLogDAO
 import br.meetingplace.server.modules.authentication.dto.requests.RequestLog
+import br.meetingplace.server.modules.authentication.dto.requests.RequestLogin
 import br.meetingplace.server.modules.authentication.entities.AccessLogEntity
 import br.meetingplace.server.modules.authentication.services.AuthenticationService
 import br.meetingplace.server.modules.user.dao.user.UserDAO
@@ -21,6 +22,15 @@ fun Route.authentication(){
 
     route("/api"){
         authenticate {
+            get ("/id"){
+                val log = call.log
+                if(log != null){
+                    call.respond(log.userID)
+                }
+
+                else
+                    call.respond(HttpStatusCode.Unauthorized)
+            }
             get("/verify/token"){
                 val log = call.log
                 println("Verification requested")
@@ -34,7 +44,7 @@ fun Route.authentication(){
             }
         }
         put("/login") {
-            val data = call.receive<RequestLog>()
+            val data = call.receive<RequestLogin>()
             val token = AuthenticationService.signIn(data, UserDAO)
             if(token.isNullOrBlank())
                 call.respond(HttpStatusCode.Unauthorized)

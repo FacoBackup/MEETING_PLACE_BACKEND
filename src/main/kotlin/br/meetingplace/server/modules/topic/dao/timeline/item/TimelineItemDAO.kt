@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object TimelineItemDAO:TMII {
+
     override suspend fun create(topicID: Long, userID: Long): HttpStatusCode {
         return try{
             transaction{
@@ -25,14 +26,27 @@ object TimelineItemDAO:TMII {
             HttpStatusCode.InternalServerError
         }
     }
-
+    override suspend fun readNewest(userID: Long): List<TimelineItemDTO> {
+        return try{
+            transaction{
+                TimelineItemEntity.deleteWhere { (TimelineItemEntity.userID eq userID) and (TimelineItemEntity.validUntil.less(System.currentTimeMillis())) }
+                TimelineItemEntity.select{
+                    (TimelineItemEntity.userID eq userID)
+                }.limit(5).orderBy(TimelineItemEntity.topicID, SortOrder.DESC).map { mapItem(it) }
+            }
+        }catch (e: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
     override suspend fun readByMaxID(userID: Long, maxID: Long): List<TimelineItemDTO> {
         return try{
             transaction{
                 TimelineItemEntity.deleteWhere { (TimelineItemEntity.userID eq userID) and (TimelineItemEntity.validUntil.less(System.currentTimeMillis())) }
                 TimelineItemEntity.select{
-                    TimelineItemEntity.topicID.less(maxID)
-                }.limit(5).map { mapItem(it) }
+                    TimelineItemEntity.topicID.less(maxID) and (TimelineItemEntity.userID eq userID)
+                }.limit(5).orderBy(TimelineItemEntity.topicID, SortOrder.DESC).map { mapItem(it) }
             }
         }catch (e: Exception){
             listOf()

@@ -10,7 +10,7 @@ object UserEntity: Table("users"){
     val email = varchar("email", 320)
     val category = text("category_work").nullable()
     val name = text("name")
-    val userName = varchar("user_name",128)
+    val userName = varchar("user_name",128).uniqueIndex()
     val birth = long("birth")
     val password = varchar("password", 512)
     val gender = varchar("gender", 32)
