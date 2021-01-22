@@ -2,6 +2,8 @@ package br.meetingplace.server.modules.community.dao
 
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
 import br.meetingplace.server.modules.community.dto.response.CommunityDTO
+import br.meetingplace.server.modules.community.dto.response.SimplifiedCommunityDTO
+import br.meetingplace.server.modules.community.dto.response.SimplifiedUserCommunityDTO
 import br.meetingplace.server.modules.community.entities.CommunityEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
@@ -94,12 +96,25 @@ object CommunityDAO: CI {
         }
     }
 
-    override suspend fun readByName(name: String): List<CommunityDTO> {
+    override suspend fun searchByMaxID(name: String, maxID: Long): List<SimplifiedCommunityDTO> {
+        return try{
+            transaction {
+                CommunityEntity.select{
+                    (CommunityEntity.name like "%$name%") and (CommunityEntity.id.less(maxID))
+                }.limit(10).orderBy(CommunityEntity.id, SortOrder.DESC).map { mapSimplifiedCommunityDTO(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
+    override suspend fun searchByNewest(name: String): List<SimplifiedCommunityDTO> {
         return try{
             transaction {
                 CommunityEntity.select{
                     CommunityEntity.name like "%$name%"
-                }.map { mapCommunityDTO(it) }
+                }.limit(10).orderBy(CommunityEntity.id, SortOrder.DESC).map { mapSimplifiedCommunityDTO(it) }
             }
         }catch (normal: Exception){
             listOf()
@@ -126,7 +141,15 @@ object CommunityDAO: CI {
             HttpStatusCode.InternalServerError
         }
     }
+    private fun mapSimplifiedCommunityDTO(it: ResultRow): SimplifiedCommunityDTO {
+        return SimplifiedCommunityDTO(
+            communityID = it[CommunityEntity.id],
+            name = it[CommunityEntity.name],
+            imageURL = it[CommunityEntity.pic],
+            about = it[CommunityEntity.about]
+        )
 
+    }
     private fun mapCommunityDTO(it: ResultRow): CommunityDTO {
         return CommunityDTO(
             name = it[CommunityEntity.name],

@@ -143,20 +143,7 @@ fun Route.communityRouter() {
             else call.respond(HttpStatusCode.Unauthorized)
 
         }
-        patch("/search/community") {
-            val data= call.receive<RequestCommunity>()
-            val log = call.log
-            if(log != null && data.communityName != null){
 
-                call.respond(CommunityReadService.readCommunityByName(
-                    requester = log.userID,
-                    name= data.communityName,
-                    communityDAO = CommunityDAO,
-                    communityMemberDAO = CommunityMemberDAO))
-            }
-
-            else call.respond(HttpStatusCode.Unauthorized)
-        }
 
         post<RequestCommunityCreation>("/community") {
             val log = call.log

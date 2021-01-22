@@ -8,6 +8,7 @@ import br.meetingplace.server.modules.conversation.routes.conversationRouter
 import br.meetingplace.server.modules.conversation.routes.groupConversationRouter
 import br.meetingplace.server.modules.conversation.routes.messageRouter
 import br.meetingplace.server.modules.conversation.routes.userConversationRouter
+import br.meetingplace.server.modules.search.routes.searchRouter
 import br.meetingplace.server.modules.topic.routes.topicRouter
 import br.meetingplace.server.modules.user.routes.userRouter
 import br.meetingplace.server.settings.jwt.JWTSettings
@@ -44,7 +45,7 @@ fun Application.module(){
 //
 //    }
     install(Authentication){
-        jwt {
+         jwt {
             verifier(JWTSettings.jwtVerifier)
             realm = "MeetingPlaceBackEnd"
             validate {
@@ -64,6 +65,7 @@ fun Application.module(){
             authentication()
         }
         authenticate(optional = false){
+            searchRouter()
             conversationRouter()
             topicRouter()
             communityRouter()

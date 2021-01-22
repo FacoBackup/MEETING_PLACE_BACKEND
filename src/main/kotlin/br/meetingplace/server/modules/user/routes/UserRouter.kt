@@ -14,7 +14,6 @@ import br.meetingplace.server.modules.user.services.delete.UserDeleteService
 import br.meetingplace.server.modules.user.services.factory.UserFactoryService
 import br.meetingplace.server.modules.user.services.profile.UserUpdateService
 import br.meetingplace.server.modules.user.services.read.UserReadService
-import br.meetingplace.server.modules.user.services.search.UserSearchService
 import br.meetingplace.server.modules.user.services.social.UserSocialService
 import br.meetingplace.server.server.AuthLog.log
 import io.ktor.application.*
@@ -96,13 +95,13 @@ fun Route.userRouter() {
 
                 else call.respond(HttpStatusCode.Unauthorized)
             }
-            patch("/search/user"){
-                val data = call.receive<RequestUser>()
-                val log = call.log
-                if(log != null && data.userName != null)
-                    call.respond(UserSearchService.searchUser(requester = log.userID, userName = data.userName, userDAO = UserDAO, userSocialDAO= UserSocialDAO, maxID = data.userID))
-                else call.respond(HttpStatusCode.Unauthorized)
-            }
+//            patch("/search/user"){
+//                val data = call.receive<RequestUser>()
+//                val log = call.log
+//                if(log != null && data.userName != null)
+//                    call.respond(UserSearchService.searchUser(requester = log.userID, userName = data.userName, userDAO = UserDAO, userSocialDAO= UserSocialDAO, maxID = data.userID))
+//                else call.respond(HttpStatusCode.Unauthorized)
+//            }
             get(UserPaths.USER) {
                 val log = call.log
                 if(log != null){
@@ -114,14 +113,6 @@ fun Route.userRouter() {
                 }
                 else call.respond(HttpStatusCode.Unauthorized)
             }
-//            get(UserPaths.USER +"/name") {
-//                val data = call.receive<RequestUser>()
-//                val user = UserDAO.readAllByAttribute(null,name = data.userName, null,null,null,null)
-//                if (user.isEmpty())
-//                    call.respond(HttpStatusCode.NotFound)
-//                else
-//                    call.respond(user)
-//            }
 
             delete(UserPaths.USER) {
                 val data = call.receive<RequestUser>()

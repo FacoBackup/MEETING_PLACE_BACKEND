@@ -86,10 +86,7 @@ object UserDAO: UI {
                 val result = mutableListOf<UserSimplifiedDTO>()
                 transaction {
                     result.addAll(UserEntity.select{
-                        (UserEntity.userName like "%$name%") and (UserEntity.id neq requester)
-                    }.limit(5).orderBy(UserEntity.id, SortOrder.DESC).map { mapSimplifiedUser(it) })
-                    result.addAll(UserEntity.select{
-                        (UserEntity.name like "%$name%") and (UserEntity.id neq requester)
+                        ((UserEntity.userName like "%$name%") or (UserEntity.name like "%$name%"))  and (UserEntity.id neq requester)
                     }.limit(5).orderBy(UserEntity.id, SortOrder.DESC).map { mapSimplifiedUser(it) })
                 }
                 return result
@@ -264,7 +261,7 @@ object UserDAO: UI {
         return UserSimplifiedDTO(
             userID =it[UserEntity.id],
             email = it[UserEntity.email],
-            name = it[UserEntity.userName],
+            name = it[UserEntity.name],
             birthDate= it[UserEntity.birth],
             imageURL = it[UserEntity.pic],
             backgroundImageURL = it[UserEntity.background],
