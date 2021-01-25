@@ -52,12 +52,13 @@ object UserSocialService {
         return try {
             when(data.community){
                 true-> {
-                    if(communityDAO.check(data.subjectID) && userDAO.check(requester))
+                    if(communityDAO.check(data.subjectID))
                         communityMemberDAO.create(requester, communityID = data.subjectID, MemberType.FOLLOWER.toString())
                     else HttpStatusCode.FailedDependency
                 }
                 false-> {
-                    if(userDAO.check(data.subjectID) && userDAO.check(requester) && !userSocialDAO.check(userID = requester, followedID = data.subjectID))
+
+                    if(requester != data.subjectID && !userSocialDAO.check(userID = requester, followedID = data.subjectID))
                         userSocialDAO.create(userID = requester, followedID = data.subjectID)
                     else HttpStatusCode.FailedDependency
                 }

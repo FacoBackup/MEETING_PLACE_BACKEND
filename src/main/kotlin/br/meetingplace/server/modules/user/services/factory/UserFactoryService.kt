@@ -10,7 +10,12 @@ object UserFactoryService{
 
     suspend fun create(data: RequestUserCreation, userDAO: UI): HttpStatusCode {
         return try{
-            if(userDAO.readAllByAttribute(email = data.email, data.userName, null, null, phoneNumber = data.phoneNumber, null, null).isNullOrEmpty()  && data.email.isNotBlank() && data.name.isNotBlank() && data.userName.isNotBlank() && data.phoneNumber.isNotBlank() && data.password.length >= 8&& data.email.length > 11 && data.email.contains("@"))
+            if(userDAO.readAllByAttribute(email = data.email, data.userName, null, null, phoneNumber = data.phoneNumber, null, null).isNullOrEmpty()  && data.email.isNotBlank() && data.name.isNotBlank() && data.userName.isNotBlank() &&
+                data.phoneNumber.isNotBlank() &&
+                data.password.length >= 8&&
+                data.email.length > 11 &&
+                data.email.contains("@"))
+
                 userDAO.create(data)
             else
                 HttpStatusCode.ExpectationFailed

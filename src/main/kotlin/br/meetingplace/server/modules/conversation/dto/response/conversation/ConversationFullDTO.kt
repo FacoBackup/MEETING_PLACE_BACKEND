@@ -10,5 +10,5 @@ data class ConversationFullDTO(val id: Long,
                                val unreadMessages: Long,
                                val userName: String?,
                                val latestMessage: Long?,
-                               val latestMessageContent: String?
+                               val userID: Long?
                                )

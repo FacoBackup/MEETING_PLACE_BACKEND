@@ -21,6 +21,13 @@ import io.ktor.routing.*
 
 fun Route.communityRouter() {
     route("/api") {
+        get("/moderator/in"){
+            val log = call.log
+            if(log != null)
+                call.respond(CommunityReadService.readModeratorIn(log.userID, communityMemberDAO = CommunityMemberDAO, communityDAO = CommunityDAO))
+
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
         put("/lower/member"){
             val data = call.receive<RequestCommunityMember>()
             val log = call.log

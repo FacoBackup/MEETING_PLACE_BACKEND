@@ -23,8 +23,6 @@ object UserUpdateService {
 
         }catch (e: Exception){
             HttpStatusCode.InternalServerError
-        }catch (psql: PSQLException){
-            HttpStatusCode.InternalServerError
         }
     }
 }

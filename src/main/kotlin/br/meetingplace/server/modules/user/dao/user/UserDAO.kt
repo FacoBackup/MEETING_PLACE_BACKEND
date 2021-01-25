@@ -105,10 +105,7 @@ object UserDAO: UI {
                 val result = mutableListOf<UserSimplifiedDTO>()
                 transaction {
                     result.addAll(UserEntity.select{
-                        (UserEntity.userName like "%$name%") and (UserEntity.id neq requester) and (UserEntity.id.less(maxID))
-                    }.limit(5).orderBy(UserEntity.id, SortOrder.DESC).map { mapSimplifiedUser(it) })
-                    result.addAll(UserEntity.select{
-                        (UserEntity.name like "%$name%") and (UserEntity.id neq requester) and (UserEntity.id.less(maxID))
+                        ((UserEntity.userName like "%$name%") or (UserEntity.name like "%$name%")) and (UserEntity.id neq requester) and (UserEntity.id.less(maxID))
                     }.limit(5).orderBy(UserEntity.id, SortOrder.DESC).map { mapSimplifiedUser(it) })
                 }
                 return result
@@ -170,20 +167,20 @@ object UserDAO: UI {
     ): List<UserDTO> {
         return try {
             val users  = mutableListOf<UserDTO>()
-            if(!userName.isNullOrBlank()) users.add(transaction {
+            if(!userName.isNullOrBlank()) users.addAll(transaction {
                 UserEntity.select {
                     UserEntity.userName eq userName
-                }.map { mapUser(it) }.first()
+                }.map { mapUser(it) }
             })
-            if(!email.isNullOrBlank()) users.add(transaction {
+            if(!email.isNullOrBlank()) users.addAll(transaction {
                 UserEntity.select {
                     UserEntity.email eq email
-                }.map { mapUser(it) }.first()
+                }.map { mapUser(it) }
             })
-            if(!name.isNullOrBlank()) users.add(transaction {
+            if(!name.isNullOrBlank()) users.addAll(transaction {
                 UserEntity.select {
                     UserEntity.userName eq name
-                }.map { mapUser(it) }.first()
+                }.map { mapUser(it) }
             })
             if(birthDate != null) users.addAll(transaction {
                 UserEntity.select {
@@ -230,7 +227,7 @@ object UserDAO: UI {
             transaction {
                 UserEntity.update({UserEntity.id eq userID}){
                     if(!name.isNullOrBlank())
-                        it[this.userName] = name
+                        it[this.name] = name
 
                     it[this.category] = category
 
@@ -281,7 +278,8 @@ object UserDAO: UI {
             backgroundImageURL = it[UserEntity.background],
             joinedIn = it[UserEntity.joinedIn],
             id = it[UserEntity.id],
-            userName = it[UserEntity.userName]
+            userName = it[UserEntity.userName],
+            category = it[UserEntity.category]
             )
     }
 

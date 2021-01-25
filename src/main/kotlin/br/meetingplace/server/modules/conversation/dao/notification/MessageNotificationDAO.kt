@@ -1,12 +1,8 @@
 package br.meetingplace.server.modules.conversation.dao.notification
-
-import br.meetingplace.server.modules.conversation.dao.messages.MessageDAO
 import br.meetingplace.server.modules.conversation.dto.response.notification.MessageNotificationDTO
-import br.meetingplace.server.modules.conversation.entities.messages.MessageEntity
 import br.meetingplace.server.modules.conversation.entities.notification.MessageNotificationEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
@@ -58,7 +54,7 @@ object MessageNotificationDAO: MNI {
             val lastPage = transaction {
                 MessageNotificationEntity.select {
                     (MessageNotificationEntity.userID eq requester)
-                }.orderBy(MessageEntity.page, SortOrder.DESC).map{ mapMessageNotification(it) }.firstOrNull()
+                }.orderBy(MessageNotificationEntity.page, SortOrder.DESC).map{ mapMessageNotification(it) }.firstOrNull()
             }
 
             return if(lastPage != null){

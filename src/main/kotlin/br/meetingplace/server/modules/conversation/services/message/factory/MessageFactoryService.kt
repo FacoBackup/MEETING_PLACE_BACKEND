@@ -32,6 +32,8 @@ object MessageFactoryService {
                     else{
 
                         conversationMembers = conversationMemberDAO.readAllByConversation(conversationID = data.conversationID)
+                        val lastMessage = messageDAO.readLastMessage(conversationID = data.conversationID)
+
                         val response = messageDAO.create(
                             message = encryptedMessage,
                             imageURL = encryptedImageURL,
@@ -41,7 +43,8 @@ object MessageFactoryService {
                        if(response != null){
                            conversationDAO.update(conversationID =  data.conversationID, latestMessage = true,null,null,null)
                            for(i in conversationMembers.indices){
-                               messageNotificationDAO.create(conversationMembers[i].userID, conversationID = data.conversationID, messageID = response,isGroup = true, creationDate = System.currentTimeMillis())
+                               if(lastMessage == null || ((lastMessage.creationDate - System.currentTimeMillis()) >= 21600000 && lastMessage.creatorID != requester) )
+                                   messageNotificationDAO.create(conversationMembers[i].userID, conversationID = data.conversationID, messageID = response,isGroup = true, creationDate = System.currentTimeMillis())
                                messageStatusDAO.create(conversationID = data.conversationID, userID = conversationMembers[i].userID, messageID = response)
                            }
                            HttpStatusCode.Created
@@ -77,9 +80,11 @@ object MessageFactoryService {
                                 imageURL = encryptedImageURL,
                                 creator = requester,
                                 conversationID = conversation.conversationID)
+                            val lastMessage = messageDAO.readLastMessage(conversationID = conversation.conversationID)
 
                             return if(response != null){
-                                messageNotificationDAO.create(conversationID = conversation.conversationID, messageID = response,isGroup = false,creationDate= System.currentTimeMillis(), requester = data.receiverID)
+                                if(lastMessage == null || ((lastMessage.creationDate - System.currentTimeMillis()) >= 21600000 && lastMessage.creatorID != requester))
+                                    messageNotificationDAO.create(conversationID = conversation.conversationID, messageID = response,isGroup = false,creationDate= System.currentTimeMillis(), requester = data.receiverID)
                                 conversationDAO.update(conversationID =  conversation.conversationID, latestMessage =true,null,null,null)
                                 messageStatusDAO.create(conversationID = conversation.conversationID, userID = requester, messageID = response)
                                 messageStatusDAO.create(conversationID = conversation.conversationID, userID = data.receiverID, messageID = response)
@@ -97,7 +102,7 @@ object MessageFactoryService {
                             val encryptedImageURL = data.imageURL?.let { encryption.encrypt(myKey = key, it) }
 
                             val id = conversationDAO.create(
-                                data = RequestConversationCreation(
+                                    data = RequestConversationCreation(
                                     name="private",
                                     imageURL = null,
                                     about = null,
@@ -116,7 +121,9 @@ object MessageFactoryService {
                                         creator = requester,
                                         conversationID = id
                                     )
+
                                     if(response != null){
+
                                         messageNotificationDAO.create( conversationID = id,isGroup = false, creationDate = System.currentTimeMillis(), messageID = response, requester = data.receiverID)
                                         conversationDAO.update(conversationID = id, latestMessage = true,null,null,null)
                                         messageStatusDAO.create(conversationID = id, userID = requester, messageID = response)

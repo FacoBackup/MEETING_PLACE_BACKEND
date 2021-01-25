@@ -5,6 +5,7 @@ import br.meetingplace.server.modules.community.dto.response.CommunityMemberDTO
 import io.ktor.http.*
 
 interface CMI {
+    suspend fun readModeratorIn(userID: Long): List<CommunityMemberDTO>
     suspend fun create(userID: Long, communityID: Long, role: String): HttpStatusCode
     suspend fun read(communityID: Long, userID: Long): CommunityMemberDTO?
     suspend fun readByCommunity(communityID: Long): List<CommunityMemberDTO>

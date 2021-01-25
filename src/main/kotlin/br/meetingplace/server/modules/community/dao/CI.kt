@@ -7,7 +7,7 @@ import br.meetingplace.server.modules.community.dto.response.SimplifiedUserCommu
 import io.ktor.http.*
 
 interface CI {
-    suspend fun create(data: RequestCommunityCreation):HttpStatusCode
+    suspend fun create(data: RequestCommunityCreation):Long?
     suspend fun read(id: Long): CommunityDTO?
     suspend fun update(communityID: Long,
                        imageURL: String?,

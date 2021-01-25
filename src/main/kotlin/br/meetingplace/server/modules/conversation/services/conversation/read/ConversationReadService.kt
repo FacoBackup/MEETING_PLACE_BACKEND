@@ -17,9 +17,7 @@ object ConversationReadService {
         conversationMemberDAO: CMI,
         conversationDAO: CI, userDAO: UI,
         conversationOwnerDAO: COI,
-        messageStatusDAO: MSI,
-        messageDAO: MI,
-        decryption: AESInterface
+        messageStatusDAO: MSI
         ): List<ConversationFullDTO> {
 
         return try {
@@ -44,12 +42,8 @@ object ConversationReadService {
                                 members = conversationMemberDAO.readAllByConversation(conversationID = private[i].conversationID),
                                 unreadMessages = unreadMessages,
                                 userName = simplifiedUser.name,
+                                userID= simplifiedUser.userID,
                                 latestMessage = conversationData.latestMessage,
-                                latestMessageContent = messageDAO.readLastMessage(conversationID = private[i].conversationID, userID = requester)?.let {
-                                    decryption.decrypt(myKey = AESMessageKey.key ,
-                                        it
-                                    )
-                                }
                             )
                         )
                     }
@@ -69,12 +63,8 @@ object ConversationReadService {
                                 members = conversationMemberDAO.readAllByConversation(conversationID = memberIn[i].conversationID),
                                 unreadMessages =unreadMessages,
                                 userName = null,
+                                userID = null,
                                 latestMessage = conversationData.latestMessage,
-                                latestMessageContent = messageDAO.readLastMessage(conversationID = memberIn[i].conversationID, userID = requester)?.let {
-                                    decryption.decrypt(myKey = AESMessageKey.key ,
-                                        it
-                                    )
-                                }
                         )
                         )
                     }

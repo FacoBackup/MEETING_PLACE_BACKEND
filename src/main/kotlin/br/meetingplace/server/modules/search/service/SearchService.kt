@@ -17,7 +17,14 @@ object SearchService {
 
             for(i in users.indices){
                 val isFollowing = userSocialDAO.check(followedID = users[i].userID, userID = requester)
-                result.add(UserSearchDTO(name = users[i].name,email = users[i].email,imageURL = users[i].imageURL,isFollowing = isFollowing, userID = users[i].userID))
+                result.add(UserSearchDTO(
+                    name = users[i].name,
+                    email = users[i].email,
+                    imageURL = users[i].imageURL,
+                    isFollowing = isFollowing,
+                    userID = users[i].userID,
+                    userName = users[i].userName
+                    ))
             }
 
             result

@@ -34,9 +34,7 @@ fun Route.userConversationRouter() {
                     conversationDAO = ConversationDAO,
                     userDAO = UserDAO,
                     conversationOwnerDAO = ConversationOwnersDAO,
-                    messageStatusDAO = MessageStatusDAO,
-                    messageDAO = MessageDAO,
-                    decryption = AES
+                    messageStatusDAO = MessageStatusDAO
                     ))
             else call.respond(HttpStatusCode.Unauthorized)
         }

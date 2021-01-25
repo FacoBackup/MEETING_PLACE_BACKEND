@@ -13,18 +13,16 @@ object CommunityFactoryService {
 
         return try {
             return if(data.relatedCommunityID != null && communityDAO.read(data.relatedCommunityID) != null){
-                communityDAO.create(data)
-                val community = communityDAO.readByExactName(data.name)
-                return if(community != null)
-                    communityMemberDAO.create(userID = requester, communityID = community.id, role = MemberType.MODERATOR.toString())
+                val communityID = communityDAO.create(data)
+                return if(communityID != null)
+                    communityMemberDAO.create(userID = requester, communityID = communityID, role = MemberType.MODERATOR.toString())
                 else
                     HttpStatusCode.InternalServerError
             }
-            else if(data.relatedCommunityID != null){
-                communityDAO.create(data)
-                val community = communityDAO.readByExactName(data.name)
-                return if(community != null)
-                    communityMemberDAO.create(userID = requester, communityID = community.id, role = MemberType.MODERATOR.toString())
+            else if(data.relatedCommunityID == null){
+                val communityID = communityDAO.create(data)
+                return if(communityID != null)
+                    communityMemberDAO.create(userID = requester, communityID = communityID, role = MemberType.MODERATOR.toString())
                 else
                     HttpStatusCode.InternalServerError
             }

@@ -8,16 +8,14 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.util.PSQLException
 
 object MessageDAO: MI{
-    override suspend fun readLastMessage(conversationID: Long, userID: Long): String? {
+    override suspend fun readLastMessage(conversationID: Long): MessageDTO? {
         return try {
-            val result = transaction {
+            transaction {
                 MessageEntity.select {
                     (MessageEntity.conversationID eq conversationID) and
-                    (MessageEntity.creationDate.lessEq(System.currentTimeMillis())) and
-                    (MessageEntity.creatorID neq userID)
+                    (MessageEntity.creationDate.lessEq(System.currentTimeMillis()))
                 }.map { mapMessage(it) }.firstOrNull()
             }
-            result?.content
         }catch (normal: Exception){
             null
         }catch (psql: PSQLException){

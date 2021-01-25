@@ -4,5 +4,6 @@ data class UserSearchDTO (val email: String,
                           val name: String,
                           val imageURL: String?,
                           val isFollowing: Boolean,
-                          val userID: Long
+                          val userID: Long,
+                          val userName: String
                           )

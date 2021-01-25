@@ -3,7 +3,6 @@ package br.meetingplace.server.modules.community.dao
 import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
 import br.meetingplace.server.modules.community.dto.response.CommunityDTO
 import br.meetingplace.server.modules.community.dto.response.SimplifiedCommunityDTO
-import br.meetingplace.server.modules.community.dto.response.SimplifiedUserCommunityDTO
 import br.meetingplace.server.modules.community.entities.CommunityEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
@@ -12,7 +11,7 @@ import org.postgresql.util.PSQLException
 
 object CommunityDAO: CI {
 
-    override suspend fun create(data: RequestCommunityCreation):HttpStatusCode  {
+    override suspend fun create(data: RequestCommunityCreation):Long?  {
         return try{
             transaction {
                 CommunityEntity.insert {
@@ -23,13 +22,31 @@ object CommunityDAO: CI {
                     it[about] = data.about
                     it[mainCommunityID]= data.relatedCommunityID
                     it[background] = data.background
-                }
+                } get CommunityEntity.id
             }
-            HttpStatusCode.Created
+
         }catch (normal: Exception){
-            HttpStatusCode.InternalServerError
+            println()
+            println()
+            println()
+
+            println(normal.message)
+
+            println()
+            println()
+            println()
+            null
         }catch (psql: PSQLException){
-            HttpStatusCode.InternalServerError
+            println()
+            println()
+            println()
+
+            println(psql.message)
+
+            println()
+            println()
+            println()
+            null
         }
     }
 
@@ -157,7 +174,7 @@ object CommunityDAO: CI {
             about = it[CommunityEntity.about],
             imageURL =  it[CommunityEntity.pic],
             creationDate = it[CommunityEntity.creationDate],
-            parentCommunityID = it[CommunityEntity.mainCommunityID],
+            mainCommunity = it[CommunityEntity.mainCommunityID],
             backgroundImageURL = it[CommunityEntity.background]
             )
     }

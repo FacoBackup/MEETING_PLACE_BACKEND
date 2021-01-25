@@ -93,6 +93,26 @@ fun Route.topicRouter() {
             else call.respond(HttpStatusCode.Unauthorized)
         }
         //FETCHING
+
+        //LIKES/DISLIKES
+        patch("/fetch/quantity/likes"){
+            val data = call.receive<RequestTopic>()
+            val log = call.log
+            if(log != null)
+                call.respond(TopicOpinionDAO.readQuantity(topicID = data.topicID,likes = true))
+
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
+        patch("/fetch/quantity/dislikes"){
+            val data = call.receive<RequestTopic>()
+            val log = call.log
+            if(log != null)
+                call.respond(TopicOpinionDAO.readQuantity(topicID = data.topicID,likes = false))
+
+            else call.respond(HttpStatusCode.Unauthorized)
+        }
+        //LIKES/DISLIKES
+
         post<RequestTopicCreation>("/topic") {
             val log = call.log
 

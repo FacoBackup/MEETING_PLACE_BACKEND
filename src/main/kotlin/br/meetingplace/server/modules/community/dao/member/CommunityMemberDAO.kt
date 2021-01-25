@@ -153,6 +153,18 @@ object CommunityMemberDAO: CMI {
         }
     }
 
+    override suspend fun readModeratorIn(userID: Long): List<CommunityMemberDTO> {
+        return try{
+            return transaction {
+                CommunityMemberEntity.select { (CommunityMemberEntity.userID eq userID) and (CommunityMemberEntity.role eq "MODERATOR")}
+                    .map { mapCommunityMemberDTO(it) }
+            }
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
     override suspend fun readByCommunity(communityID: Long): List<CommunityMemberDTO> {
         return try{
             return transaction {

@@ -29,22 +29,7 @@ fun Route.userRouter() {
         post<RequestUserCreation>(UserPaths.USER) {
             call.respond(UserFactoryService.create(it, UserDAO))
         }
-        patch("/get/profile") {
-            val data = call.receive<RequestUser>()
-            val log = call.log
-            if(log != null && data.userID != null){
-                val response = UserReadService.read(data.userID, topicDAO = TopicDAO, userDAO = UserDAO, userSocialDAO = UserSocialDAO)
-                if(response == null)
-                    call.respond(HttpStatusCode.NoContent)
-                else
-                    call.respond(response)
 
-            }
-
-            else call.respond(HttpStatusCode.InternalServerError)
-
-
-        }
 
         get(UserPaths.USER +"/all") {
             val user = UserDAO.readAll()
@@ -54,6 +39,20 @@ fun Route.userRouter() {
                 call.respond(user)
         }
         authenticate {
+            patch("/get/profile") {
+                val data = call.receive<RequestUser>()
+                val log = call.log
+                if(log != null && data.userID != null){
+                    val response = UserReadService.read(data.userID, requester = log.userID,topicDAO = TopicDAO, userDAO = UserDAO, userSocialDAO = UserSocialDAO)
+                    if(response == null)
+                        call.respond(HttpStatusCode.NoContent)
+                    else
+                        call.respond(response)
+
+                }
+                else call.respond(HttpStatusCode.InternalServerError)
+            }
+
             patch("/verify/follower"){
                 val data = call.receive<RequestUser>()
                 val log = call.log
@@ -88,7 +87,7 @@ fun Route.userRouter() {
                 if(log != null && data.userID != null){
                     val user = UserDAO.readByID(data.userID)
                     if(user != null)
-                        call.respond(UserSearchDTO(name= user.name,email = user.email,imageURL = user.imageURL,isFollowing = false, userID = data.userID))
+                        call.respond(UserSearchDTO(name= user.name,email = user.email,imageURL = user.imageURL,isFollowing = false, userID = data.userID, userName = user.userName))
                     else
                         call.respond(HttpStatusCode.NoContent)
                 }

@@ -9,7 +9,7 @@ interface MI {
     suspend fun check(messageID: Long): Boolean
     suspend fun readByPage(conversationID: Long, page: Long): List<MessageDTO>
     suspend fun readLastPage(conversationID: Long): List<MessageDTO>
-    suspend fun readLastMessage(conversationID: Long, userID: Long): String?
+    suspend fun readLastMessage(conversationID: Long): MessageDTO?
     suspend fun readAllConversation(userID: Long, conversationID: Long): List<MessageDTO>
     suspend fun delete(messageID: Long): HttpStatusCode
     suspend fun update(messageID: Long): HttpStatusCode

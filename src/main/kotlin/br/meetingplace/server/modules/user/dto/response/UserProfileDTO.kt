@@ -1,9 +1,11 @@
 package br.meetingplace.server.modules.user.dto.response
 
 data class UserProfileDTO(
+    val id: Long,
     val email: String,
     val name: String,
     val userName: String,
+    val category: String?,
     val gender: String,
     val birthDate:Long,
     val imageURL: String?,
@@ -15,5 +17,6 @@ data class UserProfileDTO(
     val followers: Long,
     val following: Long,
     val topics: Long,
-    val joinedIn: Long
+    val joinedIn: Long,
+    val isFollower: Boolean?
 )
