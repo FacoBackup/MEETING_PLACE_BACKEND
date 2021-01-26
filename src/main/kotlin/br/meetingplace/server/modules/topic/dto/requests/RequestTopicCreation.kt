@@ -6,5 +6,6 @@ data class RequestTopicCreation(
         val imageURL: String?,
         val communityID: Long?,
         val mainTopicID: Long?,
-        val hashTags: List<String>
+        val hashTags: List<String>,
+        val mentionedUsers: List<String>
 )

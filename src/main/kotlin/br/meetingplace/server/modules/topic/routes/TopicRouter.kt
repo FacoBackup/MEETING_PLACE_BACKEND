@@ -62,7 +62,7 @@ fun Route.topicRouter() {
                     topicDAO = TopicDAO,
                     encryption = AES,
                     tagDAO = TagDAO,
-                    hashTags = data.tags,
+                    hashTags = data.hashTags,
                     topicTagDAO = TopicTagDAO
                     ))
             else call.respond(HttpStatusCode.Unauthorized)
