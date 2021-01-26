@@ -2,17 +2,15 @@ package br.meetingplace.server.modules.topic.services.read
 
 import br.meetingplace.server.methods.AESInterface
 import br.meetingplace.server.modules.community.dao.CI
-import br.meetingplace.server.modules.community.dao.member.CMI
 import br.meetingplace.server.modules.topic.dao.archive.TAI
 import br.meetingplace.server.modules.topic.dao.opinion.TOI
 import br.meetingplace.server.modules.topic.dao.seen.TVI
-import br.meetingplace.server.modules.topic.dao.tag.TTI
+import br.meetingplace.server.modules.topic.dao.tag.TagInterface
 import br.meetingplace.server.modules.topic.dao.timeline.item.TMII
 import br.meetingplace.server.modules.topic.dao.topic.TI
 import br.meetingplace.server.modules.topic.dto.response.TopicDTO
 import br.meetingplace.server.modules.topic.dto.response.TopicDataDTO
 import br.meetingplace.server.modules.topic.key.AESTopicKey
-import br.meetingplace.server.modules.user.dao.social.SI
 import br.meetingplace.server.modules.user.dao.user.UI
 
 object TopicReadService {
@@ -28,7 +26,7 @@ object TopicReadService {
         decryption: AESInterface,
         topicArchiveDAO: TAI,
         topicTimelineDAO: TMII,
-        topicTagsDAO: TTI,
+        topicTagsDAO: TagInterface,
         topicStatusDAO: TVI): List<TopicDataDTO>{
 
         return try{
@@ -88,7 +86,7 @@ object TopicReadService {
         subjectID: Long,
         maxID: Long?,
         topicDAO: TI,
-        topicTagsDAO: TTI,
+        topicTagsDAO: TagInterface,
         topicArchiveDAO: TAI,
         decryption: AESInterface):List<TopicDataDTO>{
 

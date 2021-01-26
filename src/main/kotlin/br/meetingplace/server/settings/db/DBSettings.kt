@@ -11,6 +11,8 @@ import br.meetingplace.server.modules.conversation.entities.messages.MessageOpin
 import br.meetingplace.server.modules.conversation.entities.messages.MessageStatusEntity
 import br.meetingplace.server.modules.conversation.entities.notification.MessageNotificationEntity
 import br.meetingplace.server.modules.topic.entities.*
+import br.meetingplace.server.modules.topic.entities.tags.TagEntity
+import br.meetingplace.server.modules.topic.entities.tags.TopicTagEntity
 import br.meetingplace.server.modules.topic.entities.timeline.TimelineItemEntity
 import br.meetingplace.server.modules.user.entities.UserSocialEntity
 import br.meetingplace.server.modules.user.entities.UserEntity
@@ -50,6 +52,7 @@ object DBSettings {
                     TopicOpinionEntity,
                     TopicArchiveEntity,
                     TopicTagEntity,
+                    TagEntity,
                     TimelineItemEntity,
                     ConversationOwnersEntity,
                     TopicStatusEntity

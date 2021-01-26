@@ -8,6 +8,7 @@ import br.meetingplace.server.modules.topic.dao.archive.TopicArchiveDAO
 import br.meetingplace.server.modules.topic.dao.topic.TopicDAO
 import br.meetingplace.server.modules.topic.dao.opinion.TopicOpinionDAO
 import br.meetingplace.server.modules.topic.dao.seen.TopicStatusDAO
+import br.meetingplace.server.modules.topic.dao.tag.TagDAO
 import br.meetingplace.server.modules.topic.dao.tag.TopicTagDAO
 import br.meetingplace.server.modules.topic.dao.timeline.item.TimelineItemDAO
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopic
@@ -42,6 +43,13 @@ fun Route.topicRouter() {
             val data = call.receive<RequestTopics>()
             call.respond(HttpStatusCode.NotImplemented)
         }
+
+        //NEW
+        get("/fetch/trending"){
+            call.respond(TagDAO.readRank())
+        }
+        //NEW
+
         put("/topic"){
             val data = call.receive<TopicUpdateDTO>()
             val log = call.log
@@ -52,7 +60,10 @@ fun Route.topicRouter() {
                     body = data.body,
                     topicID = data.topicID,
                     topicDAO = TopicDAO,
-                    encryption = AES
+                    encryption = AES,
+                    tagDAO = TagDAO,
+                    hashTags = data.tags,
+                    topicTagDAO = TopicTagDAO
                     ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
@@ -72,7 +83,7 @@ fun Route.topicRouter() {
                     topicOpinionDAO = TopicOpinionDAO,
                     requester = log.userID,
                     topicArchiveDAO = TopicArchiveDAO,
-                    topicTagsDAO = TopicTagDAO
+                    topicTagsDAO = TagDAO
                 ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
@@ -90,7 +101,7 @@ fun Route.topicRouter() {
                     topicOpinionDAO = TopicOpinionDAO,
                     topicArchiveDAO = TopicArchiveDAO,
                     topicTimelineDAO = TimelineItemDAO,
-                    topicTagsDAO = TopicTagDAO
+                    topicTagsDAO = TagDAO
                 ))
 
             else call.respond(HttpStatusCode.Unauthorized)
@@ -128,6 +139,7 @@ fun Route.topicRouter() {
                     encryption = AES,
                     userSocialDAO = UserSocialDAO,
                     userTimelineDAO = TimelineItemDAO,
+                    tagDAO = TagDAO,
                     topicTagDAO = TopicTagDAO
                 ))
             else call.respond(HttpStatusCode.Unauthorized)
