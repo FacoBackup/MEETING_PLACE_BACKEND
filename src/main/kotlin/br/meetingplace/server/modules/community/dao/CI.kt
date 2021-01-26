@@ -11,7 +11,7 @@ interface CI {
     suspend fun read(id: Long): CommunityDTO?
     suspend fun update(communityID: Long,
                        imageURL: String?,
-                       backgroundImageURL: String?,
+                       backgroundImageURL: String?,name: String?,
                        about: String?):HttpStatusCode
     suspend fun readRelatedCommunities(id: Long): List<CommunityDTO>
     suspend fun check(id: Long):Boolean

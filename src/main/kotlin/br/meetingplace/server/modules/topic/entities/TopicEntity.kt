@@ -17,5 +17,6 @@ object TopicEntity: Table("topics") {
     val creationDate = long("creation_date")
     val communityID = long("community_pk").references(CommunityEntity.id).nullable()
     val image = text("image").nullable()
+
     override val primaryKey = PrimaryKey(id)
 }

@@ -6,6 +6,7 @@ import br.meetingplace.server.modules.community.dao.member.CMI
 import br.meetingplace.server.modules.topic.dao.archive.TAI
 import br.meetingplace.server.modules.topic.dao.opinion.TOI
 import br.meetingplace.server.modules.topic.dao.seen.TVI
+import br.meetingplace.server.modules.topic.dao.tag.TTI
 import br.meetingplace.server.modules.topic.dao.timeline.item.TMII
 import br.meetingplace.server.modules.topic.dao.topic.TI
 import br.meetingplace.server.modules.topic.dto.response.TopicDTO
@@ -27,6 +28,7 @@ object TopicReadService {
         decryption: AESInterface,
         topicArchiveDAO: TAI,
         topicTimelineDAO: TMII,
+        topicTagsDAO: TTI,
         topicStatusDAO: TVI): List<TopicDataDTO>{
 
         return try{
@@ -86,6 +88,7 @@ object TopicReadService {
         subjectID: Long,
         maxID: Long?,
         topicDAO: TI,
+        topicTagsDAO: TTI,
         topicArchiveDAO: TAI,
         decryption: AESInterface):List<TopicDataDTO>{
 

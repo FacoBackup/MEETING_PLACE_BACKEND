@@ -7,19 +7,20 @@ import br.meetingplace.server.modules.community.dto.requests.RequestCommunityUpd
 import io.ktor.http.*
 
 object CommunityUpdateService {
-    suspend  fun updateCommunity(requester: Long,data: RequestCommunityUpdate, community: CI, member: CMI): HttpStatusCode {
+    suspend  fun updateCommunity(requester: Long, data: RequestCommunityUpdate, communityDAO: CI, communityMemberDAO: CMI): HttpStatusCode {
         return try {
-            val memberData = member.read(communityID = data.communityID, userID = requester)
+            val memberData = communityMemberDAO.read(communityID = data.communityID, userID = requester)
 
             if(memberData != null &&
               (memberData.role == MemberType.MODERATOR.toString() ||
                memberData.role == MemberType.MEMBER.toString())){
 
-               community.update(
+               communityDAO.update(
                    communityID = data.communityID,
                    about = data.about,
                    imageURL = data.imageURL,
-                   backgroundImageURL = data.backgroundImageURL
+                   backgroundImageURL = data.backgroundImageURL,
+                   name = data.name
                    )
             }else HttpStatusCode.FailedDependency
         }catch (normal: Exception){

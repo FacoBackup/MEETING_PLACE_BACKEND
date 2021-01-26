@@ -139,16 +139,17 @@ object CommunityDAO: CI {
             listOf()
         }
     }
-    override suspend fun update(communityID: Long, imageURL: String?, backgroundImageURL: String?, about: String?):HttpStatusCode {
+    override suspend fun update(communityID: Long, imageURL: String?, backgroundImageURL: String?,name: String?, about: String?):HttpStatusCode {
         return try{
             transaction {
                 CommunityEntity.update( { CommunityEntity.id eq communityID } ){
                     if(!about.isNullOrBlank())
                         it[this.about] = about
-                    if(!backgroundImageURL.isNullOrBlank())
-                        it[this.background] = backgroundImageURL
-                    if(!imageURL.isNullOrBlank())
-                        it[this.pic] = imageURL
+                    if(!name.isNullOrBlank())
+                        it[this.name] = name
+
+                    it[this.background] = backgroundImageURL
+                    it[this.pic] = imageURL
                 }
             }
             HttpStatusCode.OK

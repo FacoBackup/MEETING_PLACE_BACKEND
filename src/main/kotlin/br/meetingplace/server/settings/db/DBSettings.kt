@@ -10,10 +10,7 @@ import br.meetingplace.server.modules.conversation.entities.messages.MessageEnti
 import br.meetingplace.server.modules.conversation.entities.messages.MessageOpinionEntity
 import br.meetingplace.server.modules.conversation.entities.messages.MessageStatusEntity
 import br.meetingplace.server.modules.conversation.entities.notification.MessageNotificationEntity
-import br.meetingplace.server.modules.topic.entities.TopicArchiveEntity
-import br.meetingplace.server.modules.topic.entities.TopicEntity
-import br.meetingplace.server.modules.topic.entities.TopicOpinionEntity
-import br.meetingplace.server.modules.topic.entities.TopicStatusEntity
+import br.meetingplace.server.modules.topic.entities.*
 import br.meetingplace.server.modules.topic.entities.timeline.TimelineItemEntity
 import br.meetingplace.server.modules.user.entities.UserSocialEntity
 import br.meetingplace.server.modules.user.entities.UserEntity
@@ -52,6 +49,7 @@ object DBSettings {
                     TopicEntity,
                     TopicOpinionEntity,
                     TopicArchiveEntity,
+                    TopicTagEntity,
                     TimelineItemEntity,
                     ConversationOwnersEntity,
                     TopicStatusEntity

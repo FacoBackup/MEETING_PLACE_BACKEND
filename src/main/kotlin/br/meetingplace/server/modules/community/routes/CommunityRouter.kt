@@ -2,13 +2,11 @@ package br.meetingplace.server.modules.community.routes
 
 import br.meetingplace.server.modules.community.dao.CommunityDAO
 import br.meetingplace.server.modules.community.dao.member.CommunityMemberDAO
-import br.meetingplace.server.modules.community.dto.requests.CommunityUpdateDTO
-import br.meetingplace.server.modules.community.dto.requests.RequestCommunity
-import br.meetingplace.server.modules.community.dto.requests.RequestCommunityCreation
-import br.meetingplace.server.modules.community.dto.requests.RequestCommunityMember
+import br.meetingplace.server.modules.community.dto.requests.*
 import br.meetingplace.server.modules.community.services.factory.CommunityFactoryService
 import br.meetingplace.server.modules.community.services.member.CommunityMemberService
 import br.meetingplace.server.modules.community.services.read.CommunityReadService
+import br.meetingplace.server.modules.community.services.update.CommunityUpdateService
 import br.meetingplace.server.modules.topic.dao.topic.TopicDAO
 import br.meetingplace.server.modules.user.dao.user.UserDAO
 import br.meetingplace.server.modules.user.dto.requests.RequestUser
@@ -53,10 +51,10 @@ fun Route.communityRouter() {
             else call.respond(HttpStatusCode.Unauthorized)
         }
         put("/update/community"){
-            val data = call.receive<CommunityUpdateDTO>()
+            val data = call.receive<RequestCommunityUpdate>()
             val log = call.log
             if(log != null)
-                call.respond(CommunityDAO.update(communityID = data.communityID, about = data.about, imageURL = data.imageURL, backgroundImageURL = data.backgroundImageURL))
+                call.respond(CommunityUpdateService.updateCommunity(requester = log.userID, data = data, communityDAO = CommunityDAO, communityMemberDAO = CommunityMemberDAO))
             else call.respond(HttpStatusCode.Unauthorized)
 
         }

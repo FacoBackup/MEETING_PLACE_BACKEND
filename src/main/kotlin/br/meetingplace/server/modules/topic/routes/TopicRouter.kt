@@ -8,6 +8,7 @@ import br.meetingplace.server.modules.topic.dao.archive.TopicArchiveDAO
 import br.meetingplace.server.modules.topic.dao.topic.TopicDAO
 import br.meetingplace.server.modules.topic.dao.opinion.TopicOpinionDAO
 import br.meetingplace.server.modules.topic.dao.seen.TopicStatusDAO
+import br.meetingplace.server.modules.topic.dao.tag.TopicTagDAO
 import br.meetingplace.server.modules.topic.dao.timeline.item.TimelineItemDAO
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopic
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
@@ -70,7 +71,8 @@ fun Route.topicRouter() {
                     communityDAO = CommunityDAO,
                     topicOpinionDAO = TopicOpinionDAO,
                     requester = log.userID,
-                    topicArchiveDAO = TopicArchiveDAO
+                    topicArchiveDAO = TopicArchiveDAO,
+                    topicTagsDAO = TopicTagDAO
                 ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
@@ -87,7 +89,8 @@ fun Route.topicRouter() {
                     communityDAO = CommunityDAO,
                     topicOpinionDAO = TopicOpinionDAO,
                     topicArchiveDAO = TopicArchiveDAO,
-                    topicTimelineDAO = TimelineItemDAO
+                    topicTimelineDAO = TimelineItemDAO,
+                    topicTagsDAO = TopicTagDAO
                 ))
 
             else call.respond(HttpStatusCode.Unauthorized)
@@ -124,7 +127,8 @@ fun Route.topicRouter() {
                     communityMemberDAO = CommunityMemberDAO,
                     encryption = AES,
                     userSocialDAO = UserSocialDAO,
-                    userTimelineDAO = TimelineItemDAO
+                    userTimelineDAO = TimelineItemDAO,
+                    topicTagDAO = TopicTagDAO
                 ))
             else call.respond(HttpStatusCode.Unauthorized)
 

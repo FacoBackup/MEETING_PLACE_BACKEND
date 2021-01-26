@@ -3,6 +3,7 @@ package br.meetingplace.server.modules.topic.services.factory
 import br.meetingplace.server.methods.AESInterface
 import br.meetingplace.server.modules.community.dao.member.CMI
 import br.meetingplace.server.modules.community.dto.MemberType
+import br.meetingplace.server.modules.topic.dao.tag.TTI
 import br.meetingplace.server.modules.topic.dao.timeline.item.TMII
 import br.meetingplace.server.modules.topic.dao.topic.TI
 import br.meetingplace.server.modules.topic.dto.requests.RequestTopicCreation
@@ -13,7 +14,7 @@ import io.ktor.http.*
 
 object TopicFactoryService {
     private const val key = AESTopicKey.key
-    suspend fun create(requester: Long, data: RequestTopicCreation, topicDAO: TI, communityMemberDAO: CMI, userTimelineDAO: TMII, userSocialDAO: SI, encryption: AESInterface): HttpStatusCode {
+    suspend fun create(requester: Long, data: RequestTopicCreation,topicTagDAO: TTI, topicDAO: TI, communityMemberDAO: CMI, userTimelineDAO: TMII, userSocialDAO: SI, encryption: AESInterface): HttpStatusCode {
         return try {
             when (data.communityID == null) {
                 true -> {
@@ -35,6 +36,13 @@ object TopicFactoryService {
                                 approved = true)
 
                             if(topicID != null){
+
+//                                val tag = topicTagDAO.read("TAG HERE")
+//                                if(tag != null)
+//                                    topicTagDAO.update(tagID = tag.tagID,rankUp = true)
+//                                else
+//                                    topicTagDAO.create("TAG HERE")
+//
                                 userTimelineDAO.create(topicID =  topicID, userID = requester)
                                 val followers = userSocialDAO.readAll(userID = requester, following= false)
 
@@ -68,6 +76,13 @@ object TopicFactoryService {
                                 approved = member.role == MemberType.MODERATOR.toString())
 
                             if(topicID != null){
+//                                val tag = topicTagDAO.read("TAG HERE")
+//                                if(tag != null)
+//                                    topicTagDAO.update(tagID = tag.tagID,rankUp = true)
+//                                else
+//                                    topicTagDAO.create("TAG HERE")
+
+
                                 val members = communityMemberDAO.readMembers(communityID = data.communityID)
 
                                 for(i in members.indices){
