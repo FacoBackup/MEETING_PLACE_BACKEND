@@ -25,19 +25,6 @@ fun Route.userConversationRouter() {
     route("/api") {
 
 
-        get("/conversation/all"){
-            val log = call.log
-            if(log != null)
-                call.respond(ConversationReadService.readConversations(
-                    log.userID,
-                    conversationMemberDAO = ConversationMemberDAO,
-                    conversationDAO = ConversationDAO,
-                    userDAO = UserDAO,
-                    conversationOwnerDAO = ConversationOwnersDAO,
-                    messageStatusDAO = MessageStatusDAO
-                    ))
-            else call.respond(HttpStatusCode.Unauthorized)
-        }
 
         post<RequestUser>("/get/conversation/user") {
             val log = call.log

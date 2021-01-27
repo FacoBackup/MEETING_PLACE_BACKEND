@@ -44,11 +44,30 @@ fun Route.topicRouter() {
             call.respond(HttpStatusCode.NotImplemented)
         }
 
-        //NEW
+        //TAG RELATED
         get("/fetch/trending"){
             call.respond(TagDAO.readRank())
         }
-        //NEW
+        patch("/fetch/by/tag"){
+            val data = call.receive<RequestTopics>()
+            val log = call.log
+            if(log != null && data.tagID != null)
+                call.respond(TopicReadService.readTopicsByTag(
+                    tagDAO = TagDAO,
+                    requester= log.userID,
+                    tagID = data.tagID,
+                    maxID = data.maxID,
+                    decryption = AES,
+                    topicDAO = TopicDAO,
+                    userDAO = UserDAO,
+                    communityDAO = CommunityDAO,
+                    topicOpinionDAO = TopicOpinionDAO,
+                    topicArchiveDAO = TopicArchiveDAO,
+                ))
+            else call.respond(HttpStatusCode.Unauthorized)
+
+        }
+        //TAG RELATED
 
         put("/topic"){
             val data = call.receive<TopicUpdateDTO>()
@@ -82,8 +101,7 @@ fun Route.topicRouter() {
                     communityDAO = CommunityDAO,
                     topicOpinionDAO = TopicOpinionDAO,
                     requester = log.userID,
-                    topicArchiveDAO = TopicArchiveDAO,
-                    topicTagsDAO = TagDAO
+                    topicArchiveDAO = TopicArchiveDAO
                 ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
@@ -95,13 +113,11 @@ fun Route.topicRouter() {
                     maxID = data.maxID,
                     decryption = AES,
                     topicDAO = TopicDAO,
-                    topicStatusDAO = TopicStatusDAO,
                     userDAO = UserDAO,
                     communityDAO = CommunityDAO,
                     topicOpinionDAO = TopicOpinionDAO,
                     topicArchiveDAO = TopicArchiveDAO,
                     topicTimelineDAO = TimelineItemDAO,
-                    topicTagsDAO = TagDAO
                 ))
 
             else call.respond(HttpStatusCode.Unauthorized)

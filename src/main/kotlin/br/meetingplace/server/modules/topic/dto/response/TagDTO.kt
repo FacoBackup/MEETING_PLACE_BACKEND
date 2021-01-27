@@ -1,6 +1,7 @@
 package br.meetingplace.server.modules.topic.dto.response
 
-data class TopicTagDTO (
+data class TagDTO(
     val tagID: Long,
-    val topicID: Long,
-)
+    val tagValue: String,
+    val numberOfTopics: Long
+    )

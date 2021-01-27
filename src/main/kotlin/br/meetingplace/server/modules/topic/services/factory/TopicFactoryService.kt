@@ -38,13 +38,13 @@ object TopicFactoryService {
                             if(topicID != null){
 
                                 for(i in data.hashTags.indices){
-                                    val tag = tagDAO.read(data.hashTags[i])
+                                    val tag = tagDAO.read(data.hashTags[i].toLowerCase())
                                     if(tag != null){
                                         topicTagDAO.create(topicID = topicID, tagID= tag.tagID)
                                     }
 
                                     else{
-                                        val tagID = tagDAO.create(data.hashTags[i])
+                                        val tagID = tagDAO.create(data.hashTags[i].toLowerCase())
                                         if(tagID != null)
                                             topicTagDAO.create(topicID = topicID, tagID= tagID)
                                     }
@@ -84,12 +84,12 @@ object TopicFactoryService {
 
                             if(topicID != null){
                                 for(i in data.hashTags.indices){
-                                    val tag = tagDAO.read(data.hashTags[i])
+                                    val tag = tagDAO.read(data.hashTags[i].toLowerCase())
                                     if(tag != null){
                                         topicTagDAO.create(topicID = topicID, tagID= tag.tagID)
                                     }
                                     else{
-                                        val tagID = tagDAO.create(data.hashTags[i])
+                                        val tagID = tagDAO.create(data.hashTags[i].toLowerCase())
                                         if(tagID != null)
                                             topicTagDAO.create(topicID = topicID, tagID= tagID)
                                     }

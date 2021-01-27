@@ -22,13 +22,12 @@ object TopicUpdateService {
                 if(result == HttpStatusCode.OK && body != null && topic.mainTopicID == null){
                     topicTagDAO.delete(topicID = topicID)
                     for(i in hashTags.indices){
-                        val tag = tagDAO.read(hashTags[i])
+                        val tag = tagDAO.read(hashTags[i].toLowerCase())
                         if(tag != null){
                             topicTagDAO.create(topicID = topicID, tagID= tag.tagID)
                         }
-
                         else{
-                            val tagID = tagDAO.create(hashTags[i])
+                            val tagID = tagDAO.create(hashTags[i].toLowerCase())
                             if(tagID != null)
                                 topicTagDAO.create(topicID = topicID, tagID= tagID)
                         }

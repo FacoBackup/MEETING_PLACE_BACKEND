@@ -6,5 +6,4 @@ import io.ktor.http.*
 interface TVI {
     suspend fun create(userID: Long, topicID: Long): HttpStatusCode
     suspend fun check(topicID: Long, userID: Long): Boolean
-
 }

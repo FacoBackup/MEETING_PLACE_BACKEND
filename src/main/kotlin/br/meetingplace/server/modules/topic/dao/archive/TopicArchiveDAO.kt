@@ -1,5 +1,6 @@
 package br.meetingplace.server.modules.topic.dao.archive
 
+import br.meetingplace.server.modules.topic.dto.response.TopicTagDTO
 import br.meetingplace.server.modules.topic.entities.TopicArchiveEntity
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.and
@@ -56,4 +57,5 @@ object TopicArchiveDAO: TAI {
             HttpStatusCode.InternalServerError
         }
     }
+
 }

@@ -45,7 +45,7 @@ object TopicOpinionService{
             topicOpinion == null -> 2 // 2 hasn't DISLIKED or liked yet
             topicOpinion.liked -> 0
             !topicOpinion.liked -> 1 // 1 ALREADY DISLIKED
-            else -> 2
+            else -> -1
         }
     }
 }
