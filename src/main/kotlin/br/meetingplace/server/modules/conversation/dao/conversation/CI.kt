@@ -7,6 +7,7 @@ import io.ktor.http.*
 interface CI {
     suspend fun create(data: RequestConversationCreation): Long?
     suspend fun read(conversationID: Long): ConversationDTO?
+    suspend fun readNewest(minID: Long, requester: Long):List<ConversationDTO>
     suspend fun check(conversationID: Long): Boolean
     suspend fun update(conversationID: Long, latestMessage: Boolean, name: String?, about: String?, imageURL: String?): HttpStatusCode
     suspend fun delete(conversationID: Long): HttpStatusCode

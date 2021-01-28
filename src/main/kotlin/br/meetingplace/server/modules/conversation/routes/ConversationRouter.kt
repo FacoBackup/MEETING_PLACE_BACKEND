@@ -5,6 +5,7 @@ import br.meetingplace.server.modules.conversation.dao.conversation.member.Conve
 import br.meetingplace.server.modules.conversation.dao.conversation.owners.ConversationOwnersDAO
 import br.meetingplace.server.modules.conversation.dao.messages.status.MessageStatusDAO
 import br.meetingplace.server.modules.conversation.dto.requests.conversation.RequestConversation
+import br.meetingplace.server.modules.conversation.dto.requests.conversation.RequestConversationNewest
 import br.meetingplace.server.modules.conversation.services.conversation.factory.ConversationFactoryService
 import br.meetingplace.server.modules.conversation.services.conversation.read.ConversationReadService
 import br.meetingplace.server.modules.user.dao.user.UserDAO
@@ -35,16 +36,32 @@ fun Route.conversationRouter(){
         }
 
         patch("/conversation/newest"){
+            val data = call.receive<RequestConversationNewest>()
             val log = call.log
             if(log != null)
-                call.respond(HttpStatusCode.NotImplemented)
+                call.respond(ConversationReadService.readNewestConversations(
+                    requester = log.userID,
+                    minID = data.minID,
+                    conversationMemberDAO = ConversationMemberDAO,
+                    conversationDAO = ConversationDAO,
+                    userDAO = UserDAO,
+                    conversationOwnerDAO = ConversationOwnersDAO,
+                    messageStatusDAO = MessageStatusDAO
+                ))
             else call.respond(HttpStatusCode.Unauthorized)
         }
 
         get("/conversation/update/info"){
             val log = call.log
             if(log != null)
-                call.respond(HttpStatusCode.NotImplemented)
+                call.respond(ConversationReadService.updateConversationInfo(
+                    requester = log.userID,
+                   conversationID = 123,
+                    conversationMemberDAO = ConversationMemberDAO,
+                    conversationDAO = ConversationDAO,
+                    userDAO = UserDAO,
+                    conversationOwnerDAO = ConversationOwnersDAO,
+                    messageStatusDAO = MessageStatusDAO))
             else call.respond(HttpStatusCode.Unauthorized)
         }
         patch ("/conversation/search"){

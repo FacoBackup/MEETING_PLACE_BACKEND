@@ -36,6 +36,31 @@ object ConversationDAO: CI {
         }
     }
 
+    override suspend fun readNewest(minID: Long, requester: Long): List<ConversationDTO> {
+        return try {
+            val conversations = mutableListOf<ConversationDTO>()
+
+            conversations.addAll(transaction {
+                (ConversationEntity innerJoin ConversationOwnersEntity).select {
+                    ConversationEntity.id.greater(minID) and
+                            (ConversationOwnersEntity.secondaryUserID.eq(requester) or ConversationOwnersEntity.primaryUserID.eq(requester))
+                }.map { mapConversation(it) }
+            })
+
+            conversations.addAll(transaction {
+                (ConversationEntity innerJoin ConversationMemberEntity).select {
+                    ConversationEntity.id.greater(minID) and
+                            ConversationMemberEntity.userID.eq(requester)
+                }.map { mapConversation(it) }
+            })
+
+            conversations
+        }catch (normal: Exception){
+            listOf()
+        }catch (psql: PSQLException){
+            listOf()
+        }
+    }
     override suspend fun check(conversationID: Long): Boolean {
         return try {
             !transaction {
